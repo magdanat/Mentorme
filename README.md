@@ -1,6 +1,5 @@
 # Mentorme LLC
 ## Contact Information
-
 Name |
 -------------
 Lynette Li

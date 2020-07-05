@@ -1,5 +1,6 @@
 # Requirements
-Requirements page for Mentorme. Details are subject to change. 
+Requirements page for Mentorme. Details are subject to change.
+For now, please refer to the powerpoint presentation Lynette made. 
 
 ## Dictionary
 - Mentor: A person intending to act as a advisor/guide for mentees.
@@ -18,7 +19,6 @@ Requirements page for Mentorme. Details are subject to change.
 - There will be a total of 25 different mobile screens for the application.
 
 ## Sign-In & Sign-Up
-- 
 
 ## Preferences
 - When the application is first used, the screen will display three options to select from, a mentor or mentee role, and a third option labeled "Unsure".  Throughout the process of choosing preferences, a bar showing progress of how much questions are left will be displayed at the bottom of the screen.
@@ -29,19 +29,16 @@ Requirements page for Mentorme. Details are subject to change.
     - Throughout the entire process, arrows will be displayed on the left and right side of the input buttons, allowing users to go back to previous screens.
 
 ## Settings
-- 
 
 ## Newsfeed
 - The newsfeed page will display stories, posts, events from other users that are being followed.
 - At the top of the page in a row, other users' stories will be visible. Clicking a story will display that story on the entire screen.
-- Users 
 
 ## Scheduling
 
 ## Profile Pages
 
 ## Posts
-- 
 
 ## Navigation 
 - At the bottom of all screens except preferences, four buttons will be displayed in a row.
