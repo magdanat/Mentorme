@@ -4,9 +4,9 @@ The timeline for the prototype of Mentorme will happen over a ~2-3 month basis. 
 ## Week 1 (July 6th - July 13th)
 The first two weeks will be spent distributing roles and giving an overview 
 of basic Android/Kotlin knowledge for everyone. Will 
-- [] Firebase Controller
-- [] SignUpController
-- [] NavigationView
+[] Firebase Controller
+[] SignUpController
+[] NavigationView
 
 ## Week 2 (July 14th - July 21st)
 See week 1 for details.
