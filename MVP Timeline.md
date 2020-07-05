@@ -10,7 +10,7 @@ of basic Android/Kotlin knowledge for everyone.
 - [ ] Give general overview of Android/Kotlin and necessary software needed. 
 - [ ] Divide worklooad amongst everyone.
 - [ ] Set up Firebase account and give access on Firebase and Github.  
-- [ ] Have everyone read the [Cooperative Software Development resource!](http://faculty.washington.edu/ajko/books/cooperative-software-development/)
+- [ ] Have everyone read the [Cooperative Software Development resource!](http://faculty.washington.edu/ajko/books/cooperative-software-development/) (We can decide if this is necessary but I figure that information is useful)
 
 ### Components
 - [ ] FirebaseController
