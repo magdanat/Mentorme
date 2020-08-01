@@ -1,17 +1,33 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import 'react-native-gesture-handler';
+import React, { Component } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { PreferencesView } from './PreferencesView';
+import { HomeView } from './HomeView';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-        <Text>MentorMe</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+const Stack = createStackNavigator();
 
-const styles = StyleSheet.create({
+export default class App extends Component {
+  render() {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="HomeView"
+            component={HomeView}
+          />
+          <Stack.Screen
+            name="PreferencesView"
+            component={PreferencesView}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+};
+
+export const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
