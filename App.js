@@ -35,3 +35,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// export const prefStyles = StyleSheet.create({ 
+//   preferences: {
+//     container: {}
+//   }
+// })
