@@ -22,13 +22,13 @@ export const HomeView = ({ navigation }) => {
              title="Sign Up"
              onPress={() =>
                 navigation.navigate('PreferencesView')}/>
-          <div>
+          <View>
             <Text>
               Already have an account?
             </Text>
             <Button
               title="Log in"/>
-          </div>
+          </View>
       </View>
     );
   };

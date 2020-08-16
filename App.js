@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, YellowBox } from 'react-native';
 import { PreferencesView } from './PreferencesView';
 import { HomeView } from './HomeView';
 
@@ -34,6 +34,13 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  test: {
+    backgroundColor: 'yellow'
+  },
+  test2: {
+    backgroundColor: 'green'
+  }
+
 });
 
 // export const prefStyles = StyleSheet.create({ 
