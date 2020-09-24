@@ -1,35 +1,30 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, TabActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+// Icons
+import Ionicons from '@expo/vector-icons/Ionicons';
+
 import { StyleSheet, Text, View, Button, TextInput, YellowBox } from 'react-native';
+
+// Components
 import { PreferencesView } from './Components/PreferencesView';
 import { HomeView } from './Components/HomeView';
+import { MatchingView } from './Components/MatchingView';
+import { LoginView } from './Components/LoginView';
+import { ProfileView } from './Components/ProfileView';
+
 import { block } from 'react-native-reanimated';
 
-const Stack = createStackNavigator();
 
-// Old method
-// export default class App extends Component {
-//   render() {
-//     return (
-//       <NavigationContainer>
-//         <Stack.Navigator>
-//           <Stack.Screen
-//             name="HomeView"
-//             component={HomeView}
-//           />
-//           <Stack.Screen
-//             name="PreferencesView"
-//             component={PreferencesView}
-//           />
-//         </Stack.Navigator>
-//       </NavigationContainer>
-//     );
-//   }
-// };
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 // Recommended method
+// TODO: Reorganize the stacks into separate stack containers
+// https://reactnavigation.org/docs/tab-based-navigation/
 const App = () => {
   return (
       <NavigationContainer>
@@ -42,8 +37,50 @@ const App = () => {
             name="PreferencesView"
             component={PreferencesView}
           />
+          <Stack.Screen
+            name="MatchingView"
+            component={MatchingView}
+          />
+          <Stack.Screen
+            name="LoginView"
+            component={LoginView}
+          />
+          <Stack.Screen
+            name="ProfileView"
+            component={ProfileView}
+          />
+
+          {/* Connect Tabs */}
+          <Stack.Screen name="Connect" component={ConnectTabs}/>
         </Stack.Navigator>
       </NavigationContainer>
+  )
+}
+
+function ConnectTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route}) => ({
+        tabBarIcon: ({ focused, color, size}) => {
+          let iconName;
+
+          if (route.name === 'Connect') {
+            iconName = focused ? 'handshake-o' : 'handshake'
+          } else if (route.name === 'Profile') {
+            iconName = focused ? 'person' : 'person-outline'
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+      tabBarOptions={{
+        activeTintColor: 'tomato',
+        inactiveTintColor: 'gray',
+      }}
+      >
+      <Tab.Screen name="Connect" component={MatchingView}/>
+      <Tab.Screen name="Profile" component={ProfileView}/>
+    </Tab.Navigator>
   )
 }
 
@@ -51,11 +88,12 @@ export default App
 
 export const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // PreferencesView
   prefViewContainer: {
     backgroundColor: "#fff",
     flex: 1,
