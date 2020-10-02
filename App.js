@@ -5,6 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, YellowBox } from 'react-native';
 import { PreferencesView } from './PreferencesView';
 import { HomeView } from './HomeView';
+import { HomePage } from './HomePage';
+import { SignUpPage }  from './SignUpPage';
 
 const Stack = createStackNavigator();
 
@@ -14,12 +16,20 @@ export default class App extends Component {
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen
+            name="HomePage"
+            component={HomePage}
+          />
+          <Stack.Screen
             name="HomeView"
             component={HomeView}
           />
           <Stack.Screen
             name="PreferencesView"
             component={PreferencesView}
+          />
+          <Stack.Screen
+            name="SignUpPage"
+            component={SignUpPage}
           />
         </Stack.Navigator>
       </NavigationContainer>
