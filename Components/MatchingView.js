@@ -3,14 +3,21 @@ import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
 // Depending on user profile type, i.e mentor or mentee, display different
-// component
+// component or just search a different database
 export class MatchingView extends Component {
     render() {
         return (
             <View style={styles.container}>
+
+                {/* Search Bar */}
+                <TextInput
+                    placeholder="Search"
+                    style={styles.searchBar}/>
+
+
                 <View style={{ flex: 1 }}>
                     <FlatList
                         contentContainerStyle={{ alignItems: "center" }}
@@ -75,7 +82,7 @@ const styles = StyleSheet.create({
         width: '95%',
         height: 150,
         marginLeft: 10,
-        marginTop: 20,
+        marginTop: 10,
         // justifyContent: 'center',
         // alignItems: 'center',
         paddingTop: 10,
@@ -91,5 +98,16 @@ const styles = StyleSheet.create({
     },
     profileTextProfession: {
         color: 'grey'
+    },
+    searchBar: {
+        width: '90%',
+        marginTop: 10,
+        backgroundColor: 'white',
+        borderColor: '#cccccc',
+        borderWidth: 1,
+        height: 50,
+        paddingLeft: 20,
+        paddingRight: 20,
+        borderRadius: 30,
     }
 })

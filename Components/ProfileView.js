@@ -2,14 +2,38 @@ import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity } from 'react-native';
 // import { styles } from '../App.js';
 
 export class ProfileView extends Component {
     render() {
         return (
-            <View>
-                <Text>Profile!</Text>
+            <View style={styles.container}>
+                {/* Header Content
+                    Edit, Profile Name, Settings */}
+                <View>
+                    <View style={styles.titleContainer}>
+                        {/* Edit */}
+                    <TouchableOpacity>
+                        <Image source={require('../assets/favicon.png')}/>
+                    </TouchableOpacity>
+                    
+                    {/* Name */}
+                    <Text>Nathan</Text>
+
+                    {/* Settings */}
+                    <TouchableOpacity>
+                        <Image source={require('../assets/favicon.png')}/>
+                    </TouchableOpacity>
+
+                    </View>
+                </View>
+
+                {/*  */}
+                <View>
+
+                </View>
+
             </View>
         )
     }
@@ -18,3 +42,17 @@ export class ProfileView extends Component {
 function ProfileMentorView() {
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "white",
+    },
+    titleContainer: {
+        // alignSelf: "center",
+        marginTop: 10,
+        flexDirection: "row",
+        justifyContent: "space-around",
+        alignItems: "center"
+    }
+})

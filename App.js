@@ -1,8 +1,11 @@
 import 'react-native-gesture-handler';
-import React, { Component } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { NavigationContainer, TabActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+// Firebase
+import auth from '@react-native-firebase/auth';
 
 // Icons
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -26,35 +29,81 @@ const Tab = createBottomTabNavigator();
 // TODO: Reorganize the stacks into separate stack containers
 // https://reactnavigation.org/docs/tab-based-navigation/
 const App = () => {
-  return (
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="HomeView"
-            component={HomeView}
-          />
-          <Stack.Screen
-            name="PreferencesView"
-            component={PreferencesView}
-          />
-          <Stack.Screen
-            name="MatchingView"
-            component={MatchingView}
-          />
-          <Stack.Screen
-            name="LoginView"
-            component={LoginView}
-          />
-          <Stack.Screen
-            name="ProfileView"
-            component={ProfileView}
-          />
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
 
-          {/* Connect Tabs */}
-          <Stack.Screen name="Connect" component={ConnectTabs}/>
-        </Stack.Navigator>
-      </NavigationContainer>
-  )
+    // Handle user state changes
+    function onAuthStateChanged(user) {
+      setUser(user);
+      if (initializing) setInitializing(false);
+    }
+  
+    useEffect(() => {
+      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+      return subscriber; // unsubscribe on unmount
+    }, []);
+  
+    if (initializing) return null;
+  
+    if (!user) {
+      return (
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="HomeView"
+              component={HomeView}
+            />
+            <Stack.Screen
+              name="PreferencesView"
+              component={PreferencesView}
+            />
+            {/* <Stack.Screen
+              name="MatchingView"
+              component={MatchingView}
+            /> */}
+            <Stack.Screen
+              name="LoginView"
+              component={LoginView}
+            />
+            {/* <Stack.Screen
+              name="ProfileView"
+              component={ProfileView}
+            /> */}
+  
+            {/* Connect Tabs */}
+            {/* <Stack.Screen name="Connect" component={ConnectTabs}/> */}
+          </Stack.Navigator>
+        </NavigationContainer>
+    )
+    
+    } else {
+      return (
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="HomeView"
+              component={HomeView}
+            />
+            <Stack.Screen
+              name="PreferencesView"
+              component={PreferencesView}
+            />
+            <Stack.Screen
+              name="MatchingView"
+              component={MatchingView}
+            />
+            <Stack.Screen
+              name="ProfileView"
+              component={ProfileView}
+            />
+  
+            {/* Connect Tabs */}
+            <Stack.Screen name="Connect" component={ConnectTabs}/>
+          </Stack.Navigator>
+        </NavigationContainer>
+      )
+    }
 }
 
 function ConnectTabs() {
@@ -76,6 +125,7 @@ function ConnectTabs() {
       tabBarOptions={{
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
+        style:{height: 75}
       }}
       >
       <Tab.Screen name="Connect" component={MatchingView}/>

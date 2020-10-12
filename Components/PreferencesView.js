@@ -4,6 +4,9 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, TouchableOpacity } from 'react-native';
 
+// Firebase
+import auth from '@react-native-firebase/auth';
+
 // Causing cycling issue, put styles in a separate file from App.js!
 
 
