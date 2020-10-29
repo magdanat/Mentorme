@@ -9,28 +9,8 @@ import auth from '@react-native-firebase/auth';
 
 // Causing cycling issue, put styles in a separate file from App.js!
 
-
-
-// switch between different views
-// when clicking arrow button
-// export const PreferencesView = ({ navigation }) => {
-
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>Tell us who you are...</Text>
-//       <div>
-//         <div>
-//           <Button
-//             title="Your Legal Name"/>
-//           <Button
-//             title="Preferred Name"/>
-//         </div>
-//       </div>
-//     </View>
-//   )
-// }
-
+// Handles all different steps of the Preferences form.
+// Once
 export class PreferencesView extends Component {
   constructor(props) {
     super(props);
@@ -57,7 +37,20 @@ export class PreferencesView extends Component {
     }
   }
 
+  componentDidMount() {
+    console.log(this.props)
+  }
+
+  // Progresses to the next step, passed down
+  // as a prop to Preference components
   nextStep = () => {
+    const { step } = this.state
+    this.setState({
+      step: step + 1
+    })
+  }
+
+  nextStepOne = () => {
     const { step } = this.state
     this.setState({
       step: step + 1
@@ -71,6 +64,20 @@ export class PreferencesView extends Component {
     })
   }
 
+  updateMentee = () => {
+    const { mentee } = this.state
+    this.setState({
+      mentee: true
+    })
+  }
+
+  updateMentor = () => {
+    const { mentor } = this.state
+    this.setState({
+      mentor: true
+    })
+  }
+
   finish = () => {
     
   }
@@ -78,25 +85,39 @@ export class PreferencesView extends Component {
   showStep = () => {
     const { step, mentor, mentee, notSure, legalName, prefName, interests } = this.state
 
+  
     if (step === 1) {
       return <PrefButtonElements1
-        nextStep={this.nextStep}
+        nextStep={this.nextStepOne}
+        updateMentee={this.updateMentee}
+        updateMentor={this.updateMentor}
         />
-    } else if (step === 2) {
-      return <PrefButtonElements2
-        prevStep={this.prevStep}
-        nextStep={this.nextStep} />
-    } else if (step === 3) {
-      return <PrefButtonElements3
-        prevStep={this.prevStep} 
-        nextStep={this.nextStep}
-        />
-    } else if (step === 4) {
-        return <PrefButtonElements4
+    }
+    
+    // If mentee option is selected is chosen
+    if (mentee) {
+      if (step === 2) {
+        return <PrefButtonElements2
           prevStep={this.prevStep}
+          nextStep={this.nextStep} />
+      } else if (step === 3) {
+        return <PrefButtonElements3
+          prevStep={this.prevStep} 
           nextStep={this.nextStep}
-          navigation={this.props.navigation} 
           />
+      } else if (step === 4) {
+          return <PrefButtonElements4
+            prevStep={this.prevStep}
+            nextStep={this.nextStep}
+            navigation={this.props.navigation} 
+            />
+      }
+    // If mentor option is selected
+    } else {
+      if (step === 2) {
+        return <PrefButtonElements4
+          navigation={this.props.navigation}/>
+      }
     }
   }
 
@@ -109,21 +130,40 @@ export class PreferencesView extends Component {
   }
 }
 
-// Accepts input regarding step 1
+// Displays screen for selecting mentee or mentor role.
+// Selecting one of the options will highlight the option selected
+// and pressing the 'next icon' will move onto the next screen.
 class PrefButtonElements1 extends Component {
-  // constructor(props) {
-  //   super(props)
-  // }
+  constructor(props) {
+    super(props)
+  }
 
+  componentDidMount() {
+    console.log(this.props)
+    console.log(this.state)
+  }
+
+  // Proceeds to next form
   next = e => {
     e.preventDefault()
     this.props.nextStep()
   }
 
+  // Updates chosen role to mentee
+  updateMentee = e => {
+    e.preventDefault()
+    this.props.updateMentee()
+  }
+
+  // Updates chosen role to mentor
+  updateMentor = e => {
+    e.preentDefault()
+    this.props.updateMentor()
+  }
+
   // Consider separating into three using flex...
   // make question + text flex 2, content flex 3,
   // footer flex 1
-
   render() {
     return (
       <View>
@@ -132,7 +172,9 @@ class PrefButtonElements1 extends Component {
           <Text style={styles.prefViewText}>Choose your role, but you can always change later or be both roles in your personal profile.</Text>
 
           <View style={styles.prefViewButtons}>
-            <TouchableOpacity style={styles.prefViewButton}>
+            <TouchableOpacity 
+              onPress={this.updateMentee}
+              style={styles.prefViewButton}>
               <Text style={styles.prefViewButtonText}>
                 Mentee
                 </Text>
@@ -151,7 +193,7 @@ class PrefButtonElements1 extends Component {
           <TouchableOpacity
             onPress={this.next}>
             <Text style={styles.rightArrows}>
-              &#8594;
+              Continue
                 </Text>
           </TouchableOpacity>
         </View>
@@ -160,11 +202,8 @@ class PrefButtonElements1 extends Component {
   }
 }
 
-// Accepts input regarding step 2
+// Displays the screen for 
 class PrefButtonElements2 extends Component {
-  // constructor(props) {
-  // }
-
   back = e => {
     e.preventDefault()
     this.props.prevStep()
@@ -198,7 +237,7 @@ class PrefButtonElements2 extends Component {
           </TouchableOpacity>
           <TouchableOpacity onPress={this.next}>
             <Text style={styles.rightArrows}>
-              &#8594;
+              Continue
             </Text>
           </TouchableOpacity>
         </View>
@@ -227,7 +266,7 @@ class PrefButtonElements3 extends Component {
     return (
       <View>
         <View style={styles.prefViewContentContainer}>
-          <Text style={styles.prefViewTitle}>What would you like to know about to know about? </Text>
+          <Text style={styles.prefViewTitle}>What is your relationship with the Information School? </Text>
           <Text style={styles.prefViewText}>Select the fields that interests you. We will show you related information
           about your interests later.
             </Text>
@@ -237,14 +276,10 @@ class PrefButtonElements3 extends Component {
               contentContainerStyle={{ alignItems: "center" }}
               numColumns={2}
               data={[
-                { key: 'MHCDI+D' },
-                { key: 'IXD' },
-                { key: 'INFO' },
-                { key: "Computer Science" },
-                { key: "HCDE" },
-                { key: "Design" },
-                { key: "Test1" },
-                { key: "Test2" },
+                { key: 'Informatics', description: 'Undergraduate major or minor' },
+                { key: 'MSIM', description: 'Master of Science in Information Management' },
+                { key: 'Ph.D.', description: 'Doctorate in Information Science' },
+                { key: 'Faculty', description: 'Alumni of the iSchool' },
               ]}
               renderItem={({ item }) =>
                 <TouchableOpacity style={styles.prefViewButtonThree}>

@@ -19,6 +19,9 @@ import { MatchingView } from './Components/MatchingView';
 import { LoginView } from './Components/LoginView';
 import { ProfileView } from './Components/ProfileView';
 
+// Settings Components
+import { SettingsView } from './Components/SettingsView';
+
 import { block } from 'react-native-reanimated';
 
 
@@ -46,7 +49,10 @@ const App = () => {
   
     if (initializing) return null;
   
+    // Not logged in
     if (!user) {
+      console.log(user)
+
       return (
         <NavigationContainer>
           <Stack.Navigator>
@@ -54,10 +60,10 @@ const App = () => {
               name="HomeView"
               component={HomeView}
             />
-            <Stack.Screen
+            {/* <Stack.Screen
               name="PreferencesView"
               component={PreferencesView}
-            />
+            /> */}
             {/* <Stack.Screen
               name="MatchingView"
               component={MatchingView}
@@ -77,14 +83,16 @@ const App = () => {
         </NavigationContainer>
     )
     
+    // Logged in
     } else {
+      console.log(user)
       return (
         <NavigationContainer>
           <Stack.Navigator>
-            <Stack.Screen
+            {/* <Stack.Screen
               name="HomeView"
               component={HomeView}
-            />
+            /> */}
             <Stack.Screen
               name="PreferencesView"
               component={PreferencesView}
@@ -97,6 +105,9 @@ const App = () => {
               name="ProfileView"
               component={ProfileView}
             />
+            <Stack.Screen
+              name="SettingsView"
+              component={SettingsView}/>
   
             {/* Connect Tabs */}
             <Stack.Screen name="Connect" component={ConnectTabs}/>

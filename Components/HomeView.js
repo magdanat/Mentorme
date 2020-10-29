@@ -6,10 +6,12 @@ import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity } from 'rea
 // import { styles } from '../App.js';
 
 import auth from '@react-native-firebase/auth';
-
+import database from '@react-native-firebase/database';
 
 export const HomeView = ({ navigation }) => {
   const [email, setEmail] = useState("")
+  const [fName, setFName] = useState("")
+  const [lName, setLName] = useState("")
   const [pass, setPassword] = useState("")
   const [repass, setRePass] = useState("")
 
@@ -28,29 +30,53 @@ export const HomeView = ({ navigation }) => {
   // Check if user form for creating account is properly filled out,
   // then create an account and sign user in if form is filled properly.
   const createUser = () => {
-    // auth().createUserWithEmailAndPassword('jane.doe@example.com', 'SuperSecretPassword!')
-    // .then(() => {
-    //   console.log('User account created & signed in!');
-    // })
-    // .catch(error => {
-    //   if (error.code === 'auth/email-already-in-use') {
-    //     console.log('That email address is already in use!');
-    //   }
-  
-    //   if (error.code === 'auth/invalid-email') {
-    //     console.log('That email address is invalid!');
-    //   }
-  
-    //   console.error(error);
-    // });
+    let validForm = true
 
     // Check if email is valid
-    if (email.length >= 0 && email.substring(email.length - 4) == ".com") {
-      console.log("Valid email")
+    if (email.length <= 0 || email.substring(email.length - 4) != ".com") {
+      console.log("Invalid email")
+      validForm = false
     }
-    
-    if (pass != repass) {
+
+    // Check if first name entry is appropriate length
+    if (fName.length <= 0) {
+      console.log("Invalid first name")
+      validForm = false
+    }
+
+    // Check if last name entry is appropriate length
+    if (lName.length <= 0) {
+      console.log("Invalid last name")
+      validForm = false
+    }
+
+    // Check if passwords are the same
+    if (pass != repass && pass.length != 0) {
       console.log("Passwords do not match")
+      validForm = false
+    }
+
+    // Once form is properly filled out
+    // New accounts will go to the preferences page
+    if (validForm) {
+      auth().createUserWithEmailAndPassword(email, pass)
+        .then(() => {
+          console.log('User account created')
+          // Send user to preferences screen
+          // along with current user information
+          navigation.navigate("PreferencesView")
+        })
+        .catch(error => {
+          if (error.code === 'auth/email-already-in-use') {
+            console.log('That email address is already in use!');
+          }
+
+          if (error.code === 'auth/invalid-email') {
+            console.log('That email address is invalid!');
+          }
+
+          console.error(error);
+        });
     }
 
   }
@@ -59,7 +85,7 @@ export const HomeView = ({ navigation }) => {
     <View style={styles.homeContainer}>
       <Text style={styles.welcomeTitle}>Welcome</Text>
       <TouchableOpacity
-        >
+      >
         <Text style={styles.loginLinkedIn}>Log in with LinkedIn</Text>
       </TouchableOpacity>
       <Text> OR</Text>
@@ -69,20 +95,30 @@ export const HomeView = ({ navigation }) => {
           value={email}
           placeholder={"Mobile Number / Email"} />
         <TextInput
-          placeholder={"Full Name"} />
+          onChangeText={text => setFName(text)}
+          value={fName}
+          placeholder={"First Name"} />
         <TextInput
+          onChangeText={text => setLName(text)}
+          value={lName}
+          placeholder={"Last Name"} />
+        <TextInput
+          onChangeText={text => setPassword(text)}
+          value={pass}
           placeholder={"Password"} />
         <TextInput
-          placeholder={"Re-enter Password"}/>
+          onChangeText={text => setRePass(text)}
+          value={repass}
+          placeholder={"Re-enter Password"} />
       </View>
 
 
       <TouchableOpacity
-          onPress={
-            // checkSignInInfo
-            createUser
-            // () => navigation.navigate('PreferencesView')
-            }>
+        onPress={
+          // checkSignInInfo
+          createUser
+          // () => navigation.navigate('PreferencesView')
+        }>
         <Text
           style={styles.signUpButton}>
           Sign Up
@@ -96,7 +132,7 @@ export const HomeView = ({ navigation }) => {
         <TouchableOpacity
           onPress={() => navigation.navigate('LoginView')}>
           <Text style={styles.loginRowButton}>
-              Log In
+            Log In
           </Text>
         </TouchableOpacity>
       </View>
@@ -122,7 +158,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     // borderTopLeftRadius: 50,
     // borderTopRightRadius: 50,
-  },  
+  },
   welcomeTitle: {
     fontSize: 20,
     marginTop: -40,

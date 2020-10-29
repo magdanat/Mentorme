@@ -6,6 +6,11 @@ import { StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity } fr
 // import { styles } from '../App.js';
 
 export class ProfileView extends Component {
+    componentDidMount() {
+        console.log(this.props)
+        console.log("test")
+    }
+
     render() {
         return (
             <View style={styles.container}>
@@ -22,8 +27,10 @@ export class ProfileView extends Component {
                     <Text>Nathan</Text>
 
                     {/* Settings */}
-                    <TouchableOpacity>
-                        <Image source={require('../assets/favicon.png')}/>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate("SettingsView")}>
+                        <Image source={require('../assets/favicon.png')}
+                        />
                     </TouchableOpacity>
 
                     </View>

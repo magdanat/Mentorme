@@ -5,15 +5,54 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity, FlatList } from 'react-native';
 import { color } from 'react-native-reanimated';
 
+import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
+
 export class LoginView extends Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+            email: "",
+            password: ""
+        }
+    }
+
+    // If preferences haven't been filled out yet, send
+    // user to preferences views
+    signInUser() {
+        console.log(this.state)
+        auth()
+            .signInWithEmailAndPassword(this.state.email, this.state.password)
+            .then(() => {
+                console.log('User has signed in!')
+                console.log(database())
+            })
+            .catch(error => {
+                console.log(error)
+            })
+    }
+
+    setEmail(event) {
+        // let eVal = event.target.value
+        this.setState((state) => {
+            state.email = event
+            return state
+        })
+        // console.log(event)
+    }
+
+    setPassword(event) {
+        this.setState((state) => {
+            state.password = event
+            return state
+        })
     }
 
     render() {
-        return(
+        return (
             <View style={styles.container}>
-                
+
                 {/* Title */}
                 <View style={styles.loginTitle}>
                     <Text style={styles.loginTitleText}>
@@ -23,15 +62,25 @@ export class LoginView extends Component {
 
                 {/* Input Container */}
                 <View style={styles.loginInputContainer}>
-                <TextInput
-                    placeholder="Email"/>
-                <TextInput
-                    placeholder="Password"/>
+                    <TextInput
+                        onChangeText={(e) => this.setEmail(e)}
+                        placeholder="Email" />
+                    <TextInput
+                        onChangeText={(e) => this.setPassword(e)}
+                        placeholder="Password" />
                 </View>
+
+                <TouchableOpacity
+                    onPress={() => this.signInUser()}>
+                    <Text style={styles.signInButton}>
+                        Log In
+                    </Text>
+                </TouchableOpacity>
+
 
                 {/* SignUp Footer */}
                 <View style={styles.loginFooter}>
-                    <Text> 
+                    <Text>
                         Don't have an account?
                     </Text>
                     <TouchableOpacity
@@ -77,5 +126,14 @@ const styles = StyleSheet.create({
     loginFooterNav: {
         marginLeft: 10,
         color: 'blue',
+    },
+    signInButton: {
+        marginTop: 25,
+        backgroundColor: '#add8e6',
+        color: 'white',
+        padding: 10,
+        textAlign: 'center',
+        width: 300,
+        borderRadius: 25,
     }
 })
