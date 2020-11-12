@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
-import { styles } from './App.js';
+import { styles } from '../App.js';
 import { Searchbar } from 'react-native-paper';
 
 export const HomePage = ({ navigation }) => {
@@ -12,7 +12,9 @@ export const HomePage = ({ navigation }) => {
            <Searchbar
              placeholder="Search"/>
            <Button
-             title="Explore"/>
+             title="Explore"
+             onPress={() =>
+               navigation.navigate('Perference')}/> 
           <Button
              title="Match"/>
 

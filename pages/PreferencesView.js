@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity } from 'react-native';
-import { styles } from './App.js';
+import { styles } from '../App.js';
 
 
 // switch between different views
