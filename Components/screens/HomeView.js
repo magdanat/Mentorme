@@ -3,10 +3,14 @@ import React, { Component, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, TouchableOpacity } from 'react-native';
-// import { styles } from '../App.js';
 
+// import firebase from 'firebase/app'
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
+
+// Models
+import User from '../models/User.js'
+
 
 export const HomeView = ({ navigation }) => {
   const [email, setEmail] = useState("")
@@ -18,7 +22,6 @@ export const HomeView = ({ navigation }) => {
   const updatePassword = () => {
 
   }
-
 
   // Checks state to see if information entered is valid,
   // navigate to PreferencesView 
@@ -62,6 +65,20 @@ export const HomeView = ({ navigation }) => {
       auth().createUserWithEmailAndPassword(email, pass)
         .then(() => {
           console.log('User account created')
+
+          // Write new user information into Firebase
+          var cUser = auth().currentUser
+
+          database()
+            .ref('users/' + cUser.uid)
+            .set({
+              email: email, 
+              firstName: fName,
+              lastName: lName,
+              uid: cUser.uid
+            })
+            .then(() => console.log('Data set.'));
+        
           // Send user to preferences screen
           // along with current user information
           navigation.navigate("PreferencesView")
@@ -142,22 +159,16 @@ export const HomeView = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // backgroundColor: 'grey',
-    // alignItems: 'center',
   },
   // Home View
   homeContainer: {
     height: '80%',
-    // position: 'absolute',
     flex: 1,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
     bottom: 0,
     backgroundColor: 'white',
-    // borderTopLeftRadius: 50,
-    // borderTopRightRadius: 50,
   },
   welcomeTitle: {
     fontSize: 20,

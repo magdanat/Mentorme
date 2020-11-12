@@ -13,14 +13,14 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Text, View, Button, TextInput, YellowBox } from 'react-native';
 
 // Components
-import { PreferencesView } from './Components/PreferencesView';
-import { HomeView } from './Components/HomeView';
-import { MatchingView } from './Components/MatchingView';
-import { LoginView } from './Components/LoginView';
-import { ProfileView } from './Components/ProfileView';
+import { PreferencesView } from './Components/screens/PreferencesView';
+import { HomeView } from './Components/screens/HomeView';
+import { MatchingView } from './Components/screens/MatchingView';
+import { LoginView } from './Components/screens/LoginView';
+import { ProfileView } from './Components/screens/ProfileView';
 
 // Settings Components
-import { SettingsView } from './Components/SettingsView';
+import { SettingsView } from './Components/screens/SettingsView';
 
 import { block } from 'react-native-reanimated';
 
@@ -59,6 +59,7 @@ const App = () => {
             <Stack.Screen
               name="HomeView"
               component={HomeView}
+              options={{headerShown: false}}
             />
             {/* <Stack.Screen
               name="PreferencesView"
@@ -71,6 +72,7 @@ const App = () => {
             <Stack.Screen
               name="LoginView"
               component={LoginView}
+              options={{headerShown: false}}
             />
             {/* <Stack.Screen
               name="ProfileView"
@@ -86,6 +88,10 @@ const App = () => {
     // Logged in
     } else {
       console.log(user)
+
+      // Display preferences screen if user has not finished preferences
+      // otherwise navigation to home screen
+
       return (
         <NavigationContainer>
           <Stack.Navigator>
@@ -96,6 +102,7 @@ const App = () => {
             <Stack.Screen
               name="PreferencesView"
               component={PreferencesView}
+              options={{headerShown: false, headerTransparent: true}}
             />
             <Stack.Screen
               name="MatchingView"
@@ -110,7 +117,18 @@ const App = () => {
               component={SettingsView}/>
   
             {/* Connect Tabs */}
-            <Stack.Screen name="Connect" component={ConnectTabs}/>
+
+            {/* See if there is a function to make headerShown depending
+            on current stack screen 
+
+            if current stack === profile... then headerShown for Connect is true
+            
+            https://stackoverflow.com/questions/53040094/how-to-get-current-route-name-in-react-navigation
+            */}
+            <Stack.Screen 
+            name="Connect"
+            options={{headerShown: false}} 
+            component={ConnectTabs}/>
           </Stack.Navigator>
         </NavigationContainer>
       )
@@ -139,7 +157,8 @@ function ConnectTabs() {
         style:{height: 75}
       }}
       >
-      <Tab.Screen name="Connect" component={MatchingView}/>
+      <Tab.Screen name="Connect" 
+      component={MatchingView}/>
       <Tab.Screen name="Profile" component={ProfileView}/>
     </Tab.Navigator>
   )

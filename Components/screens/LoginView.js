@@ -25,8 +25,8 @@ export class LoginView extends Component {
         auth()
             .signInWithEmailAndPassword(this.state.email, this.state.password)
             .then(() => {
+                console.log(auth().currentUser.uid)
                 console.log('User has signed in!')
-                console.log(database())
             })
             .catch(error => {
                 console.log(error)
@@ -34,12 +34,10 @@ export class LoginView extends Component {
     }
 
     setEmail(event) {
-        // let eVal = event.target.value
         this.setState((state) => {
             state.email = event
             return state
         })
-        // console.log(event)
     }
 
     setPassword(event) {

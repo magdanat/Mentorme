@@ -20,7 +20,7 @@ export class ProfileView extends Component {
                     <View style={styles.titleContainer}>
                         {/* Edit */}
                     <TouchableOpacity>
-                        <Image source={require('../assets/favicon.png')}/>
+                        <Image source={require('../../assets/favicon.png')}/>
                     </TouchableOpacity>
                     
                     {/* Name */}
@@ -29,7 +29,7 @@ export class ProfileView extends Component {
                     {/* Settings */}
                     <TouchableOpacity
                         onPress={() => this.props.navigation.navigate("SettingsView")}>
-                        <Image source={require('../assets/favicon.png')}
+                        <Image source={require('../../assets/favicon.png')}
                         />
                     </TouchableOpacity>
 

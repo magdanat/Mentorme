@@ -79,44 +79,56 @@ export class PreferencesView extends Component {
   }
 
   finish = () => {
-    
+
   }
 
   showStep = () => {
     const { step, mentor, mentee, notSure, legalName, prefName, interests } = this.state
 
-  
+    // Mentee/mentor selection
     if (step === 1) {
       return <PrefButtonElements1
         nextStep={this.nextStepOne}
         updateMentee={this.updateMentee}
         updateMentor={this.updateMentor}
-        />
+      />
     }
-    
+
     // If mentee option is selected is chosen
     if (mentee) {
+      // What stage are you at...
       if (step === 2) {
-        return <PrefButtonElements2
+        return <PrefButtonElementsStage
           prevStep={this.prevStep}
           nextStep={this.nextStep} />
+      // What is your class standing...
       } else if (step === 3) {
-        return <PrefButtonElements3
-          prevStep={this.prevStep} 
+        return <PrefButtonElementsStand
+          prevStep={this.prevStep}
           nextStep={this.nextStep}
-          />
+        />
+      // What direction in INFO are you in or interested in...
       } else if (step === 4) {
-          return <PrefButtonElements4
-            prevStep={this.prevStep}
-            nextStep={this.nextStep}
-            navigation={this.props.navigation} 
-            />
+        return <PrefButtonElementsDirection
+          prevStep={this.prevStep}
+          nextStep={this.nextStep}
+          navigation={this.props.navigation}
+        />
       }
+
     // If mentor option is selected
     } else {
+      // What is your relationship to the iSchool?
       if (step === 2) {
-        return <PrefButtonElements4
-          navigation={this.props.navigation}/>
+        return <PrefButtonElementsRelationship
+          prevStep={this.prevStep}
+          nextStep={this.nextStep}/>
+      } else if (step === 3) {
+        return <PrefButtonElementsDirection
+        prevStep={this.prevStep}
+        nextStep={this.nextStep}
+        navigation={this.props.navigation}
+          />
       }
     }
   }
@@ -172,7 +184,7 @@ class PrefButtonElements1 extends Component {
           <Text style={styles.prefViewText}>Choose your role, but you can always change later or be both roles in your personal profile.</Text>
 
           <View style={styles.prefViewButtons}>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={this.updateMentee}
               style={styles.prefViewButton}>
               <Text style={styles.prefViewButtonText}>
@@ -202,8 +214,8 @@ class PrefButtonElements1 extends Component {
   }
 }
 
-// Displays the screen for 
-class PrefButtonElements2 extends Component {
+// What stage are you at
+class PrefButtonElementsStage extends Component {
   back = e => {
     e.preventDefault()
     this.props.prevStep()
@@ -218,13 +230,27 @@ class PrefButtonElements2 extends Component {
     return (
       <View>
         <View style={styles.prefViewContentContainer}>
-          <Text style={styles.prefViewTitle}>Tell us who  you are ...</Text>
+          <Text style={styles.prefViewTitle}>What stage are you at right now?</Text>
 
-          <View>
-            <TextInput
-              placeholder="Your Legal Name" />
-            <TextInput
-              placeholder="Preferred Name" />
+          {/* List of buttons */}
+          <View style={{ flex: 1 }}>
+            <FlatList
+              contentContainerStyle={{ alignItems: "center" }}
+              numColumns={2}
+              data={[
+                { key: 'Applying for INFO undergraduate major / minor', description: 'Undergraduate major or minor' },
+                { key: 'Exploring different areas in INFO and classes', description: 'Master of Science in Information Management' },
+                { key: 'Looking for internships / jobs / career advice', description: 'Doctorate in Information Science' },
+                { key: 'Other', description: 'Alumni of the iSchool' },
+              ]}
+              renderItem={({ item }) =>
+                <TouchableOpacity style={styles.prefViewButtonThree}>
+                  <Text style={styles.prefViewButtonText}>
+                    {item.key}
+                  </Text>
+                </TouchableOpacity>
+              }
+            />
           </View>
 
         </View>
@@ -248,7 +274,7 @@ class PrefButtonElements2 extends Component {
 }
 
 // Implement a scrollview for the buttons?
-class PrefButtonElements3 extends Component {
+class PrefButtonElementsStand extends Component {
   // constructor(props) {
   // }
 
@@ -266,20 +292,22 @@ class PrefButtonElements3 extends Component {
     return (
       <View>
         <View style={styles.prefViewContentContainer}>
-          <Text style={styles.prefViewTitle}>What is your relationship with the Information School? </Text>
-          <Text style={styles.prefViewText}>Select the fields that interests you. We will show you related information
+          <Text style={styles.prefViewTitle}>What is your class standing?</Text>
+
+          {/* <Text style={styles.prefViewText}>Select the fields that interests you. We will show you related information
           about your interests later.
-            </Text>
+            </Text> */}
+
           {/* List of buttons */}
           <View style={{ flex: 1 }}>
             <FlatList
               contentContainerStyle={{ alignItems: "center" }}
               numColumns={2}
               data={[
-                { key: 'Informatics', description: 'Undergraduate major or minor' },
-                { key: 'MSIM', description: 'Master of Science in Information Management' },
-                { key: 'Ph.D.', description: 'Doctorate in Information Science' },
-                { key: 'Faculty', description: 'Alumni of the iSchool' },
+                { key: 'First Year', description: 'Undergraduate major or minor' },
+                { key: 'Second Year', description: 'Master of Science in Information Management' },
+                { key: 'Third Year', description: 'Doctorate in Information Science' },
+                { key: 'Fourth Year or more', description: 'Alumni of the iSchool' },
               ]}
               renderItem={({ item }) =>
                 <TouchableOpacity style={styles.prefViewButtonThree}>
@@ -312,7 +340,7 @@ class PrefButtonElements3 extends Component {
 
 class PrefButtonElements4 extends Component {
   constructor(props) {
-      super(props)
+    super(props)
   }
 
 
@@ -328,39 +356,167 @@ class PrefButtonElements4 extends Component {
           <Text style={styles.prefViewTitle}>Which phrase resonates with you more?</Text>
           <Text style={styles.prefViewText}>If you change your mind, this decision can be adjusted later.</Text>
 
-          <View style={{ flex: 1}}>
+          <View style={{ flex: 1 }}>
             <FlatList
-                contentContainerStyle={{ alignItems: "center" }}
-                numColumns={2}
-                data={[
-                  { key: 'Applying into a program' },
-                  { key: 'Navigating classes/majors/graduating on time' },
-                  { key: 'Looking for a life coach' },
-                  { key: "Landing an internship/job" },
-                ]}
-                renderItem={({item }) =>
+              contentContainerStyle={{ alignItems: "center" }}
+              numColumns={2}
+              data={[
+                { key: 'Applying into a program' },
+                { key: 'Navigating classes/majors/graduating on time' },
+                { key: 'Looking for a life coach' },
+                { key: "Landing an internship/job" },
+              ]}
+              renderItem={({ item }) =>
                 <TouchableOpacity style={styles.prefViewButtonFour}>
                   <Text style={styles.prefViewButtonText}>
                     {item.key}
                   </Text>
                 </TouchableOpacity>
-                }
+              }
             />
           </View>
 
           <View style={styles.arrows}>
-          <TouchableOpacity onPress={this.back}>
-            <Text style={styles.leftArrows}>
-              &#8592;
+            <TouchableOpacity onPress={this.back}>
+              <Text style={styles.leftArrows}>
+                &#8592;
             </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-           onPress={() => this.props.navigation.navigate('Connect')}>
-            <Text style={styles.rightArrows}>
-              Finish
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('Connect')}>
+              <Text style={styles.rightArrows}>
+                Finish
             </Text>
-          </TouchableOpacity>
+            </TouchableOpacity>
+          </View>
         </View>
+      </View>
+    )
+  }
+}
+
+class PrefButtonElementsDirection extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+
+  back = e => {
+    e.preventDefault()
+    this.props.prevStep()
+  }
+
+  finish = e => {
+    e.prevemtDefault()
+  }
+
+  render() {
+    return (
+      <View>
+        <View style={styles.prefViewContentContainer}>
+          <Text style={styles.prefViewTitle}>What direction in INFO are you in or interested in?</Text>
+
+          <View style={{ flex: 1 }}>
+            <FlatList
+              contentContainerStyle={{ alignItems: "center" }}
+              numColumns={2}
+              data={[
+                { key: 'User experience design' },
+                { key: 'User experience research' },
+                { key: 'Data Science'},
+                { key: 'Software Development' },
+                { key: 'Information Management' },
+                { key: 'Human-Computer Interaction' },
+              ]}
+              renderItem={({ item }) =>
+                <TouchableOpacity style={styles.prefViewButtonFour}>
+                  <Text style={styles.prefViewButtonText}>
+                    {item.key}
+                  </Text>
+                </TouchableOpacity>
+              }
+            />
+          </View>
+
+          <View style={styles.arrows}>
+            <TouchableOpacity onPress={this.back}>
+              <Text style={styles.leftArrows}>
+                &#8592;
+            </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('Connect')}>
+              <Text style={styles.rightArrows}>
+                Finish
+            </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    )
+  }
+}
+
+class PrefButtonElementsRelationship extends Component {
+  constructor(props) {
+    super(props)
+  }
+
+
+  back = e => {
+    e.preventDefault()
+    this.props.prevStep()
+  }
+
+  next = e => {
+    e.preventDefault()
+    this.props.nextStep()
+  }
+
+  render() {
+    return (
+      <View>
+        <View style={styles.prefViewContentContainer}>
+          <Text style={styles.prefViewTitle}>What is your relationship with the iSchool?</Text>
+
+          <View style={{ flex: 1 }}>
+            <FlatList
+              contentContainerStyle={{ alignItems: "center" }}
+              numColumns={2}
+              data={[
+                { key: 'Informatics', description: "Undergraduate major or minor" },
+                { key: 'MLIS', description: "Master of Library and Information Science"},
+                { key: 'MSIM', description: "Master of Science in Information Management"},
+                { key: 'Ph.D', description: "Doctorate in Information Science" },
+                { key: 'Faculty', description: "Teach and assist teaching INFO classes"},
+                { key: 'Alumni', description: "Alumni of the iSchool"},
+              ]}
+              renderItem={({ item }) =>
+                <TouchableOpacity style={styles.prefViewButtonFour}>
+                  <Text style={styles.prefViewButtonText}>
+                    {item.key}
+                  </Text>
+                  <Text> 
+                    {item.description}
+                  </Text>
+                </TouchableOpacity>
+              }
+            />
+          </View>
+
+          <View style={styles.arrows}>
+            <TouchableOpacity onPress={this.back}>
+              <Text style={styles.leftArrows}>
+                &#8592;
+            </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={this.next}>
+              <Text style={styles.rightArrows}>
+                Continue
+            </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     )
