@@ -11,6 +11,7 @@ import auth from '@react-native-firebase/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { StyleSheet, Text, View, Button, TextInput, YellowBox } from 'react-native';
+<<<<<<< HEAD
 
 // Components
 import { PreferencesView } from './Components/screens/PreferencesView';
@@ -24,6 +25,19 @@ import { SettingsView } from './Components/screens/SettingsView';
 
 import { block } from 'react-native-reanimated';
 
+=======
+import { PreferencesView } from './pages/PreferencesView';
+import { HomeView } from './pages/HomeView';
+import { HomePage } from './pages/HomePage';
+import { Perference} from './pages/Perference';
+import { RecommentationList } from './pages/RecommentationList';
+import { Mentor } from './pages/Mentor';
+import { Inbox } from './pages/Inbox';
+import { Profile } from './pages/Profile';
+import { Chat } from './pages/Chat';
+import { Tips } from './pages/Tips';
+import { ConversationStarter} from './pages/ConversationStarter';
+>>>>>>> 87255e62f688cd69b14200b4d808a819b7f0ef42
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -164,7 +178,65 @@ function ConnectTabs() {
   )
 }
 
+<<<<<<< HEAD
 export default App
+=======
+export default class App extends Component {
+  render() {
+    return (
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="HomePage"
+            component={HomePage}
+          />
+          <Stack.Screen
+            name="HomeView"
+            component={HomeView}
+          />
+          <Stack.Screen
+            name="PreferencesView"
+            component={PreferencesView}
+          />
+          <Stack.Screen
+            name="Perference"
+            component={Perference}
+          />
+          <Stack.Screen
+            name="RecommentationList"
+            component={RecommentationList}
+          />
+          <Stack.Screen
+            name="Mentor"
+            component={Mentor}
+          />
+          <Stack.Screen
+            name="Inbox"
+            component={Inbox}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+          />
+          <Stack.Screen
+            name='Chat'
+            component={Chat}
+          />
+          <Stack.Screen
+            name='Tips'
+            component={Tips}
+          />
+          <Stack.Screen
+            name='ConversationStarter'
+            component={ConversationStarter}
+          />
+          
+        </Stack.Navigator>
+      </NavigationContainer>
+    );
+  }
+};
+>>>>>>> 87255e62f688cd69b14200b4d808a819b7f0ef42
 
 export const styles = StyleSheet.create({
   container: {
