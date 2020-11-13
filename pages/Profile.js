@@ -205,6 +205,7 @@ export const Profile = ({ navigation }) => {
     );
   };
 
+  
   const styles = StyleSheet.create({
 	profileView: {
 		backgroundColor: "white",

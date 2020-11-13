@@ -630,30 +630,3 @@ const styles = StyleSheet.create({
     fontWeight: 'bold'
   }
 })
-
-// const PrefButttonElements1 = ({ test }) => (
-//   <View>
-//     <Text style={styles.prefViewTitle}>Would you like to be a Mentor or Mentee?</Text>
-//     <Text style={styles.prefViewText}>Choose your role, but you can always change later or be both roles in your personal profile.</Text>
-
-//     <View style={styles.prefViewButtons}>
-//       <TouchableOpacity>
-//         <Text>
-//           Mentee
-//                </Text>
-//       </TouchableOpacity>
-//       <TouchableOpacity>
-//         <Text>
-//           Mentor
-//                </Text>
-//       </TouchableOpacity>
-
-//       <TouchableOpacity
-//         onPress={this.next}>
-//         <Text>
-//           &#8594;
-//                </Text>
-//       </TouchableOpacity>
-//     </View>
-//   </View>
-// )
