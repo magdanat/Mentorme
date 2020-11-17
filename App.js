@@ -10,7 +10,7 @@ import auth from '@react-native-firebase/auth';
 // Icons
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { StyleSheet, Text, View, Button, TextInput, YellowBox } from 'react-native';
+import { StyleSheet, Image, Text, View, Button, TextInput, YellowBox } from 'react-native';
 
 // Components
 import { PreferencesView } from './Components/screens/PreferencesView';
@@ -18,6 +18,8 @@ import { HomeView } from './Components/screens/HomeView';
 import { MatchingView } from './Components/screens/MatchingView';
 import { LoginView } from './Components/screens/LoginView';
 import { ProfileView } from './Components/screens/ProfileView';
+import { InboxView } from './Components/screens/InboxView';
+
 
 // Settings Components
 import { SettingsView } from './Components/screens/SettingsView';
@@ -143,12 +145,13 @@ function ConnectTabs() {
           let iconName;
 
           if (route.name === 'Connect') {
-            iconName = focused ? 'handshake-o' : 'handshake'
+            iconName = focused ? require("./assets/images/shape-13.png") : require("./assets/images/shape-66.png")
           } else if (route.name === 'Profile') {
-            iconName = focused ? 'person' : 'person-outline'
+            iconName = focused ? require("./assets/images/shape-12.png") : require("./assets/images/shape-12.png")
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          // return <Ionicons name={iconName} size={size} color={color} />;
+          return <Image source={iconName}/>
         },
       })}
       tabBarOptions={{
@@ -159,6 +162,7 @@ function ConnectTabs() {
       >
       <Tab.Screen name="Connect" 
       component={MatchingView}/>
+      <Tab.Screen name="Inbox" component={InboxView}/>
       <Tab.Screen name="Profile" component={ProfileView}/>
     </Tab.Navigator>
   )
