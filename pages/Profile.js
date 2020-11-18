@@ -2,8 +2,6 @@ import 'react-native-gesture-handler';
 import React, { Component } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
-// import { styles } from './App.js';
-
 export const Profile = ({ navigation }) => {
     return (
         <View

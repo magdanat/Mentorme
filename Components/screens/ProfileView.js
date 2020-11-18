@@ -69,9 +69,40 @@ export class ProfileView extends Component {
     }
 }
 
-// 
+// Represents a module of information
+// where each module has a title descriptive of its' content.
+// Should be able to render whether its a list of elements
+// or a description. Another option is just to read the format on linkedIn.
 export class ProfileContainerInfoContainer extends Component {
+    constructor(props) {
+        super(props);
 
+        this.state = {
+            title: "",
+            description: "",
+        }
+    }
+
+    render() {
+        return (
+            <View>
+
+                {/* Title */}
+                <View>
+                    <Text>
+                        {this.props.title}
+                    </Text>
+                </View>
+
+                {/* Description */}
+                <View>
+                    <Text>
+                        {this.props.description}
+                    </Text>
+                </View>
+            </View>
+        )
+    }
 }
 
 const styles = StyleSheet.create({
@@ -80,7 +111,6 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
     },
     titleContainer: {
-        // alignSelf: "center",
         marginTop: 25,
         flexDirection: "row",
         justifyContent: "space-around",

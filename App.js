@@ -25,6 +25,7 @@ import { InboxView } from './Components/screens/InboxView';
 import { SettingsView } from './Components/screens/SettingsView';
 
 import { block } from 'react-native-reanimated';
+import { isRequired } from 'react-native/Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 
 
 const Stack = createStackNavigator();
@@ -92,7 +93,7 @@ const App = () => {
       console.log(user)
 
       // Display preferences screen if user has not finished preferences
-      // otherwise navigation to home screen
+      // otherwise navigation to home screen or if they wish to edit preferences
 
       return (
         <NavigationContainer>
@@ -148,6 +149,8 @@ function ConnectTabs() {
             iconName = focused ? require("./assets/images/shape-13.png") : require("./assets/images/shape-66.png")
           } else if (route.name === 'Profile') {
             iconName = focused ? require("./assets/images/shape-12.png") : require("./assets/images/shape-12.png")
+          } else if (route.name === 'Inbox') {
+            iconName = focused ? require("./assets/images/shape-18.png") : require("./assets/images/shape-7.png") 
           }
 
           // return <Ionicons name={iconName} size={size} color={color} />;
