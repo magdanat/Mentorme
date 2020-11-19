@@ -7,8 +7,6 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, TouchableOpacity }
 // Firebase
 import auth from '@react-native-firebase/auth';
 
-// Causing cycling issue, put styles in a separate file from App.js!
-
 // Handles all different steps of the Preferences form.
 // Once
 export class PreferencesView extends Component {
@@ -17,8 +15,8 @@ export class PreferencesView extends Component {
 
     let interestMap = []
 
-
     this.state = {
+
       step: 1,
 
       // step 1
@@ -39,6 +37,7 @@ export class PreferencesView extends Component {
 
   componentDidMount() {
     console.log(this.props)
+    console.log("fuckin workin please")
   }
 
   // Progresses to the next step, passed down
@@ -151,8 +150,6 @@ class PrefButtonElements1 extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
-    console.log(this.state)
   }
 
   // Proceeds to next form

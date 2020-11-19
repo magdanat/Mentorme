@@ -27,9 +27,12 @@ import { SettingsView } from './Components/screens/SettingsView';
 import { block } from 'react-native-reanimated';
 import { isRequired } from 'react-native/Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
 
-
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+const UserContext = React.createContext({
+  name: 'Guest',
+})
 
 // Recommended method
 // TODO: Reorganize the stacks into separate stack containers
@@ -39,73 +42,62 @@ const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
 
-    // Handle user state changes
-    function onAuthStateChanged(user) {
-      setUser(user);
-      if (initializing) setInitializing(false);
-    }
-  
-    useEffect(() => {
-      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-      return subscriber; // unsubscribe on unmount
-    }, []);
-  
-    if (initializing) return null;
-  
-    // Not logged in
-    if (!user) {
-      console.log(user)
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    // Sets state.user to user information received from Firebase 
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
 
-      return (
-        <NavigationContainer>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="HomeView"
-              component={HomeView}
-              options={{headerShown: false}}
-            />
-            {/* <Stack.Screen
-              name="PreferencesView"
-              component={PreferencesView}
-            /> */}
-            {/* <Stack.Screen
-              name="MatchingView"
-              component={MatchingView}
-            /> */}
-            <Stack.Screen
-              name="LoginView"
-              component={LoginView}
-              options={{headerShown: false}}
-            />
-            {/* <Stack.Screen
-              name="ProfileView"
-              component={ProfileView}
-            /> */}
-  
-            {/* Connect Tabs */}
-            {/* <Stack.Screen name="Connect" component={ConnectTabs}/> */}
-          </Stack.Navigator>
-        </NavigationContainer>
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (initializing) return null;
+
+  // Not logged in
+  if (!user) {
+    return (
+      <NavigationContainer>
+        <UserContext.Provider value={{something: "something"}}>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="HomeView"
+            component={HomeView}
+            options={{ headerShown: false }}
+            initialParams={{ user: user }}
+          />
+          <Stack.Screen
+            name="LoginView"
+            component={LoginView}
+            options={{ headerShown: false }}
+          />
+        </Stack.Navigator>
+        </UserContext.Provider>
+      </NavigationContainer>
     )
-    
+
     // Logged in
-    } else {
-      console.log(user)
+  } else {
+    console.log(user)
 
-      // Display preferences screen if user has not finished preferences
-      // otherwise navigation to home screen or if they wish to edit preferences
-
-      return (
-        <NavigationContainer>
+    // Display preferences screen if user has not finished preferences
+    // otherwise navigation to home screen or if they wish to edit preferences
+    return (
+      <NavigationContainer>
+        {/* <UserContext.Provider value={user}> */}
+          {/* <Navigator/> */}
           <Stack.Navigator>
-            {/* <Stack.Screen
-              name="HomeView"
-              component={HomeView}
-            /> */}
-            <Stack.Screen
+        <Stack.Screen
               name="PreferencesView"
-              component={PreferencesView}
-              options={{headerShown: false, headerTransparent: true}}
+
+              // NOTE: May be issues is user logs out from the app
+              // and relogging in the same instance.
+              // EX: User logs in, goes to settings, logs out.
+              // Issue may be user never gets passed in or somethin
+              children={() => <PreferencesView user={user}/>}
+              options={{ headerShown: false, headerTransparent: true }}
             />
             <Stack.Screen
               name="MatchingView"
@@ -117,8 +109,8 @@ const App = () => {
             />
             <Stack.Screen
               name="SettingsView"
-              component={SettingsView}/>
-  
+              component={SettingsView} />
+
             {/* Connect Tabs */}
 
             {/* See if there is a function to make headerShown depending
@@ -128,21 +120,69 @@ const App = () => {
             
             https://stackoverflow.com/questions/53040094/how-to-get-current-route-name-in-react-navigation
             */}
-            <Stack.Screen 
-            name="Connect"
-            options={{headerShown: false}} 
-            component={ConnectTabs}/>
-          </Stack.Navigator>
-        </NavigationContainer>
-      )
-    }
+            <Stack.Screen
+              name="Connect"
+              options={{ headerShown: false }}
+              component={ConnectTabs} />
+    </Stack.Navigator>
+        {/* </UserContext.Provider> */}
+      </NavigationContainer>
+    )
+  }
 }
+
+function Navigator() {
+  return (
+    <Stack.Navigator>
+        <Stack.Screen
+              name="PreferencesView"
+              // component={{PreferencesView}}
+              children={() => <PreferencesView users={users}/>}
+              options={{ headerShown: false, headerTransparent: true }}
+            />
+            <Stack.Screen
+              name="MatchingView"
+              component={MatchingView}
+            />
+            <Stack.Screen
+              name="ProfileView"
+              component={ProfileView}
+            />
+            <Stack.Screen
+              name="SettingsView"
+              component={SettingsView} />
+
+            {/* Connect Tabs */}
+
+            {/* See if there is a function to make headerShown depending
+            on current stack screen 
+
+            if current stack === profile... then headerShown for Connect is true
+            
+            https://stackoverflow.com/questions/53040094/how-to-get-current-route-name-in-react-navigation
+            */}
+            <Stack.Screen
+              name="Connect"
+              options={{ headerShown: false }}
+              component={ConnectTabs} />
+    </Stack.Navigator>
+  )
+}
+
+// const PreferenceContextWrapper = ({navigation, route}) => (
+//   <UserContext.Consumer>
+//     {(user) => (
+//             <PreferencesView {...user}/> 
+//     )}
+
+//   </UserContext.Consumer>
+// )
 
 function ConnectTabs() {
   return (
     <Tab.Navigator
-      screenOptions={({ route}) => ({
-        tabBarIcon: ({ focused, color, size}) => {
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
           if (route.name === 'Connect') {
@@ -150,23 +190,23 @@ function ConnectTabs() {
           } else if (route.name === 'Profile') {
             iconName = focused ? require("./assets/images/shape-12.png") : require("./assets/images/shape-12.png")
           } else if (route.name === 'Inbox') {
-            iconName = focused ? require("./assets/images/shape-18.png") : require("./assets/images/shape-7.png") 
+            iconName = focused ? require("./assets/images/shape-18.png") : require("./assets/images/shape-7.png")
           }
 
           // return <Ionicons name={iconName} size={size} color={color} />;
-          return <Image source={iconName}/>
+          return <Image source={iconName} />
         },
       })}
       tabBarOptions={{
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
-        style:{height: 75}
+        style: { height: 75 }
       }}
-      >
-      <Tab.Screen name="Connect" 
-      component={MatchingView}/>
-      <Tab.Screen name="Inbox" component={InboxView}/>
-      <Tab.Screen name="Profile" component={ProfileView}/>
+    >
+      <Tab.Screen name="Connect"
+        component={MatchingView} />
+      <Tab.Screen name="Inbox" component={InboxView} />
+      <Tab.Screen name="Profile" component={ProfileView} />
     </Tab.Navigator>
   )
 }

@@ -49,7 +49,10 @@ class Chats extends Component {
 	render() {
 		return (
 			<View style={styles.chatsContainer}>
-				<ChatContainer />
+				<ChatContainer name="Jordan"/>
+				<ChatContainer name="Jack Johnson the"/>
+				<ChatContainer name="Bill"/>
+				<ChatContainer name="John"/>
 			</View>
 		)
 	}
@@ -57,13 +60,14 @@ class Chats extends Component {
 
 // Renders a single chat, containing the most recent message and the user who sent it
 class ChatContainer extends Component {
-	constructor(props) {
-		super(props)
-	}
+	// constructor(props) {
+	// 	super(props)
+	// }
 
 	render() {
 		return (
-			<View style={styles.chatContainer}>
+			<View>
+				<TouchableOpacity style={styles.chatContainer}>
 				<Image 
 					style={styles.chatProfilePicture}
 					// Should render userProfile image as a prop
@@ -71,7 +75,7 @@ class ChatContainer extends Component {
 				<View style={styles.chatInfo}>
 					<Text>
 						{/* {this.props.name} */}
-						Test Name
+						{this.props.name}
 					</Text>
 
 					{/* Should only show a maximum amount of the characters (prefereably words)... */}
@@ -80,6 +84,7 @@ class ChatContainer extends Component {
 						Hey, this is Test Name! Thanks 
 					</Text>
 				</View>
+				</TouchableOpacity>
 			</View>
 		)
 	}
@@ -112,8 +117,12 @@ const styles = StyleSheet.create({
 	},	
 	chatInfo: {
 		marginLeft: 25,
+		marginTop: 5,
 	},
 	chatContainer: {
+		
 		flexDirection: 'row',
+		paddingTop: 10,
+		paddingBottom: 10,
 	}
 })
