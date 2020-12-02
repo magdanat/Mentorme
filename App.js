@@ -60,20 +60,20 @@ const App = () => {
   if (!user) {
     return (
       <NavigationContainer>
-        <UserContext.Provider value={{something: "something"}}>
-        <Stack.Navigator>
-          <Stack.Screen
-            name="HomeView"
-            component={HomeView}
-            options={{ headerShown: false }}
-            initialParams={{ user: user }}
-          />
-          <Stack.Screen
-            name="LoginView"
-            component={LoginView}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
+        <UserContext.Provider value={this.state.user}>
+          <Stack.Navigator>
+            <Stack.Screen
+              name="HomeView"
+              component={HomeView}
+              options={{ headerShown: false }}
+              initialParams={{ user: user }}
+            />
+            <Stack.Screen
+              name="LoginView"
+              component={LoginView}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
         </UserContext.Provider>
       </NavigationContainer>
     )
@@ -86,97 +86,45 @@ const App = () => {
     // otherwise navigation to home screen or if they wish to edit preferences
     return (
       <NavigationContainer>
-        {/* <UserContext.Provider value={user}> */}
-          {/* <Navigator/> */}
-          <Stack.Navigator>
-        <Stack.Screen
-              name="PreferencesView"
-
-              // NOTE: May be issues is user logs out from the app
-              // and relogging in the same instance.
-              // EX: User logs in, goes to settings, logs out.
-              // Issue may be user never gets passed in or somethin
-              children={() => <PreferencesView user={user}/>}
-              options={{ headerShown: false, headerTransparent: true }}
-            />
-            <Stack.Screen
-              name="MatchingView"
-              component={MatchingView}
-            />
-            <Stack.Screen
-              name="ProfileView"
-              component={ProfileView}
-            />
-            <Stack.Screen
-              name="SettingsView"
-              component={SettingsView} />
-
-            {/* Connect Tabs */}
-
-            {/* See if there is a function to make headerShown depending
-            on current stack screen 
-
-            if current stack === profile... then headerShown for Connect is true
-            
-            https://stackoverflow.com/questions/53040094/how-to-get-current-route-name-in-react-navigation
-            */}
-            <Stack.Screen
-              name="Connect"
-              options={{ headerShown: false }}
-              component={ConnectTabs} />
-    </Stack.Navigator>
-        {/* </UserContext.Provider> */}
+        <UserContext.Provider value={user}>
+          <Navigator />
+        </UserContext.Provider>
       </NavigationContainer>
-    )
+    );
   }
 }
 
 function Navigator() {
   return (
     <Stack.Navigator>
-        <Stack.Screen
-              name="PreferencesView"
-              // component={{PreferencesView}}
-              children={() => <PreferencesView users={users}/>}
-              options={{ headerShown: false, headerTransparent: true }}
-            />
-            <Stack.Screen
-              name="MatchingView"
-              component={MatchingView}
-            />
-            <Stack.Screen
-              name="ProfileView"
-              component={ProfileView}
-            />
-            <Stack.Screen
-              name="SettingsView"
-              component={SettingsView} />
+      <Stack.Screen
+        name="PreferencesView"
+        component={PreferenceContextWrapper}
+        options={{ headerShown: false, headerTransparent: true }}
+      />
+       <Stack.Screen
+        name="MatchingView"
+        component={MatchingContextWrapper}
+      />
+      <Stack.Screen
+        name="ProfileView"
+        component={ProfileContextWrapper}
+      />
+      <Stack.Screen
+        name="SettingsView"
+        component={SettingsContextWrapper} /> 
 
-            {/* Connect Tabs */}
+      {/* Connect Tabs */}
 
-            {/* See if there is a function to make headerShown depending
-            on current stack screen 
-
-            if current stack === profile... then headerShown for Connect is true
-            
-            https://stackoverflow.com/questions/53040094/how-to-get-current-route-name-in-react-navigation
-            */}
-            <Stack.Screen
-              name="Connect"
-              options={{ headerShown: false }}
-              component={ConnectTabs} />
+      <Stack.Screen
+        name="Connect"
+        component={ConnectContextWrapper}
+        options={{ headerShown: false }}
+        />
     </Stack.Navigator>
-  )
+  );
 }
 
-// const PreferenceContextWrapper = ({navigation, route}) => (
-//   <UserContext.Consumer>
-//     {(user) => (
-//             <PreferencesView {...user}/> 
-//     )}
-
-//   </UserContext.Consumer>
-// )
 
 function ConnectTabs() {
   return (
@@ -194,22 +142,78 @@ function ConnectTabs() {
           }
 
           // return <Ionicons name={iconName} size={size} color={color} />;
-          return <Image source={iconName} />
+          return (
+            <Image source={iconName} />
+          );
         },
       })}
       tabBarOptions={{
         activeTintColor: 'tomato',
         inactiveTintColor: 'gray',
         style: { height: 75 }
-      }}
-    >
+      }}>
       <Tab.Screen name="Connect"
-        component={MatchingView} />
+        component={MatchingContextWrapper} />
       <Tab.Screen name="Inbox" component={InboxView} />
-      <Tab.Screen name="Profile" component={ProfileView} />
+      <Tab.Screen name="Profile" component={ProfileContextWrapper} />
     </Tab.Navigator>
-  )
+  );
 }
+
+const PreferenceContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferencesView {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
+
+const MatchingContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <MatchingView {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
+
+const ProfileContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <ProfileView {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
+
+const SettingsContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <SettingsView {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
+
+const ConnectContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <ConnectTabs {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
 
 export default App
 
@@ -285,3 +289,12 @@ export const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
+
+// Ref 1.
+{/* See if there is a function to make headerShown depending
+            on current stack screen 
+
+            if current stack === profile... then headerShown for Connect is true
+            
+            https://stackoverflow.com/questions/53040094/how-to-get-current-route-name-in-react-navigation
+            */}

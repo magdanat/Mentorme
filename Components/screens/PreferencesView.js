@@ -37,7 +37,6 @@ export class PreferencesView extends Component {
 
   componentDidMount() {
     console.log(this.props)
-    console.log("fuckin workin please")
   }
 
   // Progresses to the next step, passed down

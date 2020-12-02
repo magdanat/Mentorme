@@ -10,20 +10,8 @@ export const InboxView = ({ navigation }) => {
                 Edit, Profile Name, Settings */}
 			<View>
 				<View style={styles.titleContainer}>
-					{/* Back */}
-					<TouchableOpacity>
-						<Image source={require('../../assets/images/shape-51.png')} />
-					</TouchableOpacity>
-
 					{/* Name */}
-					<Text>Nathan</Text>
-
-					{/* Settings */}
-					<TouchableOpacity
-						onPress={() => this.props.navigation.navigate("SettingsView")}>
-						<Image source={require('../../assets/images/shape-46.png')}
-						/>
-					</TouchableOpacity>
+					<Text>Inbox</Text>
 
 				</View>
 			</View>

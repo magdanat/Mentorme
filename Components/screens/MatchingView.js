@@ -9,6 +9,8 @@ import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } 
 // component or just search a different database
 export class MatchingView extends Component {
     render() {
+        console.log(this.props)
+
         return (
             <View style={styles.container}>
 
