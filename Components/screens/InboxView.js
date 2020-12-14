@@ -29,6 +29,7 @@ export const InboxView = ({ navigation }) => {
 
 // Renders the list of all chats a user is in
 // Should order messages by time received in descending order
+// Should be  flatlist
 class Chats extends Component {
 	orderChats = () => {
 

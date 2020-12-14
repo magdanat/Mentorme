@@ -9,8 +9,7 @@ import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 
 // Models
-import User from '../models/User.js'
-
+import { createNewUser } from '../models/User.js';
 
 export const HomeView = ({ navigation }) => {
   const [email, setEmail] = useState("")
@@ -26,10 +25,10 @@ export const HomeView = ({ navigation }) => {
   // Checks state to see if information entered is valid,
   // navigate to PreferencesView 
   const checkSignInInfo = (props) => {
-    console.log('Testcheck')
     navigation.navigate('PreferencesView')
   }
 
+  // TODO: Put this in the user model in User.js as a function
   // Check if user form for creating account is properly filled out,
   // then create an account and sign user in if form is filled properly.
   const createUser = () => {
@@ -69,16 +68,8 @@ export const HomeView = ({ navigation }) => {
           // Write new user information into Firebase
           var cUser = auth().currentUser
 
-          database()
-            .ref('users/' + cUser.uid)
-            .set({
-              email: email, 
-              firstName: fName,
-              lastName: lName,
-              uid: cUser.uid
-            })
-            .then(() => console.log('Data set.'));
-        
+          createNewUser(cUser.uid, email, fName, lName)        
+
           // Send user to preferences screen
           // along with current user information
           navigation.navigate("PreferencesView")
@@ -132,9 +123,7 @@ export const HomeView = ({ navigation }) => {
 
       <TouchableOpacity
         onPress={
-          // checkSignInInfo
           createUser
-          // () => navigation.navigate('PreferencesView')
         }>
         <Text
           style={styles.signUpButton}>

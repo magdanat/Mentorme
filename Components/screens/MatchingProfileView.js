@@ -7,7 +7,7 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOp
 import { getProfile, profileArray } from '../models/Profile.js';
 import { getUser, getOppositeUserType} from '../models/User.js';
 
-export class ProfileView extends Component {
+export class MatchingProfileView extends Component {
     constructor(props) {
         super(props)
 
@@ -23,17 +23,16 @@ export class ProfileView extends Component {
     componentDidMount() {
         this.getProfileCB()
     }
-   
-    componentDidUpdate() { 
-        // console.log(this.state)
-    }
 
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
+        // let cUser = await getUser(this.props.user.uid)
         let cUserType = getOppositeUserType(cUser)
-        let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
+
+        let retrievedProfile = await getProfile(this.props.route.params.userID, cUserType)
         let profileAr = Array.from(profileArray(retrievedProfile))
         profileAr = Array.from(profileArray(profileAr[1][1]))
+
         this.setState({
             profile: retrievedProfile,
             profileAr: profileAr
@@ -48,22 +47,10 @@ export class ProfileView extends Component {
                 <View>
                     <View style={styles.titleContainer}>
                         {/* Edit */}
-                        <TouchableOpacity>
-                            <Image source={require('../../assets/images/shape-51.png')} />
-                        </TouchableOpacity>
-
-                        {/* Name */}
-                        <Text>
-                            {this.state.profile.fullName}
-                        </Text>
-
-                        {/* Settings */}
                         <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate("SettingsView")}>
-                            <Image source={require('../../assets/images/shape-46.png')}
-                            />
+                            onPress={() => this.props.navigation.goBack()}>
+                            <Image source={require('../../assets/images/path-2.png')} />
                         </TouchableOpacity>
-
                     </View>
                 </View>
 
@@ -74,23 +61,20 @@ export class ProfileView extends Component {
                         {/* Profile Picture */}
                         <Image
                             resizeMode={'contain'}
-                            style={styles.profileImageContainer}
-                            source={require('../../assets/images/oval-3.png')} />
+                            style={styles.profileImageContainer} 
+                            source={require('../../assets/images/oval-3.png')}/>
 
                         {/* Role  + Flavor Text */}
                         <View style={styles.profileTextContainer}>
                             <Text style={styles.profileRole}>
-                            {this.state.profile.fullName}
+                                {this.state.profile.fullName}
                             </Text>
-                            <Text style={styles.profileBio}>I really like coding!!!!!!! Besides that...</Text>
+                            <Text style={styles.profileBio}>
+                                Test
+                            </Text>
                         </View>
 
-                        {/* Import Button */}
-                        <TouchableOpacity style={styles.linkedInButton}>
-                            <Text style={styles.linkedInContainer}>
-                                Import from LinkedIn
-                            </Text>
-                        </TouchableOpacity>
+            
                     </View>
                 </View>
 
@@ -100,6 +84,14 @@ export class ProfileView extends Component {
                         profile={this.state.profileAr}/>
                 </View>
 
+                {/* Chat Button */}
+                <View style={styles.chatButtonContainer}>
+                    <TouchableOpacity style={styles.chatButton}>
+                        <Text style={styles.chatButtonText}>
+                            Chat with {this.state.profile.fullName}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         )
     }
@@ -111,7 +103,6 @@ export class ProfileContainer extends Component {
     }
 
     componentDidMount() {
-        console.log("test")
         console.log(this.props)
     }
 
@@ -144,6 +135,15 @@ export class ProfileContainerInfoContainer extends Component {
         super(props);
     }
 
+    componentDidMount() {
+        console.log(this.props)
+        console.log("yuh")
+    }
+
+    componentDidUpdate() {
+        console.log(this.props)
+    }
+
     render() {
         return (
             <View style={styles.specificInfoContainer}>
@@ -158,6 +158,7 @@ export class ProfileContainerInfoContainer extends Component {
                 {/* Description */}
                 <View>
                     <Text>
+                        {/* {this.props.description} */}
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
                         sunt in culpa qui officia deserunt mollit anim id est laborum
                     </Text>
@@ -175,15 +176,15 @@ const styles = StyleSheet.create({
     titleContainer: {
         marginTop: 25,
         flexDirection: "row",
-        justifyContent: "space-around",
-        alignItems: "center"
+        alignItems: "center",
+        marginLeft: 60
     },
     profileTitleContainer: {
         flexDirection: "row",
         alignSelf: "center",
         alignItems: "center",
         marginTop: 20,
-        marginLeft: 10,
+        marginLeft: 20,
         marginRight: 10,
         flexWrap: "wrap",
     },
@@ -191,29 +192,27 @@ const styles = StyleSheet.create({
         height: 100,
         // borderColor: 'black',
         // borderWidth: 1,
-        flex: 2,
+        flex: 1,
     },
     profileTextContainer: {
         marginLeft: 20,
-        flex: 4
+        flex: 3
     },
     profileRole: {
         fontSize: 20,
+        fontWeight: "bold",
     },
     profileBio: {
-        fontSize: 14,
-    },
-    linkedInButton: {
-        flex: 2,
-        borderColor: "black",
-        borderWidth: 0.5,
-        borderRadius: 10,
-        justifyContent: "center",
-        padding: 2.5,
+        fontSize: 15,
     },
     linkedInContainer: {
         alignItems: "center",
         flexWrap: 'wrap',
+    },
+    infoContainer: {
+        marginLeft: 20,
+        marginRight: 20,
+        marginTop: 10,
     },
     specificInfoContainer: {
         borderColor: '#d3d3d3',
@@ -226,13 +225,26 @@ const styles = StyleSheet.create({
         marginTop: 5,
         marginBottom: 10,
     },
-    infoContainer: {
-        marginLeft: 20,
-        marginRight: 20,
-        marginTop: 10,
-    },
     infoContainerTitle: {
         fontSize: 15,
         fontWeight: "bold",
     },
+    chatButton: {
+        borderColor: '#d3d3d3',
+        borderWidth: 1,
+        width: 325,
+        borderRadius: 25,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 10,
+    },
+    chatButtonText: {
+        color: "#fbc015",
+        fontSize: 20,
+        fontWeight: 'bold'
+    },
+    chatButtonContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+    }
 })

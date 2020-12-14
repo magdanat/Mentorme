@@ -6,6 +6,11 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, TouchableOpacity }
 
 // Firebase
 import auth from '@react-native-firebase/auth';
+import database from '@react-native-firebase/database';
+
+// Models
+import { createMentee } from '../models/Mentee.js'
+import { createMentor } from '../models/Mentor.js'
 
 // Handles all different steps of the Preferences form.
 // Once
@@ -36,7 +41,6 @@ export class PreferencesView extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
   }
 
   // Progresses to the next step, passed down
@@ -62,6 +66,16 @@ export class PreferencesView extends Component {
     })
   }
 
+  // Resets current mentee/mentor selection
+  prevStepMenteeMentor = () => {
+    const { step } = this.state
+    this.setState({
+      step: step - 1,
+      mentee: false,
+      mentor: false,
+    })
+  }
+
   updateMentee = () => {
     const { mentee } = this.state
     this.setState({
@@ -77,6 +91,31 @@ export class PreferencesView extends Component {
   }
 
   finish = () => {
+    console.log(this.state)
+    console.log('Writing to database...')
+    console.log(this.props)
+    let uid = this.props._user.uid
+    // let uid = this.props.user.uid
+    let fullName = "test"
+
+    // Mentee chosen
+    if (this.state.mentee) {
+      console.log("Creating mentee profile...")
+      createMentee(uid, fullName)
+    
+    // Mentor chosen
+    } else if (this.state.mentor) {
+      console.log("Creating mentor profile...")
+      createMentor(uid, fullName)
+
+    // Error occurred, no role selected
+    } else {
+      console.log("Error. No profile being created.")
+    }
+
+    // Navigate to next stack screen
+    console.log('Connecting!')
+    this.props.navigation.navigate('Connect')
 
   }
 
@@ -97,36 +136,40 @@ export class PreferencesView extends Component {
       // What stage are you at...
       if (step === 2) {
         return <PrefButtonElementsStage
-          prevStep={this.prevStep}
+          prevStep={this.prevStepMenteeMentor}
           nextStep={this.nextStep} />
-      // What is your class standing...
+        // What is your class standing...
       } else if (step === 3) {
         return <PrefButtonElementsStand
           prevStep={this.prevStep}
           nextStep={this.nextStep}
         />
-      // What direction in INFO are you in or interested in...
+        // What direction in INFO are you in or interested in...
       } else if (step === 4) {
         return <PrefButtonElementsDirection
-          prevStep={this.prevStep}
+          prevStep={this.prevStepMenteeMentor}
           nextStep={this.nextStep}
+          finish={this.finish}
           navigation={this.props.navigation}
+          {...this.props}
         />
       }
 
-    // If mentor option is selected
+      // If mentor option is selected
     } else {
       // What is your relationship to the iSchool?
       if (step === 2) {
         return <PrefButtonElementsRelationship
-          prevStep={this.prevStep}
-          nextStep={this.nextStep}/>
+          prevStep={this.prevStepMenteeMentor}
+          nextStep={this.nextStep} />
       } else if (step === 3) {
         return <PrefButtonElementsDirection
-        prevStep={this.prevStep}
-        nextStep={this.nextStep}
-        navigation={this.props.navigation}
-          />
+          {...this.props}
+          prevStep={this.prevStep}
+          nextStep={this.nextStep}
+          finish={this.finish}
+          navigation={this.props.navigation}
+        />
       }
     }
   }
@@ -148,8 +191,8 @@ class PrefButtonElements1 extends Component {
     super(props)
   }
 
-  componentDidMount() {
-  }
+  // componentDidMount() {
+  // }
 
   // Proceeds to next form
   next = e => {
@@ -165,8 +208,13 @@ class PrefButtonElements1 extends Component {
 
   // Updates chosen role to mentor
   updateMentor = e => {
-    e.preentDefault()
+    e.preventDefault()
     this.props.updateMentor()
+  }
+
+  prev = e => {
+    e.preventDefault()
+    this.props.prevStep()
   }
 
   // Consider separating into three using flex...
@@ -187,7 +235,9 @@ class PrefButtonElements1 extends Component {
                 Mentee
                 </Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.prefViewButton}>
+            <TouchableOpacity
+              onPress={this.updateMentor}
+              style={styles.prefViewButton}>
               <Text style={styles.prefViewButtonText}>
                 Mentor
                 </Text>
@@ -396,6 +446,9 @@ class PrefButtonElementsDirection extends Component {
     super(props)
   }
 
+  componentDidMount() {
+    console.log("Loading final element")
+  }
 
   back = e => {
     e.preventDefault()
@@ -403,7 +456,9 @@ class PrefButtonElementsDirection extends Component {
   }
 
   finish = e => {
-    e.prevemtDefault()
+    e.preventDefault()
+    console.log("Testing finish")
+    this.props.finish()
   }
 
   render() {
@@ -419,7 +474,7 @@ class PrefButtonElementsDirection extends Component {
               data={[
                 { key: 'User experience design' },
                 { key: 'User experience research' },
-                { key: 'Data Science'},
+                { key: 'Data Science' },
                 { key: 'Software Development' },
                 { key: 'Information Management' },
                 { key: 'Human-Computer Interaction' },
@@ -440,8 +495,11 @@ class PrefButtonElementsDirection extends Component {
                 &#8592;
             </Text>
             </TouchableOpacity>
+
+            {/* Call finish function */}
             <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Connect')}>
+              // onPress={() => this.props.navigation.navigate('Connect')}>
+              onPress={(e) => this.finish(e)}>
               <Text style={styles.rightArrows}>
                 Finish
             </Text>
@@ -481,18 +539,18 @@ class PrefButtonElementsRelationship extends Component {
               numColumns={2}
               data={[
                 { key: 'Informatics', description: "Undergraduate major or minor" },
-                { key: 'MLIS', description: "Master of Library and Information Science"},
-                { key: 'MSIM', description: "Master of Science in Information Management"},
+                { key: 'MLIS', description: "Master of Library and Information Science" },
+                { key: 'MSIM', description: "Master of Science in Information Management" },
                 { key: 'Ph.D', description: "Doctorate in Information Science" },
-                { key: 'Faculty', description: "Teach and assist teaching INFO classes"},
-                { key: 'Alumni', description: "Alumni of the iSchool"},
+                { key: 'Faculty', description: "Teach and assist teaching INFO classes" },
+                { key: 'Alumni', description: "Alumni of the iSchool" },
               ]}
               renderItem={({ item }) =>
                 <TouchableOpacity style={styles.prefViewButtonFour}>
                   <Text style={styles.prefViewButtonText}>
                     {item.key}
                   </Text>
-                  <Text> 
+                  <Text>
                     {item.description}
                   </Text>
                 </TouchableOpacity>

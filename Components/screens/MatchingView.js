@@ -5,63 +5,59 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
+
+import database from '@react-native-firebase/database';
+
+// Controllers
+import { findMentors } from '../controllers/matching.js'
+
 // Depending on user profile type, i.e mentor or mentee, display different
 // component or just search a different database
 export class MatchingView extends Component {
-    render() {
-        console.log(this.props)
+    constructor(props) {
+        super(props)
 
+        this.state = {
+            users: []
+        }
+    }
+
+    componentDidMount() {
+        // Read list of mentors
+        this.findMentorCB()
+    }
+
+    componentDidUpdate() {
+    }
+
+    // TODO: Currently forces search for mentors list,
+    // need to make it so it switches between finding mentors or mentees
+    // depending on user type 
+    // Callback function waiting for database results
+    async findMentorCB() {
+        let mentors = await findMentors()
+        let mentorsArray = Array.from(mentors)
+        this.setState({
+            users: mentorsArray
+        })
+    }
+
+    render() {
         return (
             <View style={styles.container}>
 
-                {/* Search Bar */}
-                <TextInput
-                    placeholder="Search"
-                    style={styles.searchBar}/>
-
-
                 <View style={{ flex: 1 }}>
-                    <FlatList
-                        contentContainerStyle={{ alignItems: "center" }}
-                        numColumns={2}
-                        
-                        data={[
-                            {
-                                key: 'Nathan Magdalera',
-                                position: 'Software Dev @ Mentorme',
-                                profileText: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed feugiat facilisis sem, eget sagittis velit sodales id. Curabitur ac mi rutrum quam laoreet bibendum viverra eu quam. Vestibulum tortor massa, consequat vel lorem a, varius molestie nisl. Aliquam augue ligula, fringilla sed volutpat sit amet, efficitur in urna. Donec fringilla dictum purus, quis consectetur dui venenatis ac. In hac habitasse platea dictumst. Nullam scelerisque augue vitae ex ultricies, vel iaculis odio condimentum. Ut vitae nisl bibendum, lobortis ipsum ut, viverra dui. Vestibulum vehicula suscipit velit nec gravida. Quisque nec elit ligula. Aenean ac lectus neque. Maecenas hendrerit fringilla purus, eget tincidunt nulla aliquam eget. Suspendisse ut risus at nunc ultrices dictum. Quisque laoreet eu lacus vel tincidunt. Cras pellentesque mauris posuere, fermentum mi nec, iaculis sapien. Morbi a augue vel nisl ultrices finibus sed non tellus.'
-                            }
-                        ]}
-                        renderItem={({ item }) =>
-                            <View>
+                    {/* Search Bar */}
+                    <TextInput
+                        placeholder="Search"
+                        style={styles.searchBar} />
 
-                            <TouchableOpacity style={styles.profileContainer}>
-                                {/* Image */}
-                                <View>
-                                    <Image/>
-                                </View>
-
-                                {/* Button profile content */}
-                                <View>
-                                    {/* Name */}
-                                    <Text style={styles.profileTextName}>
-                                        {item.key}
-                                    </Text>
-
-                                    {/* Profession */}
-                                    <Text style={styles.profileTextProfession}>
-                                        {item.position}
-                                    </Text>
-
-                                    {/* Biography */}
-                                    <Text>
-                                        {item.profileText}
-                                    </Text>
-                                </View>
-
-                            </TouchableOpacity>
-                            </View>
-                        }
+                </View>
+                {/* List of items */}
+                <View style={{ flex: 9 }}>
+                    <Bios
+                        navigation={this.props.navigation}
+                        mentors={this.state.users}
                     />
                 </View>
             </View>
@@ -69,43 +65,146 @@ export class MatchingView extends Component {
     }
 }
 
+class Bios extends Component {
+    constructor(props) {
+        super(props)
+    }
+
+    componentDidMount() {
+        console.log(this.props.mentors)
+    }
+
+    componentDidUpdate() {
+        console.log(this.props.mentors)
+    }
+
+    render() {
+        return (
+            <View>
+                <FlatList
+                    data={this.props.mentors
+                    }
+                    renderItem={({ item }) =>
+                        <BioContainer
+                            navigation={this.props.navigation}
+                            item={item[0]}
+                            career={item[1].info.career}
+                            bio={item[1].info.bio}
+                            name={item[1].fullName} />
+                    }
+                />
+            </View>
+        )
+    }
+}
+
+// Renders a single biography instance, containing name, picture, role, and biography
+class BioContainer extends Component {
+    constructor(props) {
+        super(props)
+    }
+
+    componentDidMount() {
+        // console.log(this.props.item)
+    }
+
+    componentDidUpdate() {
+    }
+
+    loadProfile = (e) => {
+            e.preventDefault()
+            this.props.navigation.navigate('MatchingProfileView', {
+                userID: this.props.item,
+            })
+    }
+
+    render() {
+        return (
+            <TouchableOpacity 
+                onPress={(e) => this.loadProfile(e)}
+                style={styles.profileContainer}>
+                {/* Image */}
+                <View style={styles.pictureRole}>
+                    <Image
+                        style={styles.profilePicture}
+                        source={require("../../assets/favicon.png")} />
+
+                    {/* Name */}
+                    <Text style={styles.profileTextName}>
+                        {this.props.name}
+                    </Text>
+                </View>
+
+                {/* Button profile content */}
+                <View>
+
+                    {/* Profession */}
+                    <Text style={styles.profileTextProfession}>
+                        {this.props.career}
+                    </Text>
+
+                    {/* Biography */}
+                    <Text>
+                        {this.props.bio}
+                    </Text>
+                </View>
+
+            </TouchableOpacity>
+        )
+    }
+}
+
+const width_proportion = '80%'
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
+        // alignItems: 'center',
         justifyContent: 'center',
     },
     profileContainer: {
+        flex: 1,
         backgroundColor: "white",
-        borderColor: "#cccccc",
+        borderColor: "#d3d3d3",
         borderWidth: 1,
         borderRadius: 30,
-        width: '95%',
         height: 150,
+        // See if you can find fix to issue
+        // where no need for margin to fix clinging to left side
         marginLeft: 10,
         marginTop: 10,
-        // justifyContent: 'center',
-        // alignItems: 'center',
         paddingTop: 10,
         paddingLeft: 20,
         paddingRight: 10,
         shadowRadius: 5,
         shadowOpacity: 0.5,
-        shadowColor: "#cccccc"
+        shadowColor: "#cccccc",
+        width: '95%'
+    },
+    pictureRole: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    profilePicture: {
+        height: 50,
+        width: 50,
     },
     profileTextName: {
         color: "#fbc015",
-        fontWeight: "bold"
+        marginLeft: 40,
+        fontWeight: "bold",
+        fontSize: 20,
     },
     profileTextProfession: {
         color: 'grey'
     },
     searchBar: {
-        width: '90%',
+        width: '95%',
+        marginLeft: 10,
         marginTop: 10,
         backgroundColor: 'white',
-        borderColor: '#cccccc',
+        borderColor: '#d3d3d3',
         borderWidth: 1,
         height: 50,
         paddingLeft: 20,

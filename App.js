@@ -3,6 +3,7 @@ import React, { Component, useState, useEffect } from 'react';
 import { NavigationContainer, TabActions } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+// import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
 // Firebase
 import auth from '@react-native-firebase/auth';
@@ -19,10 +20,13 @@ import { MatchingView } from './Components/screens/MatchingView';
 import { LoginView } from './Components/screens/LoginView';
 import { ProfileView } from './Components/screens/ProfileView';
 import { InboxView } from './Components/screens/InboxView';
-
+import { MatchingProfileView } from './Components/screens/MatchingProfileView';
 
 // Settings Components
 import { SettingsView } from './Components/screens/SettingsView';
+
+// Models
+import * as userModel from './Components/models/User.js';
 
 import { block } from 'react-native-reanimated';
 import { isRequired } from 'react-native/Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
@@ -41,12 +45,34 @@ const App = () => {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
+  const [preference, setPreference] = useState();
 
   // Handle user state changes
   function onAuthStateChanged(user) {
-    // Sets state.user to user information received from Firebase 
-    setUser(user);
+    // if invalid user
+    if (!user) {
+      console.log("User is invalid or logged out")
+      setUser(user)
+    } else {
+
+      // Get preference settings
+      getPreferenceCB(user)
+
+      // Set current user
+      setUser(user)
+    }
+
     if (initializing) setInitializing(false);
+  }
+
+  // NOTE: Using getUserCB instead of setUser causes 
+  // issues with navigating payload and promises
+  async function getPreferenceCB(user) {
+    let userInfo = await userModel.getUser(user.uid)
+    let userData = {
+      user: userInfo
+    }
+    setPreference(userInfo.preference)
   }
 
   useEffect(() => {
@@ -56,53 +82,63 @@ const App = () => {
 
   if (initializing) return null;
 
+  var content;
+
   // Not logged in
   if (!user) {
-    return (
-      <NavigationContainer>
-        <UserContext.Provider value={this.state.user}>
-          <Stack.Navigator>
-            <Stack.Screen
-              name="HomeView"
-              component={HomeView}
-              options={{ headerShown: false }}
-              initialParams={{ user: user }}
-            />
-            <Stack.Screen
-              name="LoginView"
-              component={LoginView}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
-        </UserContext.Provider>
-      </NavigationContainer>
-    )
+    content = (
+      <Stack.Navigator>
+        <Stack.Screen
+          name="HomeView"
+          component={HomeView}
+          options={{ headerShown: false }}
+          initialParams={{ user: user }}
+        />
+        <Stack.Screen
+          name="LoginView"
+          component={LoginView}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>)
 
     // Logged in
   } else {
-    console.log(user)
-
-    // Display preferences screen if user has not finished preferences
-    // otherwise navigation to home screen or if they wish to edit preferences
-    return (
-      <NavigationContainer>
-        <UserContext.Provider value={user}>
-          <Navigator />
-        </UserContext.Provider>
-      </NavigationContainer>
-    );
+    content = (
+      <Navigator preference={preference} />
+    )
   }
+  // Display preferences screen if user has not finished preferences
+  // otherwise navigation to home screen or if they wish to edit preferences
+  return (
+    <NavigationContainer>
+      <UserContext.Provider value={user}>
+        {content}
+      </UserContext.Provider>
+    </NavigationContainer>
+  );
 }
 
-function Navigator() {
+function Navigator(props) {
+  let initialRouteName = "PreferencesView"
+
+  if (props.preference) {
+    console.log("test")
+    initialRouteName = "Connect"
+  }
+
+  var content;
+
+
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      initialRouteName={initialRouteName}
+    >
       <Stack.Screen
         name="PreferencesView"
         component={PreferenceContextWrapper}
         options={{ headerShown: false, headerTransparent: true }}
       />
-       <Stack.Screen
+      <Stack.Screen
         name="MatchingView"
         component={MatchingContextWrapper}
       />
@@ -112,15 +148,21 @@ function Navigator() {
       />
       <Stack.Screen
         name="SettingsView"
-        component={SettingsContextWrapper} /> 
+        component={SettingsContextWrapper} />
 
       {/* Connect Tabs */}
-
       <Stack.Screen
         name="Connect"
         component={ConnectContextWrapper}
         options={{ headerShown: false }}
-        />
+      />
+
+      {/* MatchingProfile */}
+      <Stack.Screen
+        name="MatchingProfileView"
+        component={MatchingProfileContextWrapper}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -186,6 +228,17 @@ const ProfileContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
       <ProfileView {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
+
+const MatchingProfileContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <MatchingProfileView {...user}
         navigation={navigation}
         route={route}
       />
