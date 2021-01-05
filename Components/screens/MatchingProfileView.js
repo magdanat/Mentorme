@@ -24,9 +24,13 @@ export class MatchingProfileView extends Component {
         this.getProfileCB()
     }
 
+    componentDidUpdate() {
+        console.log(this.props)
+    }
+
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
-        // let cUser = await getUser(this.props.user.uid)
+
         let cUserType = getOppositeUserType(cUser)
 
         let retrievedProfile = await getProfile(this.props.route.params.userID, cUserType)
@@ -86,7 +90,9 @@ export class MatchingProfileView extends Component {
 
                 {/* Chat Button */}
                 <View style={styles.chatButtonContainer}>
-                    <TouchableOpacity style={styles.chatButton}>
+                    <TouchableOpacity style={styles.chatButton}
+                        onPress={(e) => this.props.navigation.navigate("MessagesView", 
+                            { uid : this.props.route.params.userID})}>
                         <Text style={styles.chatButtonText}>
                             Chat with {this.state.profile.fullName}
                         </Text>
@@ -102,18 +108,18 @@ export class ProfileContainer extends Component {
         super(props)
     }
 
-    componentDidMount() {
-        console.log(this.props)
-    }
+    // componentDidMount() {
+    //     console.log(this.props)
+    // }
 
-    componentDidUpdate() {
-    }
+    // componentDidUpdate() {
+    //     console.log(this.props)
+    // }
 
     render() {
         return (
             <View style={styles.infoContainer}>
                 <FlatList
-                    // data={Array.from(profileArray(this.props.profile[1]))}
                     data={this.props.profile}
                     renderItem={({ item } ) => 
                         <ProfileContainerInfoContainer
@@ -135,14 +141,14 @@ export class ProfileContainerInfoContainer extends Component {
         super(props);
     }
 
-    componentDidMount() {
-        console.log(this.props)
-        console.log("yuh")
-    }
+    // componentDidMount() {
+    //     console.log(this.props)
+    //     console.log("yuh")
+    // }
 
-    componentDidUpdate() {
-        console.log(this.props)
-    }
+    // componentDidUpdate() {
+    //     console.log(this.props)
+    // }
 
     render() {
         return (

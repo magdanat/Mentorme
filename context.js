@@ -15,3 +15,11 @@ import { InboxView } from './Components/screens/InboxView';
 //     user: "Guest",
 //     updateUser: () => {}
 // })
+
+export const UserContext = React.createContext({
+    name: 'Guest',
+  })
+
+export const PreferenceContext = React.createContext({
+    preference: false,
+})

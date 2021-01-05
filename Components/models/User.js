@@ -6,6 +6,7 @@ export async function getUser(uid) {
     let ref = database().ref('users/' + uid)
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
+    console.log(snapshotItem)
     return snapshotItem;
 }
 

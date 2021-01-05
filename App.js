@@ -11,7 +11,7 @@ import auth from '@react-native-firebase/auth';
 // Icons
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-import { StyleSheet, Image, Text, View, Button, TextInput, YellowBox } from 'react-native';
+import { StyleSheet, Image, Text, View, Button, TextInput } from 'react-native';
 
 // Components
 import { PreferencesView } from './Components/screens/PreferencesView';
@@ -21,6 +21,12 @@ import { LoginView } from './Components/screens/LoginView';
 import { ProfileView } from './Components/screens/ProfileView';
 import { InboxView } from './Components/screens/InboxView';
 import { MatchingProfileView } from './Components/screens/MatchingProfileView';
+import { MessagesView } from './Components/screens/MessagesView';
+
+// Edit Components
+import { EditProfileView } from './Components/screens/EditProfileView';
+import { EditComponentView } from './Components/screens/EditComponentView';
+
 
 // Settings Components
 import { SettingsView } from './Components/screens/SettingsView';
@@ -34,9 +40,8 @@ import { isRequired } from 'react-native/Libraries/DeprecatedPropTypes/Deprecate
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const UserContext = React.createContext({
-  name: 'Guest',
-})
+import { UserContext, PreferenceContext } from './context.js'
+
 
 // Recommended method
 // TODO: Reorganize the stacks into separate stack containers
@@ -49,30 +54,35 @@ const App = () => {
 
   // Handle user state changes
   function onAuthStateChanged(user) {
+    setUser(user)
+
     // if invalid user
     if (!user) {
       console.log("User is invalid or logged out")
-      setUser(user)
+      setPreference(false)
+      if (initializing) setInitializing(false);
     } else {
-
       // Get preference settings
+      console.log("Getting preference settings")
       getPreferenceCB(user)
-
-      // Set current user
-      setUser(user)
     }
-
-    if (initializing) setInitializing(false);
   }
 
   // NOTE: Using getUserCB instead of setUser causes 
   // issues with navigating payload and promises
   async function getPreferenceCB(user) {
     let userInfo = await userModel.getUser(user.uid)
-    let userData = {
-      user: userInfo
+    console.log(user.uid)
+    if (userInfo) {
+      setPreference(userInfo.preference)
+    } else {
+      setPreference(false)
     }
-    setPreference(userInfo.preference)
+    if (initializing) setInitializing(false);
+  }
+
+  togglePreference = () => {
+    setPreference(true)
   }
 
   useEffect(() => {
@@ -82,12 +92,69 @@ const App = () => {
 
   if (initializing) return null;
 
-  var content;
+  // logged in
+  if (user) {
+    if (preference) {
+      content = (
+        <>
+          {/* Connect Tabs */}
+          <Stack.Screen
+            name="Connect"
+            component={ConnectContextWrapper}
+            options={{ headerShown: false }}
+          />
 
-  // Not logged in
-  if (!user) {
+          <Stack.Screen
+            name="EditProfileView"
+            component={EditProfileContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="EditComponentView"
+            component={EditComponentContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          {/* Settings View */}
+          <Stack.Screen
+            name="SettingsView"
+            component={SettingsContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+
+          {/* MessagesView */}
+          <Stack.Screen
+            name="MessagesView"
+            component={MessagesContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          {/* MatchingProfile */}
+          <Stack.Screen
+            name="MatchingProfileView"
+            component={MatchingProfileContextWrapper}
+            options={{ headerShown: false }}
+          />
+        </>
+      )
+    } else {
+      content = (
+        <>
+          <Stack.Screen
+            name="PreferenceView"
+            component={PreferenceContextWrapper}
+            options={{ headerShown: false }}
+          />
+        </>
+      )
+    }
+
+    // Not logged in
+  } else {
     content = (
-      <Stack.Navigator>
+      <>
         <Stack.Screen
           name="HomeView"
           component={HomeView}
@@ -99,74 +166,21 @@ const App = () => {
           component={LoginView}
           options={{ headerShown: false }}
         />
-      </Stack.Navigator>)
-
-    // Logged in
-  } else {
-    content = (
-      <Navigator preference={preference} />
+      </>
     )
   }
-  // Display preferences screen if user has not finished preferences
-  // otherwise navigation to home screen or if they wish to edit preferences
   return (
     <NavigationContainer>
       <UserContext.Provider value={user}>
-        {content}
+        <PreferenceContext.Provider value={{ preference: [preference, togglePreference] }}>
+          <Stack.Navigator>
+            {content}
+          </Stack.Navigator>
+        </PreferenceContext.Provider>
       </UserContext.Provider>
     </NavigationContainer>
   );
 }
-
-function Navigator(props) {
-  let initialRouteName = "PreferencesView"
-
-  if (props.preference) {
-    console.log("test")
-    initialRouteName = "Connect"
-  }
-
-  var content;
-
-
-  return (
-    <Stack.Navigator
-      initialRouteName={initialRouteName}
-    >
-      <Stack.Screen
-        name="PreferencesView"
-        component={PreferenceContextWrapper}
-        options={{ headerShown: false, headerTransparent: true }}
-      />
-      <Stack.Screen
-        name="MatchingView"
-        component={MatchingContextWrapper}
-      />
-      <Stack.Screen
-        name="ProfileView"
-        component={ProfileContextWrapper}
-      />
-      <Stack.Screen
-        name="SettingsView"
-        component={SettingsContextWrapper} />
-
-      {/* Connect Tabs */}
-      <Stack.Screen
-        name="Connect"
-        component={ConnectContextWrapper}
-        options={{ headerShown: false }}
-      />
-
-      {/* MatchingProfile */}
-      <Stack.Screen
-        name="MatchingProfileView"
-        component={MatchingProfileContextWrapper}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
-
 
 function ConnectTabs() {
   return (
@@ -202,13 +216,74 @@ function ConnectTabs() {
   );
 }
 
+const PreferenceProviderWrapper = props => {
+  return (
+    <PreferenceContext.Provider>
+
+    </PreferenceContext.Provider>
+  )
+}
+
+const EditProfileContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <EditProfileView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
+const EditComponentContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <EditComponentView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
 const PreferenceContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
-      <PreferencesView {...user}
-        navigation={navigation}
-        route={route}
-      />
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <PreferencesView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
+const MessagesContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {preference => (
+          <MessagesView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
     )}
   </UserContext.Consumer>
 )
@@ -216,10 +291,15 @@ const PreferenceContextWrapper = ({ navigation, route }) => (
 const MatchingContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
-      <MatchingView {...user}
-        navigation={navigation}
-        route={route}
-      />
+      <PreferenceContext.Consumer>
+        {preference => (
+          <MatchingView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
     )}
   </UserContext.Consumer>
 )

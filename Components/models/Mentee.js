@@ -2,14 +2,16 @@
 import auth from '@react-native-firebase/auth';
 import database from '@react-native-firebase/database';
 
-export { User } from './User.js'
+import { getUser } from './User.js';
 
 // Accepts a key ID value representing the users ID
 // and creates a new mentee profile for the user,
 // storing that information in the database
 // and returning status. 
-export function createMentee(uid, fullName) {
+export async function createMentee(uid, fullName) {
     var newMenteeKey = database().ref().child('mentees').push().key;
+
+    let user = await getUser(uid)
 
     var entryData = {
         menteeID: newMenteeKey
@@ -17,7 +19,7 @@ export function createMentee(uid, fullName) {
 
     var profileData = {
         menteeID: newMenteeKey,
-        menteeName: fullName,
+        menteeName: user.fullName,
         info: {
             bio: "No biography",
             career: "No role",
@@ -29,11 +31,16 @@ export function createMentee(uid, fullName) {
     }
 
     var updates = {
-        preferences: true
     };
 
     updates['mentees/' + uid] = entryData
     updates['profiles/mentees/' + uid] = profileData
+    updates['users/' + uid + '/currentProfile'] = "mentor"
+    updates['users/' + uid + '/preference'] = true
 
     return database().ref().update(updates);
+}
+
+export function getMentee(uid) {
+
 }

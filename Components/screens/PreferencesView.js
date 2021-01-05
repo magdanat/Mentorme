@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, TouchableOpacity } from 'react-native';
@@ -11,6 +11,9 @@ import database from '@react-native-firebase/database';
 // Models
 import { createMentee } from '../models/Mentee.js'
 import { createMentor } from '../models/Mentor.js'
+
+// Context
+// import { PreferenceContext } from '../../context.js';
 
 // Handles all different steps of the Preferences form.
 // Once
@@ -39,6 +42,8 @@ export class PreferencesView extends Component {
       // step 4
     }
   }
+
+ 
 
   componentDidMount() {
   }
@@ -115,8 +120,15 @@ export class PreferencesView extends Component {
 
     // Navigate to next stack screen
     console.log('Connecting!')
-    this.props.navigation.navigate('Connect')
+    // this.props.navigation.navigate('Connect')
 
+    // Update preference here...
+    // Local update
+    this.props.preference.preference[1]()
+
+    // Update user in database  
+
+    console.log(this.props)
   }
 
   showStep = () => {
@@ -498,7 +510,6 @@ class PrefButtonElementsDirection extends Component {
 
             {/* Call finish function */}
             <TouchableOpacity
-              // onPress={() => this.props.navigation.navigate('Connect')}>
               onPress={(e) => this.finish(e)}>
               <Text style={styles.rightArrows}>
                 Finish

@@ -72,7 +72,7 @@ export const HomeView = ({ navigation }) => {
 
           // Send user to preferences screen
           // along with current user information
-          navigation.navigate("PreferencesView")
+          // navigation.navigate("PreferencesView")
         })
         .catch(error => {
           if (error.code === 'auth/email-already-in-use') {

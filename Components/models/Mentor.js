@@ -30,7 +30,7 @@ export async function createMentor(uid, fullName) {
     }
 
     var userUpdates = {
-        preferences: true,
+        preference: true,
         currentProfile: "mentor",
     }
 
@@ -40,7 +40,7 @@ export async function createMentor(uid, fullName) {
     updates['mentors/' + uid] = entryData
     updates['profiles/mentors/' + uid] = profileData
     updates['users/' + uid + '/currentProfile'] = "mentor"
-    updates['users/' + uid + '/preference'] = "true"
+    updates['users/' + uid + '/preference'] = true
 
     console.log('Updating database...')
 

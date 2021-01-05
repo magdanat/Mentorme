@@ -7,7 +7,7 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOp
 import { getProfile, profileArray } from '../models/Profile.js';
 import { getUser, getOppositeUserType } from '../models/User.js';
 
-export class ProfileView extends Component {
+export class EditProfileView extends Component {
     constructor(props) {
         super(props)
 
@@ -24,8 +24,8 @@ export class ProfileView extends Component {
         console.log(this.props)
         this.getProfileCB()
     }
-   
-    componentDidUpdate() { 
+
+    componentDidUpdate() {
         // console.log(this.state)
     }
 
@@ -50,20 +50,20 @@ export class ProfileView extends Component {
                     <View style={styles.titleContainer}>
                         {/* Edit */}
                         <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('EditProfileView')}>
-                            <Image source={require('../../assets/images/shape-51.png')} />
+                            onPress={() => this.props.navigation.goBack()}>
+                            <Image source={require('../../assets/images/path-2.png')} />
                         </TouchableOpacity>
 
                         {/* Name */}
                         <Text>
-                            {this.state.profile.fullName}
+                            Editing Profile
                         </Text>
 
                         {/* Settings */}
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('SettingsView')}>
-                            <Image source={require('../../assets/images/shape-46.png')}
-                            />
+                        <TouchableOpacity>
+                            <Text>
+                                ⠀
+                            </Text>
                         </TouchableOpacity>
 
                     </View>
@@ -82,7 +82,7 @@ export class ProfileView extends Component {
                         {/* Role  + Flavor Text */}
                         <View style={styles.profileTextContainer}>
                             <Text style={styles.profileRole}>
-                            {this.state.profile.fullName}
+                                {this.state.profile.fullName}
                             </Text>
                             <Text style={styles.profileBio}>I really like coding!!!!!!! Besides that...</Text>
                         </View>
@@ -99,7 +99,8 @@ export class ProfileView extends Component {
                 {/* Info */}
                 <View>
                     <ProfileContainer
-                        profile={this.state.profileAr}/>
+                        navigation={this.props.navigation}
+                        profile={this.state.profileAr} />
                 </View>
 
             </View>
@@ -126,10 +127,11 @@ export class ProfileContainer extends Component {
                 <FlatList
                     // data={Array.from(profileArray(this.props.profile[1]))}
                     data={this.props.profile}
-                    renderItem={({ item } ) => 
+                    renderItem={({ item }) =>
                         <ProfileContainerInfoContainer
                             title={item[0]}
-                            description={item[1]}/>
+                            navigation={this.props.navigation}
+                            description={item[1]} />
                     }
                 />
             </View>
@@ -146,25 +148,32 @@ export class ProfileContainerInfoContainer extends Component {
         super(props);
     }
 
+    componentDidMount() {
+        console.log(this.props)
+    }
+
     render() {
         return (
-            <View style={styles.specificInfoContainer}>
+            <TouchableOpacity
+                 onPress={() => this.props.navigation.navigate('EditComponentView')}>
+                <View style={styles.specificInfoContainer}>
 
-                {/* Title */}
-                <View>
-                    <Text style={styles.infoContainerTitle}>
-                        {this.props.title}
-                    </Text>
-                </View>
+                    {/* Title */}
+                    <View>
+                        <Text style={styles.infoContainerTitle}>
+                            {this.props.title}
+                        </Text>
+                    </View>
 
-                {/* Description */}
-                <View>
-                    <Text>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-                        sunt in culpa qui officia deserunt mollit anim id est laborum
-                    </Text>
+                    {/* Description */}
+                    <View>
+                        <Text>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                            sunt in culpa qui officia deserunt mollit anim id est laborum
+                        </Text>
+                    </View>
                 </View>
-            </View>
+            </TouchableOpacity>
         )
     }
 }
