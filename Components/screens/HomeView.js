@@ -68,6 +68,10 @@ export const HomeView = ({ navigation }) => {
           // Write new user information into Firebase
           var cUser = auth().currentUser
 
+          cUser.updateProfile({
+            displayName: fName + " " + lName
+          })
+
           createNewUser(cUser.uid, email, fName, lName)        
 
           // Send user to preferences screen

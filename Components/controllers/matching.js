@@ -20,3 +20,20 @@ export async function findMentors() {
 
     return snapshotMap
 }
+
+export async function findMentees() {
+    let ref = database().ref('profiles/mentees')
+    let snapshot = await ref.once('value')
+    let snapshotItem = snapshot.val()
+    let snapshotKeys = Object.keys(snapshotItem)
+
+    let snapshotMap = new Map()
+
+    // Insert object items into map to return object
+    // as a map
+    snapshotKeys.map((key) => {
+        snapshotMap.set((key), snapshotItem[key])
+    })
+
+    return snapshotMap
+}

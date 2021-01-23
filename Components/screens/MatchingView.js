@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 import React, { Component } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { getFocusedRouteNameFromRoute, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
@@ -9,7 +9,8 @@ import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } 
 import database from '@react-native-firebase/database';
 
 // Controllers
-import { findMentors } from '../controllers/matching.js'
+import { findMentees, findMentors } from '../controllers/matching.js'
+import { getUser, getOppositeUserType, getUserType} from '../models/User.js';
 
 // Depending on user profile type, i.e mentor or mentee, display different
 // component or just search a different database
@@ -24,22 +25,39 @@ export class MatchingView extends Component {
 
     componentDidMount() {
         // Read list of mentors
-        this.findMentorCB()
+        console.log("MatchingView")
+        console.log(this.props)
+        this.findUsers()
     }
 
     componentDidUpdate() {
     }
 
-    // TODO: Currently forces search for mentors list,
-    // need to make it so it switches between finding mentors or mentees
-    // depending on user type 
-    // Callback function waiting for database results
-    async findMentorCB() {
-        let mentors = await findMentors()
-        let mentorsArray = Array.from(mentors)
-        this.setState({
-            users: mentorsArray
-        })
+    // TODO: Put more of this functionality in the findUsers model function as opposed to here.
+    async findUsers() {
+        let cUser = await getUser(this.props._user.uid)
+
+        let cUserType = getOppositeUserType(cUser)
+
+        if (cUserType === "mentees") {
+            let mentees = await findMentees()
+            let menteesArray = Array.from(mentees)
+            this.setState({
+                users: menteesArray
+            })
+        } else if (cUserType === "mentors") {
+            let mentors = await findMentors()
+            let mentorArray = Array.from(mentors)
+            this.setState({
+                users: mentorArray
+            })
+        } else { 
+            this.setState({
+                users: []
+            })
+        }
+
+
     }
 
     render() {

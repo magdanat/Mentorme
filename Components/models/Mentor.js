@@ -20,8 +20,8 @@ export async function createMentor(uid, fullName) {
         mentorID: newMentorKey,
         fullName: user.fullName,
         info: {
-            bio: "No biography",
-            career: "No role",
+            Bio: "No biography",
+            Career: "No role",
         },
         profileImageURL: null,
         academicInfo: null,
@@ -34,8 +34,7 @@ export async function createMentor(uid, fullName) {
         currentProfile: "mentor",
     }
 
-    var updates = {
-    };
+    var updates = {}
 
     updates['mentors/' + uid] = entryData
     updates['profiles/mentors/' + uid] = profileData

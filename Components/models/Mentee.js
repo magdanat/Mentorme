@@ -19,10 +19,10 @@ export async function createMentee(uid, fullName) {
 
     var profileData = {
         menteeID: newMenteeKey,
-        menteeName: user.fullName,
+        fullName: user.fullName,
         info: {
-            bio: "No biography",
-            career: "No role",
+            Bio: "No biography",
+            Career: "No role",
         },
         profileImageURL: null,
         academicInfo: null,
@@ -35,7 +35,7 @@ export async function createMentee(uid, fullName) {
 
     updates['mentees/' + uid] = entryData
     updates['profiles/mentees/' + uid] = profileData
-    updates['users/' + uid + '/currentProfile'] = "mentor"
+    updates['users/' + uid + '/currentProfile'] = "mentee"
     updates['users/' + uid + '/preference'] = true
 
     return database().ref().update(updates);

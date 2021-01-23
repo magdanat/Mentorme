@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
 import { getProfile, profileArray } from '../models/Profile.js';
-import { getUser, getOppositeUserType } from '../models/User.js';
+import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 
 export class ProfileView extends Component {
     constructor(props) {
@@ -21,29 +21,51 @@ export class ProfileView extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props)
+            console.log(this.props)
         this.getProfileCB()
     }
    
     componentDidUpdate() { 
-        // console.log(this.state)
+        console.log(this.state)
     }
 
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
-        let cUserType = getOppositeUserType(cUser)
+        console.log(cUser)
+        let cUserType = getUserType(cUser)
+        console.log(cUserType)
         let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
         let profileAr = Array.from(profileArray(retrievedProfile))
+
+
+        console.log("Inside profileCB")
+        console.log(retrievedProfile)
+        console.log(profileAr)
+
         profileAr = Array.from(profileArray(profileAr[1][1]))
+
+        console.log(profileAr)
+
         this.setState({
             profile: retrievedProfile,
             profileAr: profileAr
         })
     }
 
+    _handleUpdate = user => {
+
+    }
+
     render() {
         return (
             <View style={styles.container}>
+
+                {/* <FetchUserData
+                    userID={this.props.userID}
+                    onUpdate={this.handleUpdate}
+                /> */}
+
+
                 {/* Header Content
                 Edit, Profile Name, Settings */}
                 <View>
@@ -113,7 +135,6 @@ export class ProfileContainer extends Component {
     }
 
     componentDidMount() {
-        console.log("test")
         console.log(this.props)
     }
 
@@ -160,8 +181,7 @@ export class ProfileContainerInfoContainer extends Component {
                 {/* Description */}
                 <View>
                     <Text>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-                        sunt in culpa qui officia deserunt mollit anim id est laborum
+                        {this.props.description}
                     </Text>
                 </View>
             </View>

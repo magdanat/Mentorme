@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
 import { getProfile, profileArray } from '../models/Profile.js';
-import { getUser, getOppositeUserType} from '../models/User.js';
+import { getUser, getOppositeUserType, getUserType} from '../models/User.js';
 
 export class MatchingProfileView extends Component {
     constructor(props) {
@@ -21,6 +21,7 @@ export class MatchingProfileView extends Component {
     }
 
     componentDidMount() {
+        console.log(this.props)
         this.getProfileCB()
     }
 
@@ -92,7 +93,10 @@ export class MatchingProfileView extends Component {
                 <View style={styles.chatButtonContainer}>
                     <TouchableOpacity style={styles.chatButton}
                         onPress={(e) => this.props.navigation.navigate("MessagesView", 
-                            { uid : this.props.route.params.userID})}>
+                            { 
+                                uid : this.props.route.params.userID, 
+                                name: this.state.profile.fullName,
+                            })}>
                         <Text style={styles.chatButtonText}>
                             Chat with {this.state.profile.fullName}
                         </Text>
@@ -107,14 +111,6 @@ export class ProfileContainer extends Component {
     constructor(props) {
         super(props)
     }
-
-    // componentDidMount() {
-    //     console.log(this.props)
-    // }
-
-    // componentDidUpdate() {
-    //     console.log(this.props)
-    // }
 
     render() {
         return (
@@ -140,15 +136,6 @@ export class ProfileContainerInfoContainer extends Component {
     constructor(props) {
         super(props);
     }
-
-    // componentDidMount() {
-    //     console.log(this.props)
-    //     console.log("yuh")
-    // }
-
-    // componentDidUpdate() {
-    //     console.log(this.props)
-    // }
 
     render() {
         return (

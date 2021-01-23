@@ -6,7 +6,6 @@ export async function getUser(uid) {
     let ref = database().ref('users/' + uid)
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
-    console.log(snapshotItem)
     return snapshotItem;
 }
 
@@ -28,6 +27,16 @@ export function getOppositeUserType(user) {
         return "mentees"
     } else {
         console.log("Error in getting user type. Invalid user object.")
+    }
+}
+
+export function getUserType(user) {
+    if (user.currentProfile == "mentee") {
+        return "mentees"
+    } else if (user.currentProfile == "mentor") {
+        return "mentors"
+    } else {
+        console.log("Error in getting user type.")
     }
 }
 

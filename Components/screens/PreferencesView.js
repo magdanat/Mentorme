@@ -120,7 +120,6 @@ export class PreferencesView extends Component {
 
     // Navigate to next stack screen
     console.log('Connecting!')
-    // this.props.navigation.navigate('Connect')
 
     // Update preference here...
     // Local update

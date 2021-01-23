@@ -73,6 +73,7 @@ export class MessagesView extends Component {
             this.sendMessageCB(this.props._user.uid, this.state.currentInput, this.state.chatKey)
 
             let messageArray = this.state.messages
+
             let messageObject = {
                 senderID: this.props._user.uid,
                 messageSentTime: Date.now(),
@@ -95,29 +96,31 @@ export class MessagesView extends Component {
             this.sendMessageCB(this.props._user.uid, this.state.currentInput, key)
 
             let messageArray = this.state.messages
+            
             let messageObject = {
                 chatID: this.state.chatKey,
                 messageContent: this.state.currentInput,
                 messageSentTime: Date.now(),
-                senderID: this.props._user.uid
+                senderID: this.props._user.uid,
+                senderName: "Test",
+                receiverName: this.props.route.params.name,
             }
 
             messageArray.unshift(messageObject)
 
             this.setState({
                 chatExists: true,
+                chatKey: key,
                 messages: messageArray
             })
 
         }
-
         this.textInput.clear()
-
     }
 
     // Send message callback for handling promises/async calls
     sendMessageCB(uid, message, chat) {
-        sendMessage(uid, message, chat)
+        sendMessage(uid, message, chat, this.props.route.params.uid)
     }
 
     render() {
@@ -134,13 +137,14 @@ export class MessagesView extends Component {
 
                         {/* Name */}
                         <Text>
-                            test
+                            {this.props.route.params.name}
                             </Text>
 
                         {/* Settings */}
                         <TouchableOpacity>
-                            <Image source={require('../../assets/images/shape-46.png')}
-                            />
+                            <Text>
+                                
+                            </Text>
                         </TouchableOpacity>
 
                     </View>

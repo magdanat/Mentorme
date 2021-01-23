@@ -5,7 +5,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
 import { getProfile, profileArray } from '../models/Profile.js';
-import { getUser, getOppositeUserType } from '../models/User.js';
+import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 
 export class EditProfileView extends Component {
     constructor(props) {
@@ -31,7 +31,10 @@ export class EditProfileView extends Component {
 
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
-        let cUserType = getOppositeUserType(cUser)
+        let cUserType = getUserType(cUser)
+
+        console.log(cUserType)
+
         let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
         let profileAr = Array.from(profileArray(retrievedProfile))
         profileAr = Array.from(profileArray(profileAr[1][1]))
@@ -69,38 +72,17 @@ export class EditProfileView extends Component {
                     </View>
                 </View>
 
-                {/* Profile Picture + name and role */}
-                <View>
-                    <View style={styles.profileTitleContainer}>
-
-                        {/* Profile Picture */}
-                        <Image
-                            resizeMode={'contain'}
-                            style={styles.profileImageContainer}
-                            source={require('../../assets/images/oval-3.png')} />
-
-                        {/* Role  + Flavor Text */}
-                        <View style={styles.profileTextContainer}>
-                            <Text style={styles.profileRole}>
-                                {this.state.profile.fullName}
-                            </Text>
-                            <Text style={styles.profileBio}>I really like coding!!!!!!! Besides that...</Text>
-                        </View>
-
-                        {/* Import Button */}
-                        <TouchableOpacity style={styles.linkedInButton}>
-                            <Text style={styles.linkedInContainer}>
-                                Import from LinkedIn
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
                 {/* Info */}
                 <View>
                     <ProfileContainer
                         navigation={this.props.navigation}
                         profile={this.state.profileAr} />
+                    <TouchableOpacity style={styles.addMoreButton}
+                        onPress={() => this.props.navigation.navigate('AddComponentView')}>
+                        <Text style={styles.addMoreButtonText}>
+                            Add More
+                        </Text>
+                    </TouchableOpacity>
                 </View>
 
             </View>
@@ -155,7 +137,12 @@ export class ProfileContainerInfoContainer extends Component {
     render() {
         return (
             <TouchableOpacity
-                 onPress={() => this.props.navigation.navigate('EditComponentView')}>
+                onPress={() => this.props.navigation.navigate('EditComponentView',
+                    {
+                        description: this.props.description,
+                        title: this.props.title
+                    }
+                )}>
                 <View style={styles.specificInfoContainer}>
 
                     {/* Title */}
@@ -168,8 +155,10 @@ export class ProfileContainerInfoContainer extends Component {
                     {/* Description */}
                     <View>
                         <Text>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                            sunt in culpa qui officia deserunt mollit anim id est laborum
+                            {this.props.description}
+
+                            {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                            sunt in culpa qui officia deserunt mollit anim id est laborum */}
                         </Text>
                     </View>
                 </View>
@@ -246,4 +235,21 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: "bold",
     },
+    addMoreButton: {
+        alignItems: "center",
+        justifyContent: "center",
+        borderWidth: 1,
+        borderRadius: 25,
+        marginTop: 10,
+        marginRight: 75,
+        marginLeft: 75,
+        padding: 12.5,
+        borderColor: '#d3d3d3',
+        backgroundColor: '#fbc015',
+    },
+    addMoreButtonText: {
+        color: "white",
+        fontWeight: "bold",
+        fontSize: 20,
+    }
 })

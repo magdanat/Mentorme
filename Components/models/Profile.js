@@ -1,4 +1,7 @@
 import database from '@react-native-firebase/database';
+import { useFocusEffect } from '@react-navigation/native';
+
+import { getUser, getUserType } from './User.js';
 
 
 // Accepts a user's key ID and retrieves the associated
@@ -6,9 +9,14 @@ import database from '@react-native-firebase/database';
 export async function getProfile(uid, userType) {
     // NOTE: Hardcoded to be mentors atm, switch back to userType
     // so that mentors will get mentees and mentees will get mentors appropriately
-    let ref = database().ref('profiles/' + "mentors" + '/' + uid)
+
+    console.log('profiles/' + userType + '/' + uid)
+
+    let ref = database().ref('profiles/' + userType + '/' + uid)
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
+
+    console.log(snapshotItem)
 
     return snapshotItem;
 }
@@ -18,6 +26,10 @@ export async function getProfile(uid, userType) {
 export function profileArray(infoItem) {
     let infoKeys = Object.keys(infoItem)
 
+    console.log("Inside profile array")
+    console.log(infoItem)
+    console.log(infoKeys)
+
     let infoMap = new Map()
 
     infoKeys.map((key) => {
@@ -26,3 +38,32 @@ export function profileArray(infoItem) {
 
     return infoMap;
 }
+
+export async function editProfileInfo(info, update, id) {
+    let user = await getUser(id)
+    let userType = getUserType(user)
+    var updates = {}
+
+    updates['profiles/' + userType + '/' + id + "/info/" + info] = update
+
+    database().ref().update(updates)
+}
+
+export async function focusProfile() {
+    useFocusEffect(
+        React.useCallback(() => {
+            console.log("Screen focused")
+            const unsubscribe = API.subscribe();
+
+            return () => unsubscribe();
+        })
+    )
+
+    return null;
+}
+
+// export function getProfileInfo(info, id) {
+//     let ref  = database().ref('profiles/')
+
+
+// }

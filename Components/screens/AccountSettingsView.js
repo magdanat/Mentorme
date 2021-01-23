@@ -6,13 +6,13 @@ import { StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, Fla
 
 import auth from '@react-native-firebase/auth';
 
-export class SettingsView extends Component {
+export class AccountSettingsView extends Component {
     constructor(props) {
         super(props);
     }
 
     componentDidMount() {
-        console.log("Settings view mounted")
+        // retrieve current user information
     }
 
     logOut() {
@@ -37,26 +37,27 @@ export class SettingsView extends Component {
                             </Text>
                         </TouchableOpacity> */}
                         <Text style={styles.titleText}>
-                            Settings
+                            Account
                         </Text>
-                        <Text>
 
+                        {/* Take back to profile menu */}
+                        <TouchableOpacity>
+                        <Text>
+                            Done
                         </Text>
+                        </TouchableOpacity>
                     </View>
 
                     <View style={styles.infoContainer}>
 
                         <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('AccountSettingsView')}
                             style={styles.optionButton}>
                             <Image style={styles.optionImage} 
                                    source={require('../../assets/images/shape-17.png')}/>
                             <Text style={styles.optionText}>
                             Manage account</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity 
-                            onPress={() => this.props.navigation.navigate('AboutView')}
-                            style={styles.optionButton}>
+                        <TouchableOpacity style={styles.optionButton}>
                         <Image 
                             style={styles.optionImage} 
                             source={require('../../assets/images/rectangle-2.png')}/>

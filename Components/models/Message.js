@@ -15,12 +15,14 @@ export async function sendMessage(uid, message, chat, uidTwo) {
         messageContent: message,
         messageSentTime: Date.now(),
         senderID: uid,
+        receiverID: uidTwo,
     }
 
     var updates = {}
 
     updates['chats/' + chat + '/messages/' + newMessageKey] = messageData
     updates['messages/' + newMessageKey] = messageData
+    updates['chats/' + chat + '/recentMessage'] = messageData
 
     console.log("Sending message...")
 
@@ -35,8 +37,6 @@ export async function retrieveMessages(chat) {
 
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
-
-    console.log(snapshot)
 
     let infoKeys = Object.keys(snapshotItem)
     // let infoMap = new Map()

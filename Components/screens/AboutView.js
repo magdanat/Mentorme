@@ -6,20 +6,14 @@ import { StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, Fla
 
 import auth from '@react-native-firebase/auth';
 
-export class SettingsView extends Component {
+export class AboutView extends Component {
     constructor(props) {
         super(props);
     }
 
     componentDidMount() {
-        console.log("Settings view mounted")
     }
 
-    logOut() {
-        auth()
-            .signOut()
-            .then(() => console.log('User signed out'))
-    }
 
     render() {
         return (
@@ -37,7 +31,7 @@ export class SettingsView extends Component {
                             </Text>
                         </TouchableOpacity> */}
                         <Text style={styles.titleText}>
-                            Settings
+                            About Passionfruit
                         </Text>
                         <Text>
 
@@ -46,24 +40,22 @@ export class SettingsView extends Component {
 
                     <View style={styles.infoContainer}>
 
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('AccountSettingsView')}
-                            style={styles.optionButton}>
-                            <Image style={styles.optionImage} 
-                                   source={require('../../assets/images/shape-17.png')}/>
-                            <Text style={styles.optionText}>
-                            Manage account</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity 
-                            onPress={() => this.props.navigation.navigate('AboutView')}
-                            style={styles.optionButton}>
-                        <Image 
-                            style={styles.optionImage} 
-                            source={require('../../assets/images/rectangle-2.png')}/>
-                            <Text style={styles.optionText}>
-                                About Passionfruit
+                        <View
+                            style={styles.itemContainer}>
+                            <Text style={styles.infoTitle}>
+                            Our Story</Text>
+                            <Text style={styles.infoText}>
+                                Passionfruit is a platform to help students to connect with eachother to learn and inspire.
                             </Text>
-                        </TouchableOpacity>
+                        </View>
+                        <View style={styles.itemContainer}>
+                            <Text style={styles.infoTitle}>
+                                Contact Us
+                            </Text>
+                            <Text style={styles.infoText}>
+                                passionfruit@passionfruit.com
+                            </Text>
+                        </View>
                     </View>
             </View>
         )
@@ -99,12 +91,14 @@ const styles = StyleSheet.create({
         // borderWidth: 1,
         // borderColor: "black"
     },
-    optionButton: {
-        margin: 12.5,
-        flexDirection: "row",
-        alignItems: "center"
+    itemContainer: {
+        margin: 25,
     },
-    optionText: {
+    infoTitle: {
+        fontWeight: "bold",
         fontSize: 20
+    },
+    infoText: {
+        fontSize: 17.5,
     }
 })

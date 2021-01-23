@@ -26,10 +26,14 @@ import { MessagesView } from './Components/screens/MessagesView';
 // Edit Components
 import { EditProfileView } from './Components/screens/EditProfileView';
 import { EditComponentView } from './Components/screens/EditComponentView';
+import { AddComponentView } from './Components/screens/AddComponentView';
+import { ChooseComponentView } from './Components/screens/ChooseComponentView';
 
 
 // Settings Components
 import { SettingsView } from './Components/screens/SettingsView';
+import { AccountSettingsView } from './Components/screens/AccountSettingsView';
+import { AboutView } from './Components/screens/AboutView';
 
 // Models
 import * as userModel from './Components/models/User.js';
@@ -137,6 +141,30 @@ const App = () => {
             component={MatchingProfileContextWrapper}
             options={{ headerShown: false }}
           />
+
+          <Stack.Screen
+            name="AddComponentView"
+            component={AddComponentContextWrapper}
+            options={{ headerShown: false}}
+          />
+
+          <Stack.Screen
+            name="ChooseComponentView"
+            component={ChooseComponentContextWrapper}
+            options={{ headerShown: false}}
+          />
+
+          <Stack.Screen
+            name="AccountSettingsView"
+            component={AccountSettingsContextWrapper}
+            options={{ headerShown: false}}
+          />
+
+          <Stack.Screen
+            name="AboutView"
+            component={AboutContextWrapper}
+            options={{ headerShown: false}}
+          />
         </>
       )
     } else {
@@ -210,7 +238,7 @@ function ConnectTabs() {
       }}>
       <Tab.Screen name="Connect"
         component={MatchingContextWrapper} />
-      <Tab.Screen name="Inbox" component={InboxView} />
+      <Tab.Screen name="Inbox" component={InboxContextWrapper} />
       <Tab.Screen name="Profile" component={ProfileContextWrapper} />
     </Tab.Navigator>
   );
@@ -223,6 +251,38 @@ const PreferenceProviderWrapper = props => {
     </PreferenceContext.Provider>
   )
 }
+
+const AddComponentContextWrapper = ({ navigation, route}) => (
+  <UserContext.Consumer>
+  {(user) => (
+    <PreferenceContext.Consumer>
+      {(preference) => (
+        <AddComponentView {...user}
+          navigation={navigation}
+          route={route}
+          preference={preference}
+        />
+      )}
+    </PreferenceContext.Consumer>
+  )}
+</UserContext.Consumer>
+)
+
+const ChooseComponentContextWrapper = ({ navigation, route}) => (
+  <UserContext.Consumer>
+  {(user) => (
+    <PreferenceContext.Consumer>
+      {(preference) => (
+        <ChooseComponentView {...user}
+          navigation={navigation}
+          route={route}
+          preference={preference}
+        />
+      )}
+    </PreferenceContext.Consumer>
+  )}
+</UserContext.Consumer>
+)
 
 const EditProfileContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
@@ -246,6 +306,54 @@ const EditComponentContextWrapper = ({ navigation, route }) => (
       <PreferenceContext.Consumer>
         {(preference) => (
           <EditComponentView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
+const AccountSettingsContextWrapper = ({ navigation, route}) => (
+  <UserContext.Consumer>
+  {(user) => (
+    <PreferenceContext.Consumer>
+      {(preference) => (
+        <AccountSettingsView {...user}
+          navigation={navigation}
+          route={route}
+          preference={preference}
+        />
+      )}
+    </PreferenceContext.Consumer>
+  )}
+</UserContext.Consumer>
+)
+
+const AboutContextWrapper = ({ navigation, route}) => (
+  <UserContext.Consumer>
+  {(user) => (
+    <PreferenceContext.Consumer>
+      {(preference) => (
+        <AboutView {...user}
+          navigation={navigation}
+          route={route}
+          preference={preference}
+        />
+      )}
+    </PreferenceContext.Consumer>
+  )}
+</UserContext.Consumer>
+)
+
+const InboxContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <InboxView {...user}
             navigation={navigation}
             route={route}
             preference={preference}
