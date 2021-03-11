@@ -5,49 +5,56 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, FlatList } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 
-export default function SimpleImagePicker() {
-    const [image, setImage] = useState(null);
+export class SimpleImagePicker extends Component {
+    state = {
+        photo: null
+    }
 
-    useEffect(() => {
-        (async () => {
-            if (Platform.OS !== 'web') {
-                const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-                if (status !== 'granted') {
-                    alert('Sorry, we need camera roll permissions to make this work!');
-                }
-            }
-        })();
-    }, []);
 
-    const pickImage = async () => {
-        let result = ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
 
-        console.log(result);
 
-        if (!result.cancelled) {
-            setImage(result.uri);
-        }
-        console.log("Test")
-    };
+    // const [image, setImage] = useState(null);
 
-    return (
-        <View style={styles.pictureContainer}>
-            <Image
-                style={styles.profilePicture}
-                source={require("../../assets/favicon.png")} />
-            <TouchableOpacity style={styles.changePictureButton}
-                onPress={pickImage}>
-                <Text style={styles.changePictureText}>
-                    Change Profile Picture
-        </Text>
-            </TouchableOpacity>
-        </View>
-    )
+    // useEffect(() => {
+    //     (async () => {
+    //         if (Platform.OS !== 'web') {
+    //             const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    //             if (status !== 'granted') {
+    //                 alert('Sorry, we need camera roll permissions to make this work!');
+    //             }
+    //         }
+    //     })();
+    // }, []);
+
+    // const pickImage = async () => {
+    //     let result = ImagePicker.launchImageLibraryAsync({
+    //         mediaTypes: ImagePicker.MediaTypeOptions.All,
+    //         allowsEditing: true,
+    //         aspect: [4, 3],
+    //         quality: 1,
+    //     });
+
+    //     console.log(result);
+
+    //     if (!result.cancelled) {
+    //         setImage(result.uri);
+    //     }
+    //     console.log("Test")
+    // };
+
+    // return (
+    //     <View style={styles.pictureContainer}>
+    //         <Image
+    //             style={styles.profilePicture}
+    //             source={require("../../assets/favicon.png")} />
+    //         <TouchableOpacity style={styles.changePictureButton}
+    //             onPress={pickImage}>
+    //             <Text style={styles.changePictureText}>
+    //                 Change Profile Picture
+    //     </Text>
+    //         </TouchableOpacity>
+    //     </View>
+    // )
 }
 
 const styles = StyleSheet.create({

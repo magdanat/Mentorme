@@ -9,8 +9,10 @@ import auth from '@react-native-firebase/auth';
 import { getProfile, profileArray } from '../models/Profile.js';
 import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 import { EditAccountSettingsView } from './EditAccountSettingsView.js';
+import {launchImageLibrary} from 'react-native-image-picker';
 
-import SimpleImagePicker from '../controllers/imagePicker';
+
+// import SimpleImagePicker from '../controllers/imagePicker';
 
 export class AccountSettingsView extends Component {
     constructor(props) {
@@ -18,8 +20,10 @@ export class AccountSettingsView extends Component {
 
         this.editMode = this.editMode.bind(this);
         this.exitEditMode = this.exitEditMode.bind(this);
+        this.handleChoosePhoto = this.handleChoosePhoto.bind(this)
 
         this.state = {
+            photo: null,
             profile: {
                 fullName: "",
                 info: "",
@@ -42,6 +46,18 @@ export class AccountSettingsView extends Component {
         console.log("AccountSettingsView")
         console.log(this.props)
         console.log(this.state)
+    }
+
+    handleChoosePhoto = () => {
+        const options = {
+            noData: true
+        };
+        launchImageLibrary(options, response => {
+            console.log("response", response);
+            if (response.uri) {
+                this.setState({ photo: respose});
+            }
+        })
     }
 
     logOut() {
@@ -145,7 +161,9 @@ export class AccountSettingsView extends Component {
 
                     <View style={styles.infoContainer}>
                         <AccountInfo
+                            handleChoosePhoto={this.handleChoosePhoto}
                             profile={this.state.profile}
+                            photo={this.state.photo}
                             editMode={this.editMode}
                         />
                     </View>
@@ -229,22 +247,25 @@ export class AccountInfo extends Component {
 
     render() {
         let description = this.renderBioDescription()
+        // const { photo } = this.props.photo
 
         return (
             <View>
 
-                {/* <View style={styles.pictureContainer}>
+                <View style={styles.pictureContainer}>
                     <Image
                             style={styles.profilePicture}
                             source={require("../../assets/favicon.png")} />
-                <TouchableOpacity style={styles.changePictureButton}>
+                <TouchableOpacity 
+                    onPress={this.props.handleChoosePhoto}
+                    style={styles.changePictureButton}>
                     <Text style={styles.changePictureText}>
                         Change Profile Picture
                     </Text>
                 </TouchableOpacity>
-                </View> */}
+                </View>
 
-                <SimpleImagePicker />
+                {/* <SimpleImagePicker /> */}
 
 
                 <FlatList
