@@ -39,6 +39,7 @@ export class MatchingProfileView extends Component {
         profileAr = Array.from(profileArray(profileAr[1][1]))
 
         this.setState({
+            bio: profileAr[4][1].description,
             profile: retrievedProfile,
             profileAr: profileAr
         })
@@ -49,48 +50,51 @@ export class MatchingProfileView extends Component {
             <View style={styles.container}>
                 {/* Header Content
                 Edit, Profile Name, Settings */}
-                <View>
-                    <View style={styles.titleContainer}>
+                    <View 
+                        style={styles.titleContainer}
+                        >
                         {/* Edit */}
                         <TouchableOpacity
                             onPress={() => this.props.navigation.goBack()}>
                             <Image source={require('../../assets/images/path-2.png')} />
                         </TouchableOpacity>
                     </View>
-                </View>
 
                 {/* Profile Picture + name and role */}
-                <View>
-                    <View style={styles.profileTitleContainer}>
+                <View 
+                style={styles.profileTitleContainer}>
 
-                        {/* Profile Picture */}
-                        <Image
-                            resizeMode={'contain'}
-                            style={styles.profileImageContainer} 
-                            source={require('../../assets/images/oval-3.png')}/>
+                    {/* Profile Picture */}
+                    <Image
+                        resizeMode={'contain'}
+                        style={styles.profileImageContainer} 
+                        source={require('../../assets/images/oval-3.png')}/>
 
-                        {/* Role  + Flavor Text */}
-                        <View style={styles.profileTextContainer}>
-                            <Text style={styles.profileRole}>
-                                {this.state.profile.fullName}
-                            </Text>
-                            <Text style={styles.profileBio}>
-                                Test
-                            </Text>
-                        </View>
-
-            
+                    {/* Role  + Flavor Text */}
+                    <View 
+                        style={styles.profileTextContainer}
+                        >
+                        <Text style={styles.profileRole}>
+                            {this.state.profile.fullName}
+                        </Text>
+                        <Text style={styles.profileBio}>
+                            {this.state.bio}
+                        </Text>
                     </View>
                 </View>
 
                 {/* Info */}
-                <View>
+                <View 
+                    style={styles.infoContainer}
+                    >
                     <ProfileContainer
                         profile={this.state.profileAr}/>
                 </View>
 
                 {/* Chat Button */}
-                <View style={styles.chatButtonContainer}>
+                <View 
+                    style={styles.chatButtonContainer}
+                    >
                     <TouchableOpacity style={styles.chatButton}
                         onPress={(e) => this.props.navigation.navigate("MessagesView", 
                             { 
@@ -113,16 +117,55 @@ export class ProfileContainer extends Component {
     }
 
     render() {
-        return (
-            <View style={styles.infoContainer}>
+
+        var content
+
+        if (this.props.profile.length > 0) {
+            content = (
+                <View>
                 <FlatList
-                    data={this.props.profile}
-                    renderItem={({ item } ) => 
+                    data={[
+                        {
+                            title: this.props.profile[5][1].title,
+                            id: this.props.profile[5][1].key,
+                            description: this.props.profile[5][1].description
+                        },
+                        {
+                            title: this.props.profile[3][1].title,
+                            id: this.props.profile[3][1].key,
+                            description: this.props.profile[3][1].description
+                        },
+                        {
+                            title: this.props.profile[1][1].title,
+                            id: this.props.profile[1][1].key,
+                            description: this.props.profile[1][1].description
+                        },
+                        {
+                            title: this.props.profile[0][1].title,
+                            id: this.props.profile[0][1].key,
+                            description: this.props.profile[0][1].description
+                        },
+                        {
+                            title: this.props.profile[2][1].title,
+                            id: this.props.profile[2][1].key,
+                            description: this.props.profile[2][1].description
+                        },
+                    ]}
+                    renderItem={({ item }) =>
                         <ProfileContainerInfoContainer
-                            title={item[0]}
-                            description={item[1]}/>
+                            title={item.title}
+                            id={item.id}
+                            navigation={this.props.navigation}
+                            description={item.description} />
                     }
                 />
+            </View>)
+        }
+
+
+        return (
+            <View>
+                {content}
             </View>
         )
     }
@@ -137,9 +180,15 @@ export class ProfileContainerInfoContainer extends Component {
         super(props);
     }
 
+    componentDidMount() {
+        console.log(this.props)
+    }
+
     render() {
         return (
-            <View style={styles.specificInfoContainer}>
+            <View 
+                style={styles.specificInfoContainer}
+                    >
 
                 {/* Title */}
                 <View>
@@ -151,9 +200,7 @@ export class ProfileContainerInfoContainer extends Component {
                 {/* Description */}
                 <View>
                     <Text>
-                        {/* {this.props.description} */}
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, 
-                        sunt in culpa qui officia deserunt mollit anim id est laborum
+                        {this.props.description}
                     </Text>
                 </View>
             </View>
@@ -170,6 +217,7 @@ const styles = StyleSheet.create({
         marginTop: 25,
         flexDirection: "row",
         alignItems: "center",
+        // justifyContent: "space-around",
         marginLeft: 60
     },
     profileTitleContainer: {
@@ -183,7 +231,6 @@ const styles = StyleSheet.create({
     },
     profileImageContainer: {
         height: 100,
-        // borderColor: 'black',
         // borderWidth: 1,
         flex: 1,
     },
@@ -203,11 +250,13 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
     },
     infoContainer: {
+        flex: 1,
         marginLeft: 20,
         marginRight: 20,
         marginTop: 10,
     },
     specificInfoContainer: {
+        minHeight: 150,
         borderColor: '#d3d3d3',
         borderWidth: 1,
         borderRadius: 20,
@@ -223,6 +272,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     chatButton: {
+        height: 55,
         borderColor: '#d3d3d3',
         borderWidth: 1,
         width: 325,
@@ -230,6 +280,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         padding: 10,
+        marginBottom: 10,
     },
     chatButtonText: {
         color: "#fbc015",

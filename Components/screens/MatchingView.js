@@ -24,9 +24,6 @@ export class MatchingView extends Component {
     }
 
     componentDidMount() {
-        // Read list of mentors
-        console.log("MatchingView")
-        console.log(this.props)
         this.findUsers()
     }
 
@@ -60,19 +57,35 @@ export class MatchingView extends Component {
 
     }
 
+    test() {
+        console.log("Test2222")
+    }
+
     render() {
         return (
             <View style={styles.container}>
 
-                <View style={{ flex: 1 }}>
+                {/* Top Header Content */}
+                <View style={styles.headerContainer}>
+
+
                     {/* Search Bar */}
                     <TextInput
                         placeholder="Search"
                         style={styles.searchBar} />
 
+
+                    <TouchableOpacity style={styles.filterButton}
+                     onPress={() =>this.props.navigation.navigate('FilterPreferencesView')}>
+                        <Image
+                            source={require("../../assets/images/shape-34.png")}/>
+                    </TouchableOpacity>
+
                 </View>
+
+
                 {/* List of items */}
-                <View style={{ flex: 9 }}>
+                <View style={styles.bios}>
                     <Bios
                         navigation={this.props.navigation}
                         mentors={this.state.users}
@@ -83,17 +96,16 @@ export class MatchingView extends Component {
     }
 }
 
+// Represents the list of different user profiles
 class Bios extends Component {
     constructor(props) {
         super(props)
     }
 
     componentDidMount() {
-        console.log(this.props.mentors)
     }
 
     componentDidUpdate() {
-        console.log(this.props.mentors)
     }
 
     render() {
@@ -104,11 +116,15 @@ class Bios extends Component {
                     }
                     renderItem={({ item }) =>
                         <BioContainer
+                            item={item[0]} 
+                            academics={item[1].info.academics.description}
+                            career={item[1].info.career.description}
+                            projects={item[1].info.projects.description}
+                            research={item[1].info.research.description}
+                            name={item[1].fullName}
+                            help={item[1].help}
                             navigation={this.props.navigation}
-                            item={item[0]}
-                            career={item[1].info.career}
-                            bio={item[1].info.bio}
-                            name={item[1].fullName} />
+                            />
                     }
                 />
             </View>
@@ -116,14 +132,13 @@ class Bios extends Component {
     }
 }
 
-// Renders a single biography instance, containing name, picture, role, and biography
+// Renders a single profile instance
 class BioContainer extends Component {
     constructor(props) {
         super(props)
     }
 
     componentDidMount() {
-        // console.log(this.props.item)
     }
 
     componentDidUpdate() {
@@ -155,16 +170,32 @@ class BioContainer extends Component {
 
                 {/* Button profile content */}
                 <View>
-
-                    {/* Profession */}
+                    {/* Academics */}
                     <Text style={styles.profileTextProfession}>
-                        {this.props.career}
+                        {this.props.academics}
                     </Text>
 
-                    {/* Biography */}
                     <Text>
-                        {this.props.bio}
+                        Career:&nbsp;
+                        {this.props.career.substr(0,100)}...
                     </Text>
+
+
+                    <Text>
+                        Projects:&nbsp;
+                        {this.props.projects.substr(0, 100)}...
+                    </Text>
+
+                    <Text>
+                        Research:&nbsp;
+                        {this.props.research}
+                    </Text>
+
+                    <Text>
+                        What I can Help With: &nbsp;
+                        {this.props.help}
+                    </Text>
+
                 </View>
 
             </TouchableOpacity>
@@ -175,11 +206,24 @@ class BioContainer extends Component {
 const width_proportion = '80%'
 
 const styles = StyleSheet.create({
+    bios: {
+        // position: 'absolute',
+        flex: 9,
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
         // alignItems: 'center',
         justifyContent: 'center',
+    },
+    filterButton:{
+        justifyContent: 'center',
+        alignContent: 'center',
+        marginLeft: '5%',
+        marginTop: 10,
+    },
+    headerContainer: {
+        flexDirection: "row",
     },
     profileContainer: {
         flex: 1,
@@ -187,7 +231,7 @@ const styles = StyleSheet.create({
         borderColor: "#d3d3d3",
         borderWidth: 1,
         borderRadius: 30,
-        height: 150,
+        height: 200,
         // See if you can find fix to issue
         // where no need for margin to fix clinging to left side
         marginLeft: 10,
@@ -205,26 +249,28 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     profilePicture: {
-        height: 50,
-        width: 50,
+        height: 65,
+        width: 65,
     },
     profileTextName: {
         color: "#fbc015",
-        marginLeft: 40,
+        marginLeft: 25,
         fontWeight: "bold",
-        fontSize: 20,
+        fontSize: 25,
     },
     profileTextProfession: {
-        color: 'grey'
+        color: 'grey',
+        marginTop: 5,
     },
     searchBar: {
-        width: '95%',
+        width: '75%',
         marginLeft: 10,
+        // marginRight: 10,
         marginTop: 10,
         backgroundColor: 'white',
         borderColor: '#d3d3d3',
         borderWidth: 1,
-        height: 50,
+        minHeight: 50,
         paddingLeft: 20,
         paddingRight: 20,
         borderRadius: 30,

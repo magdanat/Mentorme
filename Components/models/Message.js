@@ -53,3 +53,7 @@ export async function retrieveMessages(chat) {
 
     return infoArray
 }
+
+export async function updateMessages(chat) {
+    
+}

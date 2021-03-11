@@ -7,66 +7,86 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOp
 import { getProfile, profileArray } from '../models/Profile.js';
 import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 
+import { EditProfileView} from './EditProfileView.js';
+
 export class ProfileView extends Component {
     constructor(props) {
         super(props)
+
+        this.editMode = this.editMode.bind(this);
+        this.exitEditMode = this.exitEditMode.bind(this);
 
         this.state = {
             profile: {
                 fullName: "",
                 info: "",
             },
+            bio: "",
             profileAr: [],
+            edit: false,
         }
     }
 
     componentDidMount() {
-            console.log(this.props)
+        console.log("Loading props...")
+        console.log(this.user)
+        console.log(this.props)
         this.getProfileCB()
     }
    
     componentDidUpdate() { 
+        console.log("Updating state...")
         console.log(this.state)
     }
 
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
-        console.log(cUser)
         let cUserType = getUserType(cUser)
-        console.log(cUserType)
         let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
         let profileAr = Array.from(profileArray(retrievedProfile))
-
-
-        console.log("Inside profileCB")
-        console.log(retrievedProfile)
-        console.log(profileAr)
-
         profileAr = Array.from(profileArray(profileAr[1][1]))
 
         console.log(profileAr)
 
         this.setState({
             profile: retrievedProfile,
-            profileAr: profileAr
+            profileAr: profileAr,
+            bio: profileAr[4][1].description,
+            userType: cUserType
         })
     }
 
-    _handleUpdate = user => {
+    editMode() {
+        this.setState((state) => {
+            state.edit = true
+            return state
+        })
+    }
 
+    exitEditMode() {
+        this.setState((state) => {
+            state.edit = false
+            return state
+        })
     }
 
     render() {
-        return (
-            <View style={styles.container}>
 
-                {/* <FetchUserData
-                    userID={this.props.userID}
-                    onUpdate={this.handleUpdate}
-                /> */}
+        var content
+        var userTitle 
 
 
-                {/* Header Content
+            if (this.state.userType === "mentees") {
+                userTitle = "Mentee"
+            } else if (this.state.userType === "mentors") {
+                userTitle = "Mentor"
+            }
+
+
+
+            content = (
+                <>
+                        {/* Header Content
                 Edit, Profile Name, Settings */}
                 <View>
                     <View style={styles.titleContainer}>
@@ -78,7 +98,7 @@ export class ProfileView extends Component {
 
                         {/* Name */}
                         <Text>
-                            {this.state.profile.fullName}
+                            {userTitle}
                         </Text>
 
                         {/* Settings */}
@@ -106,23 +126,35 @@ export class ProfileView extends Component {
                             <Text style={styles.profileRole}>
                             {this.state.profile.fullName}
                             </Text>
-                            <Text style={styles.profileBio}>I really like coding!!!!!!! Besides that...</Text>
+                            <Text style={styles.profileBio}>
+                                    {this.state.bio}
+                            </Text>
                         </View>
 
-                        {/* Import Button */}
+                        {/* Import Button
                         <TouchableOpacity style={styles.linkedInButton}>
                             <Text style={styles.linkedInContainer}>
                                 Import from LinkedIn
                             </Text>
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                 </View>
 
                 {/* Info */}
-                <View>
+                <View style={styles.listContainer}>
                     <ProfileContainer
                         profile={this.state.profileAr}/>
                 </View>
+                </>
+            )
+        return (
+            <View style={styles.container}>
+
+                {/* <FetchUserData
+                    userID={this.props.userID}
+                    onUpdate={this.handleUpdate}
+                /> */}
+                {content}
 
             </View>
         )
@@ -135,24 +167,62 @@ export class ProfileContainer extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props)
     }
 
     componentDidUpdate() {
+        console.log("test123123")
+        console.log(this.props.profile)
     }
 
     render() {
-        return (
-            <View style={styles.infoContainer}>
+
+        var content 
+
+        if (this.props.profile.length > 0) {
+            content = (
+                <View>
                 <FlatList
-                    // data={Array.from(profileArray(this.props.profile[1]))}
-                    data={this.props.profile}
-                    renderItem={({ item } ) => 
+                    data={[
+                        {
+                            title: this.props.profile[5][1].title,
+                            id: this.props.profile[5][1].key,
+                            description: this.props.profile[5][1].description
+                        },
+                        {
+                            title: this.props.profile[3][1].title,
+                            id: this.props.profile[3][1].key,
+                            description: this.props.profile[3][1].description
+                        },
+                        {
+                            title: this.props.profile[1][1].title,
+                            id: this.props.profile[1][1].key,
+                            description: this.props.profile[1][1].description
+                        },
+                        {
+                            title: this.props.profile[0][1].title,
+                            id: this.props.profile[0][1].key,
+                            description: this.props.profile[0][1].description
+                        },
+                        {
+                            title: this.props.profile[2][1].title,
+                            id: this.props.profile[2][1].key,
+                            description: this.props.profile[2][1].description
+                        },
+                    ]}
+                    renderItem={({ item }) =>
                         <ProfileContainerInfoContainer
-                            title={item[0]}
-                            description={item[1]}/>
+                            title={item.title}
+                            id={item.id}
+                            navigation={this.props.navigation}
+                            description={item.description} />
                     }
                 />
+            </View>)
+        }
+
+        return (
+            <View style={styles.infoContainer}>
+                {content}
             </View>
         )
     }
@@ -165,6 +235,10 @@ export class ProfileContainer extends Component {
 export class ProfileContainerInfoContainer extends Component {
     constructor(props) {
         super(props);
+    }
+
+    componentDidMount() {
+        console.log(this.props)
     }
 
     render() {
@@ -237,7 +311,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexWrap: 'wrap',
     },
+    listContainer: {
+        marginBottom: 175,
+    },
     specificInfoContainer: {
+        minHeight: 150,
         borderColor: '#d3d3d3',
         borderWidth: 1,
         borderRadius: 20,

@@ -96,11 +96,12 @@ export const HomeView = ({ navigation }) => {
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.welcomeTitle}>Welcome</Text>
-      <TouchableOpacity
+      
+      {/* <TouchableOpacity
       >
         <Text style={styles.loginLinkedIn}>Log in with LinkedIn</Text>
-      </TouchableOpacity>
-      <Text> OR</Text>
+      </TouchableOpacity> */}
+      {/* <Text> OR</Text> */}
       <View style={styles.loginInfo}>
         <TextInput
           onChangeText={text => setEmail(text)}

@@ -7,7 +7,7 @@ import { getUser } from './User.js';
 // Accepts a key ID value representing the users ID
 // and stores it in the database along with a mentor ID key.
 // Returns status. 
-export async function createMentor(uid, fullName) {
+export async function createMentor(uid, fullName, email) {
     var newMentorKey = database().ref().child('mentors').push().key;
 
     let user = await getUser(uid)
@@ -19,10 +19,40 @@ export async function createMentor(uid, fullName) {
     var profileData = {
         mentorID: newMentorKey,
         fullName: user.fullName,
+        // change to 
         info: {
-            Bio: "No biography",
-            Career: "No role",
+            bio: {
+                title: "Biography",
+                enabled: false,
+                key: "bio",
+            },
+            academics: {
+                title: "Academics",
+                enabled: false,
+                key: "academics",
+            },
+            research: {
+                title: "Research",
+                enabled: false,
+                key: "research",
+            },
+            career: {
+                title: "Career",
+                enabled: false,
+                key: "career",
+            },
+            projects: {
+                title: "Projects",
+                enabled: false,
+                key: "projects",
+            },
+            help: {
+                title: "What I can help with",
+                enabled: false,
+                key: "help",
+            },
         },
+        email: email,
         profileImageURL: null,
         academicInfo: null,
         researchInfo: null,

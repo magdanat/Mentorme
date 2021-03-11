@@ -12,12 +12,7 @@ import database from '@react-native-firebase/database';
 import { createMentee } from '../models/Mentee.js'
 import { createMentor } from '../models/Mentor.js'
 
-// Context
-// import { PreferenceContext } from '../../context.js';
-
-// Handles all different steps of the Preferences form.
-// Once
-export class PreferencesView extends Component {
+export class FilterPreferencesView extends Component {
   constructor(props) {
     super(props);
 
@@ -233,7 +228,7 @@ class PrefButtonElements1 extends Component {
   render() {
     return (
       <View>
-        <View style={styles.prefViewContentContainer}>
+        {/* <View style={styles.prefViewContentContainer}>
           <Text style={styles.prefViewTitle}>Would you like to be a Mentor or Mentee?</Text>
           <Text style={styles.prefViewText}>Choose your role, but you can always change later or be both roles in your personal profile.</Text>
 
@@ -264,7 +259,10 @@ class PrefButtonElements1 extends Component {
               Continue
                 </Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
+        <Text>
+            Test
+        </Text>
       </View>
     )
   }

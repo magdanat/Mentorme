@@ -103,3 +103,44 @@ export async function getAllChats(id) {
     
     return null
 }
+
+// export async function openChatListener(key) {
+//     console.log("Opening chat listener")
+
+//     var infoArray = []
+
+//     database()
+//         .ref('chats/' + key + '/messages')
+//         .on('value', snapshot => {
+//             const messageObject = snapshot.val()
+
+//             if (messageObject) {
+
+//                 let messageKeys = Object.keys(messageObject)
+
+//                 // For each key, add it to head of array.
+//                 messageKeys.map((key) => {
+//                 infoArray.push(messageObject[key])
+//                 })
+
+//                 // Sort array based on message sent time
+//                 infoArray.sort((a, b) => (a.messageSentTime < b.messageSentTime) ? 1 : -1)
+
+//                 // return infoArray
+//             } else {
+//                 console.log("Error.")
+//             }
+//         })
+
+//     console.log(infoArray)
+
+//     return infoArray
+// }
+
+export async function closeChatListener(key) {
+    database()
+        .ref('chats/' + key + '/messages')
+        .off()
+
+    console.log("Closing chat listener")
+}

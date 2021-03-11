@@ -44,7 +44,7 @@ export async function editProfileInfo(info, update, id) {
     let userType = getUserType(user)
     var updates = {}
 
-    updates['profiles/' + userType + '/' + id + "/info/" + info] = update
+    updates['profiles/' + userType + '/' + id + "/info/" + info + '/description'] = update
 
     database().ref().update(updates)
 }

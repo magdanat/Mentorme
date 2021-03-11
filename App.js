@@ -13,22 +13,25 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 
 import { StyleSheet, Image, Text, View, Button, TextInput } from 'react-native';
 
-// Components
+// Main Components
 import { PreferencesView } from './Components/screens/PreferencesView';
 import { HomeView } from './Components/screens/HomeView';
-import { MatchingView } from './Components/screens/MatchingView';
 import { LoginView } from './Components/screens/LoginView';
+
+
+// Logged-In Components
+import { MatchingView } from './Components/screens/MatchingView';
 import { ProfileView } from './Components/screens/ProfileView';
 import { InboxView } from './Components/screens/InboxView';
 import { MatchingProfileView } from './Components/screens/MatchingProfileView';
 import { MessagesView } from './Components/screens/MessagesView';
+import { FilterPreferencesView } from './Components/screens/FilterPreferencesView';
 
 // Edit Components
 import { EditProfileView } from './Components/screens/EditProfileView';
 import { EditComponentView } from './Components/screens/EditComponentView';
 import { AddComponentView } from './Components/screens/AddComponentView';
 import { ChooseComponentView } from './Components/screens/ChooseComponentView';
-
 
 // Settings Components
 import { SettingsView } from './Components/screens/SettingsView';
@@ -54,7 +57,7 @@ const App = () => {
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
-  const [preference, setPreference] = useState();
+  const [preference, setPreference] = useState(null);
 
   // Handle user state changes
   function onAuthStateChanged(user) {
@@ -98,85 +101,94 @@ const App = () => {
 
   // logged in
   if (user) {
-    if (preference) {
-      content = (
-        <>
-          {/* Connect Tabs */}
-          <Stack.Screen
-            name="Connect"
-            component={ConnectContextWrapper}
-            options={{ headerShown: false }}
-          />
+    // need thing for loading preference
+    if (preference != null) {
+      if (preference) {
+        content = (
+          <>
+            {/* Connect Tabs */}
+            <Stack.Screen
+              name="Connect"
+              component={ConnectContextWrapper}
+              options={{ headerShown: false }}
+            />
+  
+            <Stack.Screen
+              name="EditProfileView"
+              component={EditProfileContextWrapper}
+              options={{ headerShown: false }}
+            />
+  
+            <Stack.Screen
+              name="EditComponentView"
+              component={EditComponentContextWrapper}
+              options={{ headerShown: false }}
+            />
+  
+            {/* Settings View */}
+            <Stack.Screen
+              name="SettingsView"
+              component={SettingsContextWrapper}
+              options={{ headerShown: false }}
+            />
+  
+  
+            {/* MessagesView */}
+            <Stack.Screen
+              name="MessagesView"
+              component={MessagesContextWrapper}
+              options={{ headerShown: false }}
+            />
+  
+            {/* MatchingProfile */}
+            <Stack.Screen
+              name="MatchingProfileView"
+              component={MatchingProfileContextWrapper}
+              options={{ headerShown: false }}
+            />
+  
+            <Stack.Screen
+              name="AddComponentView"
+              component={AddComponentContextWrapper}
+              options={{ headerShown: false}}
+            />
+  
+            <Stack.Screen
+              name="ChooseComponentView"
+              component={ChooseComponentContextWrapper}
+              options={{ headerShown: false}}
+            />
+  
+            <Stack.Screen
+              name="AccountSettingsView"
+              component={AccountSettingsContextWrapper}
+              options={{ headerShown: false}}
+            />
 
-          <Stack.Screen
-            name="EditProfileView"
-            component={EditProfileContextWrapper}
-            options={{ headerShown: false }}
-          />
-
-          <Stack.Screen
-            name="EditComponentView"
-            component={EditComponentContextWrapper}
-            options={{ headerShown: false }}
-          />
-
-          {/* Settings View */}
-          <Stack.Screen
-            name="SettingsView"
-            component={SettingsContextWrapper}
-            options={{ headerShown: false }}
-          />
-
-
-          {/* MessagesView */}
-          <Stack.Screen
-            name="MessagesView"
-            component={MessagesContextWrapper}
-            options={{ headerShown: false }}
-          />
-
-          {/* MatchingProfile */}
-          <Stack.Screen
-            name="MatchingProfileView"
-            component={MatchingProfileContextWrapper}
-            options={{ headerShown: false }}
-          />
-
-          <Stack.Screen
-            name="AddComponentView"
-            component={AddComponentContextWrapper}
-            options={{ headerShown: false}}
-          />
-
-          <Stack.Screen
-            name="ChooseComponentView"
-            component={ChooseComponentContextWrapper}
-            options={{ headerShown: false}}
-          />
-
-          <Stack.Screen
-            name="AccountSettingsView"
-            component={AccountSettingsContextWrapper}
-            options={{ headerShown: false}}
-          />
-
-          <Stack.Screen
-            name="AboutView"
-            component={AboutContextWrapper}
-            options={{ headerShown: false}}
-          />
-        </>
-      )
-    } else {
-      content = (
-        <>
-          <Stack.Screen
-            name="PreferenceView"
-            component={PreferenceContextWrapper}
-            options={{ headerShown: false }}
-          />
-        </>
-      )
+            <Stack.Screen
+              name="FilterPreferencesView"
+              component={FilterPreferencesContextWrapper}
+              options={{ headerShown: false}}
+            />
+  
+            <Stack.Screen
+              name="AboutView"
+              component={AboutContextWrapper}
+              options={{ headerShown: false}}
+            />
+          </>
+        )
+      } else {
+        content = (
+          <>
+            <Stack.Screen
+              name="PreferenceView"
+              component={PreferenceContextWrapper}
+              options={{ headerShown: false }}
+            />
+          </>
+        )
+      }
     }
 
     // Not logged in
@@ -427,6 +439,17 @@ const MatchingProfileContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
       <MatchingProfileView {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
+
+const FilterPreferencesContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <FilterPreferencesView {...user}
         navigation={navigation}
         route={route}
       />

@@ -54,7 +54,7 @@ export class LoginView extends Component {
                 {/* Title */}
                 <View style={styles.loginTitle}>
                     <Text style={styles.loginTitleText}>
-                        Login to Mentorme
+                        Login to Passionfruit
                     </Text>
                 </View>
 

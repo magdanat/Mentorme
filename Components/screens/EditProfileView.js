@@ -21,12 +21,13 @@ export class EditProfileView extends Component {
     }
 
     componentDidMount() {
+        console.log("editprofileview")
         console.log(this.props)
         this.getProfileCB()
     }
 
     componentDidUpdate() {
-        // console.log(this.state)
+
     }
 
     async getProfileCB() {
@@ -47,43 +48,45 @@ export class EditProfileView extends Component {
     render() {
         return (
             <View style={styles.container}>
-                {/* Header Content
-                Edit, Profile Name, Settings */}
-                <View>
-                    <View style={styles.titleContainer}>
-                        {/* Edit */}
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.goBack()}>
-                            <Image source={require('../../assets/images/path-2.png')} />
-                        </TouchableOpacity>
 
-                        {/* Name */}
+                {/* Header Content, Edit, Profile Name, Settings */}
+                <View style={styles.titleContainer}>
+                    {/* Edit */}
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.goBack()}>
+                        <Image source={require('../../assets/images/path-2.png')} />
+                    </TouchableOpacity>
+
+                    {/* Name */}
+                    <Text>
+                        Editing Profile
+                    </Text>
+
+                    {/* Settings */}
+                    <TouchableOpacity>
                         <Text>
-                            Editing Profile
+                            ⠀
                         </Text>
+                    </TouchableOpacity>
 
-                        {/* Settings */}
-                        <TouchableOpacity>
-                            <Text>
-                                ⠀
-                            </Text>
-                        </TouchableOpacity>
-
-                    </View>
                 </View>
 
                 {/* Info */}
-                <View>
+                <View style={styles.infoContainer}>
                     <ProfileContainer
                         navigation={this.props.navigation}
                         profile={this.state.profileAr} />
-                    <TouchableOpacity style={styles.addMoreButton}
-                        onPress={() => this.props.navigation.navigate('AddComponentView')}>
-                        <Text style={styles.addMoreButtonText}>
-                            Add More
-                        </Text>
-                    </TouchableOpacity>
                 </View>
+
+
+                {/* <View style={styles.addMoreButton}>
+                    <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate('AddComponentView')}>
+                            <Text style={styles.addMoreButtonText}>
+                                Add More
+                            </Text>
+                        </TouchableOpacity>
+                </View> */}
 
             </View>
         )
@@ -93,29 +96,100 @@ export class EditProfileView extends Component {
 export class ProfileContainer extends Component {
     constructor(props) {
         super(props)
+
+        var data
+
+        if (this.props.profile.length > 0) {
+            data = [
+                {
+                    title: this.props.profile[5][1].title,
+                    id: this.props.profile[5][1].key,
+                    description: this.props.profile[5][1].description
+                },
+                {
+                    title: this.props.profile[3][1].title,
+                    id: this.props.profile[3][1].key,
+                    description: this.props.profile[3][1].description
+                },
+                {
+                    title: this.props.profile[1][1].title,
+                    id: this.props.profile[1][1].key,
+                    description: this.props.profile[1][1].description
+                },
+                {
+                    title: this.props.profile[0][1].title,
+                    id: this.props.profile[0][1].key,
+                    description: this.props.profile[0][1].description
+                },
+                {
+                    title: this.props.profile[2][1].title,
+                    id: this.props.profile[2][1].key,
+                    description: this.props.profile[2][1].description
+                },
+            ]
+        }
+
+        this.state = {
+            profileData: []
+        }
     }
 
     componentDidMount() {
-        console.log("test")
-        console.log(this.props)
     }
 
     componentDidUpdate() {
+        console.log(this.state)
     }
 
     render() {
+
+        var content
+
+        if (this.props.profile.length > 0) {
+            content = (
+                <View>
+                    <FlatList
+                        data={[
+                            {
+                                title: this.props.profile[5][1].title,
+                                id: this.props.profile[5][1].key,
+                                description: this.props.profile[5][1].description
+                            },
+                            {
+                                title: this.props.profile[3][1].title,
+                                id: this.props.profile[3][1].key,
+                                description: this.props.profile[3][1].description
+                            },
+                            {
+                                title: this.props.profile[1][1].title,
+                                id: this.props.profile[1][1].key,
+                                description: this.props.profile[1][1].description
+                            },
+                            {
+                                title: this.props.profile[0][1].title,
+                                id: this.props.profile[0][1].key,
+                                description: this.props.profile[0][1].description
+                            },
+                            {
+                                title: this.props.profile[2][1].title,
+                                id: this.props.profile[2][1].key,
+                                description: this.props.profile[2][1].description
+                            },
+                        ]}
+                        renderItem={({ item }) =>
+                            <ProfileContainerInfoContainer
+                                title={item.title}
+                                id={item.id}
+                                navigation={this.props.navigation}
+                                description={item.description} />
+                        }
+                    />
+                </View>)
+        }
+
         return (
-            <View style={styles.infoContainer}>
-                <FlatList
-                    // data={Array.from(profileArray(this.props.profile[1]))}
-                    data={this.props.profile}
-                    renderItem={({ item }) =>
-                        <ProfileContainerInfoContainer
-                            title={item[0]}
-                            navigation={this.props.navigation}
-                            description={item[1]} />
-                    }
-                />
+            <View>
+                {content}
             </View>
         )
     }
@@ -140,7 +214,8 @@ export class ProfileContainerInfoContainer extends Component {
                 onPress={() => this.props.navigation.navigate('EditComponentView',
                     {
                         description: this.props.description,
-                        title: this.props.title
+                        title: this.props.title,
+                        id: this.props.id,
                     }
                 )}>
                 <View style={styles.specificInfoContainer}>
@@ -154,7 +229,7 @@ export class ProfileContainerInfoContainer extends Component {
 
                     {/* Description */}
                     <View>
-                        <Text>
+                        <Text style={styles.infoContainerDesc}>
                             {this.props.description}
 
                             {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
@@ -178,44 +253,8 @@ const styles = StyleSheet.create({
         justifyContent: "space-around",
         alignItems: "center"
     },
-    profileTitleContainer: {
-        flexDirection: "row",
-        alignSelf: "center",
-        alignItems: "center",
-        marginTop: 20,
-        marginLeft: 10,
-        marginRight: 10,
-        flexWrap: "wrap",
-    },
-    profileImageContainer: {
-        height: 100,
-        // borderColor: 'black',
-        // borderWidth: 1,
-        flex: 2,
-    },
-    profileTextContainer: {
-        marginLeft: 20,
-        flex: 4
-    },
-    profileRole: {
-        fontSize: 20,
-    },
-    profileBio: {
-        fontSize: 14,
-    },
-    linkedInButton: {
-        flex: 2,
-        borderColor: "black",
-        borderWidth: 0.5,
-        borderRadius: 10,
-        justifyContent: "center",
-        padding: 2.5,
-    },
-    linkedInContainer: {
-        alignItems: "center",
-        flexWrap: 'wrap',
-    },
     specificInfoContainer: {
+        minHeight: 150,
         borderColor: '#d3d3d3',
         borderWidth: 1,
         borderRadius: 20,
@@ -227,6 +266,7 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     infoContainer: {
+        flex: 1,
         marginLeft: 20,
         marginRight: 20,
         marginTop: 10,
@@ -234,15 +274,22 @@ const styles = StyleSheet.create({
     infoContainerTitle: {
         fontSize: 15,
         fontWeight: "bold",
+        color: "#767676"
+    },
+    infoContainerDesc: {
+        color: 'grey',
     },
     addMoreButton: {
+        height: 55,
+        flexDirection: "row",
+        justifyContent: "space-around",
         alignItems: "center",
-        justifyContent: "center",
         borderWidth: 1,
         borderRadius: 25,
         marginTop: 10,
         marginRight: 75,
         marginLeft: 75,
+        marginBottom: 10,
         padding: 12.5,
         borderColor: '#d3d3d3',
         backgroundColor: '#fbc015',

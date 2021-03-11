@@ -8,7 +8,7 @@ import { getUser } from './User.js';
 // and creates a new mentee profile for the user,
 // storing that information in the database
 // and returning status. 
-export async function createMentee(uid, fullName) {
+export async function createMentee(uid, fullName, email) {
     var newMenteeKey = database().ref().child('mentees').push().key;
 
     let user = await getUser(uid)
@@ -21,9 +21,38 @@ export async function createMentee(uid, fullName) {
         menteeID: newMenteeKey,
         fullName: user.fullName,
         info: {
-            Bio: "No biography",
-            Career: "No role",
+            bio: {
+                title: "Biography",
+                enabled: false,
+                key: "bio",
+            },
+            academics: {
+                title: "Academics",
+                enabled: false,
+                key: "academics",
+            },
+            research: {
+                title: "Research",
+                enabled: false,
+                key: "research",
+            },
+            career: {
+                title: "Career",
+                enabled: false,
+                key: "career",
+            },
+            projects: {
+                title: "Projects",
+                enabled: false,
+                key: "projects",
+            },
+            help: {
+                title: "What I can help with",
+                enabled: false,
+                key: "help",
+            },
         },
+        email: email,
         profileImageURL: null,
         academicInfo: null,
         researchInfo: null,

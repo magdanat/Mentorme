@@ -27,7 +27,7 @@ export class EditComponentView extends Component {
     }
 
     async editProfileInfoCB() {
-        editProfileInfo(this.props.route.params.title, this.state.currentDescription, this.props._user.uid)
+        editProfileInfo(this.props.route.params.id, this.state.currentDescription, this.props._user.uid)
     }
 
     render() {
@@ -57,12 +57,13 @@ export class EditComponentView extends Component {
                 </View>
 
                 <View style={styles.editContainer}>
-                    <Text style={styles.editContainerTitle}>
-                        Summary
-                    </Text>
+                    {/* <Text style={styles.editContainerTitle}>
+                        Description
+                    </Text> */}
                     <TextInput
                     style={styles.textInputContainer}
                         multiline
+                        placeholder="Write Description"
                         onChangeText={(e) => this.setCurrentDescription(e)}
                         value={this.state.currentDescription}
                     />

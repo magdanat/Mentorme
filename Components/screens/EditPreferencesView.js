@@ -17,7 +17,7 @@ import { createMentor } from '../models/Mentor.js'
 
 // Handles all different steps of the Preferences form.
 // Once
-export class PreferencesView extends Component {
+export class EditPreferencesView extends Component {
   constructor(props) {
     super(props);
 
