@@ -32,6 +32,7 @@ import { EditProfileView } from './Components/screens/EditProfileView';
 import { EditComponentView } from './Components/screens/EditComponentView';
 import { AddComponentView } from './Components/screens/AddComponentView';
 import { ChooseComponentView } from './Components/screens/ChooseComponentView';
+import { ImagePickerView } from './Components/screens/ImagePickerView';
 
 // Settings Components
 import { SettingsView } from './Components/screens/SettingsView';
@@ -174,6 +175,12 @@ const App = () => {
             <Stack.Screen
               name="AboutView"
               component={AboutContextWrapper}
+              options={{ headerShown: false}}
+            />
+
+            <Stack.Screen
+              name="ImagePickerView"
+              component={ImagePickerContextWrapper}
               options={{ headerShown: false}}
             />
           </>
@@ -334,6 +341,22 @@ const AccountSettingsContextWrapper = ({ navigation, route}) => (
     <PreferenceContext.Consumer>
       {(preference) => (
         <AccountSettingsView {...user}
+          navigation={navigation}
+          route={route}
+          preference={preference}
+        />
+      )}
+    </PreferenceContext.Consumer>
+  )}
+</UserContext.Consumer>
+)
+
+const ImagePickerContextWrapper = ({ navigation, route}) => (
+  <UserContext.Consumer>
+  {(user) => (
+    <PreferenceContext.Consumer>
+      {(preference) => (
+        <ImagePickerView {...user}
           navigation={navigation}
           route={route}
           preference={preference}

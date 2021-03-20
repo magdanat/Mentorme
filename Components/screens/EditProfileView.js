@@ -24,7 +24,20 @@ export class EditProfileView extends Component {
         console.log("editprofileview")
         console.log(this.props)
         this.getProfileCB()
+
+        this.subscription = this.props.navigation.addListener(
+            'focus',
+            () => {
+                this.getProfileCB();
+            }
+        )
     }
+
+    componentWillUnMount() {
+        this.subscription()
+    }
+
+
 
     componentDidUpdate() {
 
@@ -53,6 +66,7 @@ export class EditProfileView extends Component {
                 <View style={styles.titleContainer}>
                     {/* Edit */}
                     <TouchableOpacity
+                        // onPress={}
                         onPress={() => this.props.navigation.goBack()}>
                         <Image source={require('../../assets/images/path-2.png')} />
                     </TouchableOpacity>

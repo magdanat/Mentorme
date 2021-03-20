@@ -9,7 +9,7 @@ import auth from '@react-native-firebase/auth';
 import { getProfile, profileArray } from '../models/Profile.js';
 import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 import { EditAccountSettingsView } from './EditAccountSettingsView.js';
-import {launchImageLibrary} from 'react-native-image-picker';
+import { launchImageLibrary } from 'react-native-image-picker';
 
 
 // import SimpleImagePicker from '../controllers/imagePicker';
@@ -23,7 +23,7 @@ export class AccountSettingsView extends Component {
         this.handleChoosePhoto = this.handleChoosePhoto.bind(this)
 
         this.state = {
-            photo: null,
+            uri: null,
             profile: {
                 fullName: "",
                 info: "",
@@ -43,9 +43,6 @@ export class AccountSettingsView extends Component {
     }
 
     componentDidUpdate() {
-        console.log("AccountSettingsView")
-        console.log(this.props)
-        console.log(this.state)
     }
 
     handleChoosePhoto = () => {
@@ -55,7 +52,9 @@ export class AccountSettingsView extends Component {
         launchImageLibrary(options, response => {
             console.log("response", response);
             if (response.uri) {
-                this.setState({ photo: respose});
+                this.setState({ photo: response });
+            } else if (response.didCancel) {
+                console.log('User cancelled photo picker');
             }
         })
     }
@@ -72,10 +71,6 @@ export class AccountSettingsView extends Component {
     }
 
     editMode(id, title, description) {
-
-        console.log("testtest1231231")
-        console.log(title)
-
         this.setState((state) => {
             state.id = id
             state.title = title
@@ -98,24 +93,17 @@ export class AccountSettingsView extends Component {
 
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
-        console.log(cUser)
         let cUserType = getUserType(cUser)
-        console.log(cUserType)
         let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
         let profileAr = Array.from(profileArray(retrievedProfile))
-
-
-        console.log("Inside profileCB")
-        console.log(retrievedProfile)
-        console.log(profileAr)
-
         profileAr = Array.from(profileArray(profileAr[1][1]))
 
-        console.log(profileAr)
+        console.log(retrievedProfile)
 
         this.setState({
             profile: retrievedProfile,
-            profileAr: profileAr
+            profileAr: profileAr,
+            uri: retrievedProfile.uri
         })
     }
 
@@ -123,8 +111,6 @@ export class AccountSettingsView extends Component {
 
         let content = null
         const { modalVisible } = this.state
-
-
 
         if (this.state.edit) {
             content = (
@@ -163,8 +149,9 @@ export class AccountSettingsView extends Component {
                         <AccountInfo
                             handleChoosePhoto={this.handleChoosePhoto}
                             profile={this.state.profile}
-                            photo={this.state.photo}
                             editMode={this.editMode}
+                            navigation={this.props.navigation}
+                            uri={this.state.uri}
                         />
                     </View>
 
@@ -181,13 +168,13 @@ export class AccountSettingsView extends Component {
                         transparent={true}
                         animationType="fade"
                         visible={modalVisible}>
-                            <View style={styles.modalContainer}>
+                        <View style={styles.modalContainer}>
 
-                                <View style={styles.modalButtonContainer}>
-                                    <Text>
-                                        Log Out?
+                            <View style={styles.modalButtonContainer}>
+                                <Text>
+                                    Log Out?
                                     </Text>
-                                    <View style={styles.modalButtons}>
+                                <View style={styles.modalButtons}>
                                     <TouchableOpacity style={styles.yes}
                                         onPress={() => this.logOut()}>
                                         <Text>
@@ -200,9 +187,9 @@ export class AccountSettingsView extends Component {
                                             No
                                         </Text>
                                     </TouchableOpacity>
-                                    </View>
                                 </View>
                             </View>
+                        </View>
                     </Modal>
                 </>
             )
@@ -227,10 +214,6 @@ export class AccountInfo extends Component {
         console.log(this.props)
     }
 
-    componentDidUpdate() {
-        console.log("AccountInfo")
-        console.log(this.props)
-    }
 
     renderBioDescription() {
         console.log(this.props.profile)
@@ -248,21 +231,36 @@ export class AccountInfo extends Component {
     render() {
         let description = this.renderBioDescription()
         // const { photo } = this.props.photo
+        var image
+
+        if (this.props.uri) {
+            image = (
+                <Image
+                    style={styles.profilePicture}
+                    source={{ uri: this.props.uri }} />
+            )
+        } else {
+            image = (
+                <Image
+                    style={styles.profilePicture}
+                    source={require("../../assets/favicon.png")} />
+            )
+        }
+
 
         return (
             <View>
 
                 <View style={styles.pictureContainer}>
-                    <Image
-                            style={styles.profilePicture}
-                            source={require("../../assets/favicon.png")} />
-                <TouchableOpacity 
-                    onPress={this.props.handleChoosePhoto}
-                    style={styles.changePictureButton}>
-                    <Text style={styles.changePictureText}>
-                        Change Profile Picture
+                    {image}
+                    <TouchableOpacity
+                        // onPress={this.props.handleChoosePhoto}
+                        onPress={() => this.props.navigation.navigate('ImagePickerView')}
+                        style={styles.changePictureButton}>
+                        <Text style={styles.changePictureText}>
+                            Change Profile Picture
                     </Text>
-                </TouchableOpacity>
+                    </TouchableOpacity>
                 </View>
 
                 {/* <SimpleImagePicker /> */}
@@ -388,13 +386,7 @@ const styles = StyleSheet.create({
     },
     modalContainer: {
         flex: 1,
-        // width: "40%",
-        // marginLeft: "20%",
-        // marginRight: "20%",
-        // marginTop: 250,
-        // marginBottom: 250,
         backgroundColor: 'rgba(0,0,0,0.3)',
-        // flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
     },
@@ -402,7 +394,6 @@ const styles = StyleSheet.create({
         width: "60%",
         height: "20%",
         backgroundColor: "white",
-        // flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
         opacity: 1,

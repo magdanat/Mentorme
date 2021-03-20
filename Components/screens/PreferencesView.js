@@ -11,6 +11,7 @@ import database from '@react-native-firebase/database';
 // Models
 import { createMentee } from '../models/Mentee.js'
 import { createMentor } from '../models/Mentor.js'
+import { createPreference } from '../models/Preference.js';
 
 // Context
 // import { PreferenceContext } from '../../context.js';
@@ -23,6 +24,13 @@ export class PreferencesView extends Component {
 
     let interestMap = []
 
+    this.setValue = this.setValue.bind(this)
+    this.setStage = this.setStage.bind(this)
+    this.setStanding = this.setStanding.bind(this)
+    this.setRelationship = this.setRelationship.bind(this)
+    this.setDirection = this.setDirection.bind(this)
+
+
     this.state = {
 
       step: 1,
@@ -32,14 +40,20 @@ export class PreferencesView extends Component {
       mentee: false,
       notSure: false,
 
-      // step 2
-      legalName: "",
-      prefName: "",
+      // mentees
+      stage: 0,
+      classStanding: 0,
 
-      // step 3
-      interests: ""
+      // mentors
 
-      // step 4
+      // Relationship should have low priority 
+      relationship: 0, 
+
+      // both
+
+      // Direction should have the highest priority in the matching algorithm,
+      // currently 6 choices 
+      direction: 0
     }
   }
 
@@ -48,9 +62,53 @@ export class PreferencesView extends Component {
   componentDidMount() {
   }
 
+  setValue(event) {
+
+    console.log(event)
+
+    let field = event.target.name
+    let value = event.target.value
+
+    let changes = {}
+
+    changes[field] = value
+
+    console.log(changes)
+
+    this.setState(changes)
+
+  }
+
+  setStage(value) {
+    this.setState({
+      stage: value
+    })
+  }
+
+  setStanding(value) {
+    this.setState({
+      classStanding: value
+    })
+  }
+
+  setRelationship(value) {
+    this.setState({
+      relationship: value
+    })
+  }
+
+  setDirection(value) {
+    this.setState({
+      direction: value
+    })
+  }
+
   // Progresses to the next step, passed down
   // as a prop to Preference components
   nextStep = () => {
+
+    console.log(this.state)
+
     const { step } = this.state
     this.setState({
       step: step + 1
@@ -96,25 +154,32 @@ export class PreferencesView extends Component {
   }
 
   finish = () => {
-    console.log(this.state)
-    console.log('Writing to database...')
-    console.log(this.props)
     let uid = this.props._user.uid
     let fullName = "test"
+
+    let preferenceObject = {
+      stage: this.state.stage,
+      direction: this.state.direction,
+      classStanding: this.state.classStanding,
+      relationship: this.state.relationship, 
+    }
 
     // Mentee chosen
     if (this.state.mentee) {
       console.log("Creating mentee profile...")
       createMentee(uid, fullName, this.props._user.email)
-    
+      createPreference(uid, preferenceObject, "mentee")
+      
+
     // Mentor chosen
     } else if (this.state.mentor) {
       console.log("Creating mentor profile...")
       createMentor(uid, fullName, this.props._user.email)
+      createPreference(uid, preferenceObject, "mentor")
 
     // Error occurred, no role selected
     } else {
-      console.log("Error. No profile being created.")
+      throw new Error("Error. No profile being created.")
     }
 
     // Navigate to next stack screen
@@ -125,12 +190,11 @@ export class PreferencesView extends Component {
     this.props.preference.preference[1]()
 
     // Update user in database  
-
     console.log(this.props)
   }
 
   showStep = () => {
-    const { step, mentor, mentee, notSure, legalName, prefName, interests } = this.state
+    const { step, mentee} = this.state
 
     // Mentee/mentor selection
     if (step === 1) {
@@ -147,12 +211,15 @@ export class PreferencesView extends Component {
       if (step === 2) {
         return <PrefButtonElementsStage
           prevStep={this.prevStepMenteeMentor}
-          nextStep={this.nextStep} />
+          nextStep={this.nextStep} 
+          setStage={this.setStage}/>
+
         // What is your class standing...
       } else if (step === 3) {
         return <PrefButtonElementsStand
           prevStep={this.prevStep}
           nextStep={this.nextStep}
+          setStanding={this.setStanding}
         />
         // What direction in INFO are you in or interested in...
       } else if (step === 4) {
@@ -161,6 +228,7 @@ export class PreferencesView extends Component {
           nextStep={this.nextStep}
           finish={this.finish}
           navigation={this.props.navigation}
+          setDirection={this.setDirection}
           {...this.props}
         />
       }
@@ -171,13 +239,15 @@ export class PreferencesView extends Component {
       if (step === 2) {
         return <PrefButtonElementsRelationship
           prevStep={this.prevStepMenteeMentor}
-          nextStep={this.nextStep} />
+          nextStep={this.nextStep}
+          setRelationship={this.setRelationship} />
       } else if (step === 3) {
         return <PrefButtonElementsDirection
           {...this.props}
           prevStep={this.prevStep}
           nextStep={this.nextStep}
           finish={this.finish}
+          setDirection={this.setDirection}
           navigation={this.props.navigation}
         />
       }
@@ -294,13 +364,15 @@ class PrefButtonElementsStage extends Component {
               contentContainerStyle={{ alignItems: "center" }}
               numColumns={2}
               data={[
-                { key: 'Applying for INFO undergraduate major / minor', description: 'Undergraduate major or minor' },
-                { key: 'Exploring different areas in INFO and classes', description: 'Master of Science in Information Management' },
-                { key: 'Looking for internships / jobs / career advice', description: 'Doctorate in Information Science' },
-                { key: 'Other', description: 'Alumni of the iSchool' },
+                { key: 'Applying for INFO undergraduate major / minor', description: 'Undergraduate major or minor', value: 1 },
+                { key: 'Exploring different areas in INFO and classes', description: 'Master of Science in Information Management', value: 2 },
+                { key: 'Looking for internships / jobs / career advice', description: 'Doctorate in Information Science', value: 3 },
+                { key: 'Other', description: 'Alumni of the iSchool', value: 4 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity style={styles.prefViewButtonThree}>
+                <TouchableOpacity 
+                  style={styles.prefViewButtonThree}
+                  onPress={() => this.props.setStage(item.value)}>
                   <Text style={styles.prefViewButtonText}>
                     {item.key}
                   </Text>
@@ -360,13 +432,15 @@ class PrefButtonElementsStand extends Component {
               contentContainerStyle={{ alignItems: "center" }}
               numColumns={2}
               data={[
-                { key: 'First Year', description: 'Undergraduate major or minor' },
-                { key: 'Second Year', description: 'Master of Science in Information Management' },
-                { key: 'Third Year', description: 'Doctorate in Information Science' },
-                { key: 'Fourth Year or more', description: 'Alumni of the iSchool' },
+                { key: 'First Year', description: 'Undergraduate major or minor', value: 1 },
+                { key: 'Second Year', description: 'Master of Science in Information Management', value: 2 },
+                { key: 'Third Year', description: 'Doctorate in Information Science', value: 3 },
+                { key: 'Fourth Year or more', description: 'Alumni of the iSchool', value: 4 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity style={styles.prefViewButtonThree}>
+                <TouchableOpacity 
+                  style={styles.prefViewButtonThree}
+                  onPress={() => this.props.setStanding(item.value)}>
                   <Text style={styles.prefViewButtonText}>
                     {item.key}
                   </Text>
@@ -482,15 +556,17 @@ class PrefButtonElementsDirection extends Component {
               contentContainerStyle={{ alignItems: "center" }}
               numColumns={2}
               data={[
-                { key: 'User experience design' },
-                { key: 'User experience research' },
-                { key: 'Data Science' },
-                { key: 'Software Development' },
-                { key: 'Information Management' },
-                { key: 'Human-Computer Interaction' },
+                { key: 'User experience design', value: 1 },
+                { key: 'User experience research', value: 2 },
+                { key: 'Data Science', value: 3 },
+                { key: 'Software Development', value: 4 },
+                { key: 'Information Management', value: 5 },
+                { key: 'Human-Computer Interaction', value: 6 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity style={styles.prefViewButtonFour}>
+                <TouchableOpacity 
+                  onPress={() => this.props.setDirection(item.value)}
+                  style={styles.prefViewButtonFour}>
                   <Text style={styles.prefViewButtonText}>
                     {item.key}
                   </Text>
@@ -547,15 +623,17 @@ class PrefButtonElementsRelationship extends Component {
               contentContainerStyle={{ alignItems: "center" }}
               numColumns={2}
               data={[
-                { key: 'Informatics', description: "Undergraduate major or minor" },
-                { key: 'MLIS', description: "Master of Library and Information Science" },
-                { key: 'MSIM', description: "Master of Science in Information Management" },
-                { key: 'Ph.D', description: "Doctorate in Information Science" },
-                { key: 'Faculty', description: "Teach and assist teaching INFO classes" },
-                { key: 'Alumni', description: "Alumni of the iSchool" },
+                { key: 'Informatics', description: "Undergraduate major or minor", value: 1 },
+                { key: 'MLIS', description: "Master of Library and Information Science", value: 2 },
+                { key: 'MSIM', description: "Master of Science in Information Management", value: 3 },
+                { key: 'Ph.D', description: "Doctorate in Information Science", value: 4 },
+                { key: 'Faculty', description: "Teach and assist teaching INFO classes", value: 5 },
+                { key: 'Alumni', description: "Alumni of the iSchool", value: 6 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity style={styles.prefViewButtonFour}>
+                <TouchableOpacity 
+                  onPress={() => this.props.setRelationship(item.value)}
+                  style={styles.prefViewButtonFour}>
                   <Text style={styles.prefViewButtonText}>
                     {item.key}
                   </Text>

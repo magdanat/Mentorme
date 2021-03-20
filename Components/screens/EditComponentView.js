@@ -27,17 +27,25 @@ export class EditComponentView extends Component {
     }
 
     async editProfileInfoCB() {
-        editProfileInfo(this.props.route.params.id, this.state.currentDescription, this.props._user.uid)
+        editProfileInfo(this.props.route.params.id, this.state.currentDescription, this.props._user.uid).
+            then(() => {
+                this.props.navigation.goBack();
+        })
     }
 
     render() {
         return (
             <View style={styles.container}>
+
                 {/* Exit, title, save */}
                 <View style={styles.titleContainer}>
+
                     {/* Exit */}
                     <TouchableOpacity
-                        onPress={() => this.props.navigation.goBack()}>
+                        onPress={() => 
+                            this.props.navigation.goBack()
+                        }>
+
                         {/* <Image/> */}
                         <Image source={require('../../assets/images/path-2.png')} />
                     </TouchableOpacity>

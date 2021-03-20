@@ -39,6 +39,8 @@ export function profileArray(infoItem) {
     return infoMap;
 }
 
+// Accepts information being changed, the change being uploaded, and the id of the user
+// whose information is being updated
 export async function editProfileInfo(info, update, id) {
     let user = await getUser(id)
     let userType = getUserType(user)
@@ -49,6 +51,22 @@ export async function editProfileInfo(info, update, id) {
     database().ref().update(updates)
 }
 
+// Accepts two parameters
+// Input: Update represents the new URI for the picture being uploaded
+// id represents the user's specific id
+// Output: 
+export async function updateProfilePicture(update, id) {
+    let user = await getUser(id)
+    let userType = getUserType(user)
+    var updates = {}
+
+    updates['profiles/' + userType + '/' + id + '/uri'] = update
+
+    database().ref().update(updates)
+}
+
+
+
 export async function focusProfile() {
     useFocusEffect(
         React.useCallback(() => {
@@ -58,7 +76,6 @@ export async function focusProfile() {
             return () => unsubscribe();
         })
     )
-
     return null;
 }
 

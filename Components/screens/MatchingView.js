@@ -5,12 +5,12 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
-
-import database from '@react-native-firebase/database';
-
 // Controllers
-import { findMentees, findMentors } from '../controllers/matching.js'
-import { getUser, getOppositeUserType, getUserType} from '../models/User.js';
+import { findMentees, findMentors } from '../controllers/matching.js';
+import { search } from '../controllers/search.js';
+
+// Models
+import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 
 // Depending on user profile type, i.e mentor or mentee, display different
 // component or just search a different database
@@ -19,7 +19,8 @@ export class MatchingView extends Component {
         super(props)
 
         this.state = {
-            users: []
+            users: [],
+            displaySearch: false
         }
     }
 
@@ -48,7 +49,7 @@ export class MatchingView extends Component {
             this.setState({
                 users: mentorArray
             })
-        } else { 
+        } else {
             this.setState({
                 users: []
             })
@@ -64,7 +65,6 @@ export class MatchingView extends Component {
     render() {
         return (
             <View style={styles.container}>
-
                 {/* Top Header Content */}
                 <View style={styles.headerContainer}>
 
@@ -76,9 +76,9 @@ export class MatchingView extends Component {
 
 
                     <TouchableOpacity style={styles.filterButton}
-                     onPress={() =>this.props.navigation.navigate('FilterPreferencesView')}>
+                        onPress={() => this.props.navigation.navigate('FilterPreferencesView')}>
                         <Image
-                            source={require("../../assets/images/shape-34.png")}/>
+                            source={require("../../assets/images/shape-34.png")} />
                     </TouchableOpacity>
 
                 </View>
@@ -91,6 +91,7 @@ export class MatchingView extends Component {
                         mentors={this.state.users}
                     />
                 </View>
+
             </View>
         )
     }
@@ -116,15 +117,15 @@ class Bios extends Component {
                     }
                     renderItem={({ item }) =>
                         <BioContainer
-                            item={item[0]} 
+                            item={item[0]}
                             academics={item[1].info.academics.description}
                             career={item[1].info.career.description}
                             projects={item[1].info.projects.description}
                             research={item[1].info.research.description}
                             name={item[1].fullName}
-                            help={item[1].help}
+                            help={item[1].info.help.description}
                             navigation={this.props.navigation}
-                            />
+                        />
                     }
                 />
             </View>
@@ -145,15 +146,15 @@ class BioContainer extends Component {
     }
 
     loadProfile = (e) => {
-            e.preventDefault()
-            this.props.navigation.navigate('MatchingProfileView', {
-                userID: this.props.item,
-            })
+        e.preventDefault()
+        this.props.navigation.navigate('MatchingProfileView', {
+            userID: this.props.item,
+        })
     }
 
     render() {
         return (
-            <TouchableOpacity 
+            <TouchableOpacity
                 onPress={(e) => this.loadProfile(e)}
                 style={styles.profileContainer}>
                 {/* Image */}
@@ -169,32 +170,69 @@ class BioContainer extends Component {
                 </View>
 
                 {/* Button profile content */}
-                <View>
+                <View
+                    style={styles.buttonProfile}>
                     {/* Academics */}
-                    <Text style={styles.profileTextProfession}>
-                        {this.props.academics}
+
+                    <View>
+                        <Text
+                            style={styles.buttonTitle}>
+                            Academics
+                        </Text>
+                        <Text 
+                        style={styles.buttonProfileContent}
+                            numberOfLines={2}
+                            style={styles.profileTextProfession}>            
+                            {this.props.academics}
+                        </Text>
+                    </View>
+            
+                    <View>
+                        <Text 
+                            style={styles.buttonTitle}>
+                            Career
+                        </Text>
+                        <Text
+                        style={styles.buttonProfileContent}
+                            numberOfLines={2}>
+                            {this.props.career}
+                        </Text>
+                    </View>
+
+                    <View>
+                        <Text
+                            style={styles.buttonTitle}>
+                            Projects
+                        </Text>
+                        <Text
+                            style={styles.buttonProfileContent}
+                            numberOfLines={2}>
+                            {this.props.projects}
+                        </Text>
+                    </View>
+                
+                    <View>
+                    <Text style={styles.buttonTitle}>
+                        Research
                     </Text>
-
-                    <Text>
-                        Career:&nbsp;
-                        {this.props.career.substr(0,100)}...
-                    </Text>
-
-
-                    <Text>
-                        Projects:&nbsp;
-                        {this.props.projects.substr(0, 100)}...
-                    </Text>
-
-                    <Text>
-                        Research:&nbsp;
+                    <Text
+                    style={styles.buttonProfileContent}
+                    numberOfLines={2}>
                         {this.props.research}
                     </Text>
+                    </View>
 
-                    <Text>
+                    <View>
+                        <Text style={styles.buttonTitle}>
                         What I can Help With: &nbsp;
+                        </Text>
+                    <Text
+                    style={styles.buttonProfileContent}
+                    numberOfLines={2}>
+                        
                         {this.props.help}
                     </Text>
+                    </View>
 
                 </View>
 
@@ -210,13 +248,22 @@ const styles = StyleSheet.create({
         // position: 'absolute',
         flex: 9,
     },
+    buttonProfile: {
+        marginBottom: 10,
+    },
+    buttonProfileContent: {
+        marginBottom: 10,
+    },
+    buttonTitle: {
+        fontWeight: 'bold',
+    },
     container: {
         flex: 1,
         backgroundColor: '#fff',
         // alignItems: 'center',
         justifyContent: 'center',
     },
-    filterButton:{
+    filterButton: {
         justifyContent: 'center',
         alignContent: 'center',
         marginLeft: '5%',
@@ -231,7 +278,7 @@ const styles = StyleSheet.create({
         borderColor: "#d3d3d3",
         borderWidth: 1,
         borderRadius: 30,
-        height: 200,
+        // height: 500,
         // See if you can find fix to issue
         // where no need for margin to fix clinging to left side
         marginLeft: 10,

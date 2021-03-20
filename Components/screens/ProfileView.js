@@ -7,7 +7,7 @@ import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOp
 import { getProfile, profileArray } from '../models/Profile.js';
 import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 
-import { EditProfileView} from './EditProfileView.js';
+import { EditProfileView } from './EditProfileView.js';
 
 export class ProfileView extends Component {
     constructor(props) {
@@ -24,6 +24,7 @@ export class ProfileView extends Component {
             bio: "",
             profileAr: [],
             edit: false,
+            loading: true,
         }
     }
 
@@ -31,7 +32,21 @@ export class ProfileView extends Component {
         console.log("Loading props...")
         console.log(this.user)
         console.log(this.props)
+
+        // Get profile information
         this.getProfileCB()
+
+        this.subscription = this.props.navigation.addListener(
+            'focus',
+            () => {
+                this.getProfileCB();
+            }
+        )
+    }
+
+    componentWillUnmount() {
+        console.log("Unmounting this ish")
+        this.subscription()
     }
    
     componentDidUpdate() { 
@@ -39,12 +54,23 @@ export class ProfileView extends Component {
         console.log(this.state)
     }
 
+    refresh = (data) => {
+        console.log(data)
+    }
+
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
         let cUserType = getUserType(cUser)
         let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
+
+        console.log("....test")
+        console.log(retrievedProfile)
+
         let profileAr = Array.from(profileArray(retrievedProfile))
-        profileAr = Array.from(profileArray(profileAr[1][1]))
+
+        console.log(profileAr)
+
+        profileAr = Array.from(profileArray(profileAr[2][1]))
 
         console.log(profileAr)
 
@@ -52,11 +78,15 @@ export class ProfileView extends Component {
             profile: retrievedProfile,
             profileAr: profileAr,
             bio: profileAr[4][1].description,
-            userType: cUserType
+            userType: cUserType,
+            uri: retrievedProfile.uri,
+            loading: false
         })
     }
 
     editMode() {
+        console.log("Entering edit mode")
+
         this.setState((state) => {
             state.edit = true
             return state
@@ -74,6 +104,7 @@ export class ProfileView extends Component {
 
         var content
         var userTitle 
+        var image
 
 
             if (this.state.userType === "mentees") {
@@ -82,80 +113,88 @@ export class ProfileView extends Component {
                 userTitle = "Mentor"
             }
 
+            if (this.state.uri) {
+                image = (
+                    <Image
+                    style={styles.profileImageContainer}
+                        source={{ uri: this.state.uri }} />
+                )
+            } else {
+                image = (
+                    <Image
+                    style={styles.profileImageContainer}
+                        source={require("../../assets/favicon.png")} />
+                )
+            }
 
+                content = (
+                    <>
+                            {/* Header Content
+                    Edit, Profile Name, Settings */}
+                    <View>
+                        <View style={styles.titleContainer}>
+                            {/* Edit */}
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('EditProfileView')}>
 
-            content = (
-                <>
-                        {/* Header Content
-                Edit, Profile Name, Settings */}
-                <View>
-                    <View style={styles.titleContainer}>
-                        {/* Edit */}
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('EditProfileView')}>
-                            <Image source={require('../../assets/images/shape-51.png')} />
-                        </TouchableOpacity>
-
-                        {/* Name */}
-                        <Text>
-                            {userTitle}
-                        </Text>
-
-                        {/* Settings */}
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('SettingsView')}>
-                            <Image source={require('../../assets/images/shape-46.png')}
-                            />
-                        </TouchableOpacity>
-
-                    </View>
-                </View>
-
-                {/* Profile Picture + name and role */}
-                <View>
-                    <View style={styles.profileTitleContainer}>
-
-                        {/* Profile Picture */}
-                        <Image
-                            resizeMode={'contain'}
-                            style={styles.profileImageContainer}
-                            source={require('../../assets/images/oval-3.png')} />
-
-                        {/* Role  + Flavor Text */}
-                        <View style={styles.profileTextContainer}>
-                            <Text style={styles.profileRole}>
-                            {this.state.profile.fullName}
+                                <Image source={require('../../assets/images/shape-51.png')} />
+                            </TouchableOpacity>
+    
+                            {/* Name */}
+                            <Text>
+                                {userTitle}
                             </Text>
-                            <Text style={styles.profileBio}>
-                                    {this.state.bio}
-                            </Text>
+    
+                            {/* Settings */}
+                            <TouchableOpacity
+                                onPress={() => this.props.navigation.navigate('SettingsView')}>
+                                <Image source={require('../../assets/images/shape-46.png')}
+                                />
+                            </TouchableOpacity>
+    
                         </View>
-
-                        {/* Import Button
-                        <TouchableOpacity style={styles.linkedInButton}>
-                            <Text style={styles.linkedInContainer}>
-                                Import from LinkedIn
-                            </Text>
-                        </TouchableOpacity> */}
                     </View>
-                </View>
-
-                {/* Info */}
-                <View style={styles.listContainer}>
-                    <ProfileContainer
-                        profile={this.state.profileAr}/>
-                </View>
-                </>
-            )
+    
+                    {/* Profile Picture + name and role */}
+                    <View>
+                        <View style={styles.profileTitleContainer}>
+    
+                            {/* Profile Picture */}
+                            {image}
+    
+                            {/* Role  + Flavor Text */}
+                            <View style={styles.profileTextContainer}>
+                                <Text style={styles.profileRole}>
+                                {this.state.profile.fullName}
+                                </Text>
+                                <Text style={styles.profileBio}>
+                                        {this.state.bio}
+                                </Text>
+                            </View>
+    
+                            {/* Import Button
+                            <TouchableOpacity style={styles.linkedInButton}>
+                                <Text style={styles.linkedInContainer}>
+                                    Import from LinkedIn
+                                </Text>
+                            </TouchableOpacity> */}
+                        </View>
+                    </View>
+    
+                    {/* Info */}
+                    <View style={styles.listContainer}>
+                        <ProfileContainer
+                            editMode={this.editMode}
+                            edit={this.state.edit}
+                            profile={this.state.profileAr}/>
+                    </View>
+                    </>
+                )
+         
         return (
+            
             <View style={styles.container}>
-
-                {/* <FetchUserData
-                    userID={this.props.userID}
-                    onUpdate={this.handleUpdate}
-                /> */}
                 {content}
-
             </View>
         )
     }
@@ -169,55 +208,51 @@ export class ProfileContainer extends Component {
     componentDidMount() {
     }
 
-    componentDidUpdate() {
-        console.log("test123123")
-        console.log(this.props.profile)
-    }
-
     render() {
 
         var content 
 
         if (this.props.profile.length > 0) {
-            content = (
-                <View>
-                <FlatList
-                    data={[
-                        {
-                            title: this.props.profile[5][1].title,
-                            id: this.props.profile[5][1].key,
-                            description: this.props.profile[5][1].description
-                        },
-                        {
-                            title: this.props.profile[3][1].title,
-                            id: this.props.profile[3][1].key,
-                            description: this.props.profile[3][1].description
-                        },
-                        {
-                            title: this.props.profile[1][1].title,
-                            id: this.props.profile[1][1].key,
-                            description: this.props.profile[1][1].description
-                        },
-                        {
-                            title: this.props.profile[0][1].title,
-                            id: this.props.profile[0][1].key,
-                            description: this.props.profile[0][1].description
-                        },
-                        {
-                            title: this.props.profile[2][1].title,
-                            id: this.props.profile[2][1].key,
-                            description: this.props.profile[2][1].description
-                        },
-                    ]}
-                    renderItem={({ item }) =>
-                        <ProfileContainerInfoContainer
-                            title={item.title}
-                            id={item.id}
-                            navigation={this.props.navigation}
-                            description={item.description} />
-                    }
-                />
-            </View>)
+                content = (
+                    <View>
+                    <FlatList
+                        data={[
+                            {
+                                title: this.props.profile[5][1].title,
+                                id: this.props.profile[5][1].key,
+                                description: this.props.profile[5][1].description
+                            },
+                            {
+                                title: this.props.profile[3][1].title,
+                                id: this.props.profile[3][1].key,
+                                description: this.props.profile[3][1].description
+                            },
+                            {
+                                title: this.props.profile[1][1].title,
+                                id: this.props.profile[1][1].key,
+                                description: this.props.profile[1][1].description
+                            },
+                            {
+                                title: this.props.profile[0][1].title,
+                                id: this.props.profile[0][1].key,
+                                description: this.props.profile[0][1].description
+                            },
+                            {
+                                title: this.props.profile[2][1].title,
+                                id: this.props.profile[2][1].key,
+                                description: this.props.profile[2][1].description
+                            },
+                        ]}
+                        renderItem={({ item }) =>
+                            <ProfileContainerInfoContainer
+                                title={item.title}
+                                id={item.id}
+                                editMode={this.props.editMode}
+                                navigation={this.props.navigation}
+                                description={item.description} />
+                        }
+                    />
+                </View>)
         }
 
         return (

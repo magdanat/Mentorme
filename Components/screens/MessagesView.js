@@ -22,6 +22,13 @@ export class MessagesView extends Component {
     // load previous interaction exists
     componentDidMount() {
         this.chatExistsCB(this.props._user.uid, this.props.route.params.uid)
+
+        // this.subscription = this.props.navigation.addListener(
+        //     'focus',
+        //     () => {
+        //         this.chatExistsCB(this.props._user.uid, this.props.route.params.uid)
+        //     }
+        // )
     }
 
     componentDidUpdate() {
@@ -35,6 +42,8 @@ export class MessagesView extends Component {
             .ref('chats/' + this.state.chatKey + '/messages')
             .off()
         }
+
+        // this.subscription()
     }
 
     async chatExistsCB(id1, id2) {
@@ -63,7 +72,6 @@ export class MessagesView extends Component {
 
                         // Sort array based on message sent time
                         infoArray.sort((a, b) => (a.messageSentTime < b.messageSentTime) ? 1 : -1)
-
                                     // retrieve all messages and sort them by oldest to newest
                             this.setState({
                                 chatExists: true,

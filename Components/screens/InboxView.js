@@ -21,13 +21,21 @@ export class InboxView extends Component {
 	componentDidMount() {
 		console.log(this.props)
 		this.getChatsCB()
+		this.subscription = this.props.navigation.addListener(
+			'focus',
+			() => {
+				this.getChatsCB()
+			}
+		)
 	}
 
 	componentDidUpdate() {
 		console.log(this.state)
 	}
 
-
+	componentWillUnmount() {
+		this.subscription()
+	}
 
 	async getChatsCB() {
 		let chats = await getAllChats(this.props._user.uid)
