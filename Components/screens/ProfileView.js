@@ -127,70 +127,70 @@ export class ProfileView extends Component {
                 )
             }
 
-                content = (
-                    <>
-                            {/* Header Content
-                    Edit, Profile Name, Settings */}
-                    <View>
-                        <View style={styles.titleContainer}>
-                            {/* Edit */}
-                            <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('EditProfileView')}>
+            content = (
+                <>
+                        {/* Header Content
+                Edit, Profile Name, Settings */}
+                <View>
+                    <View style={styles.titleContainer}>
+                        {/* Edit */}
+                        <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate('EditProfileView')}>
 
-                                <Image source={require('../../assets/images/shape-51.png')} />
-                            </TouchableOpacity>
-    
-                            {/* Name */}
-                            <Text>
-                                {userTitle}
+                            <Image source={require('../../assets/images/shape-51.png')} />
+                        </TouchableOpacity>
+
+                        {/* Name */}
+                        <Text>
+                            {userTitle}
+                        </Text>
+
+                        {/* Settings */}
+                        <TouchableOpacity
+                            onPress={() => this.props.navigation.navigate('SettingsView')}>
+                            <Image source={require('../../assets/images/shape-46.png')}
+                            />
+                        </TouchableOpacity>
+
+                    </View>
+                </View>
+
+                {/* Profile Picture + name and role */}
+                <View>
+                    <View style={styles.profileTitleContainer}>
+
+                        {/* Profile Picture */}
+                        {image}
+
+                        {/* Role  + Flavor Text */}
+                        <View style={styles.profileTextContainer}>
+                            <Text style={styles.profileRole}>
+                            {this.state.profile.fullName}
                             </Text>
-    
-                            {/* Settings */}
-                            <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('SettingsView')}>
-                                <Image source={require('../../assets/images/shape-46.png')}
-                                />
-                            </TouchableOpacity>
-    
+                            <Text style={styles.profileBio}>
+                                    {this.state.bio}
+                            </Text>
                         </View>
+
+                        {/* Import Button
+                        <TouchableOpacity style={styles.linkedInButton}>
+                            <Text style={styles.linkedInContainer}>
+                                Import from LinkedIn
+                            </Text>
+                        </TouchableOpacity> */}
                     </View>
-    
-                    {/* Profile Picture + name and role */}
-                    <View>
-                        <View style={styles.profileTitleContainer}>
-    
-                            {/* Profile Picture */}
-                            {image}
-    
-                            {/* Role  + Flavor Text */}
-                            <View style={styles.profileTextContainer}>
-                                <Text style={styles.profileRole}>
-                                {this.state.profile.fullName}
-                                </Text>
-                                <Text style={styles.profileBio}>
-                                        {this.state.bio}
-                                </Text>
-                            </View>
-    
-                            {/* Import Button
-                            <TouchableOpacity style={styles.linkedInButton}>
-                                <Text style={styles.linkedInContainer}>
-                                    Import from LinkedIn
-                                </Text>
-                            </TouchableOpacity> */}
-                        </View>
-                    </View>
-    
-                    {/* Info */}
-                    <View style={styles.listContainer}>
-                        <ProfileContainer
-                            editMode={this.editMode}
-                            edit={this.state.edit}
-                            profile={this.state.profileAr}/>
-                    </View>
-                    </>
-                )
-         
+                </View>
+
+                {/* Info */}
+                <View style={styles.listContainer}>
+                    <ProfileContainer
+                        editMode={this.editMode}
+                        edit={this.state.edit}
+                        profile={this.state.profileAr}/>
+                </View>
+                </>
+            )
+        
         return (
             
             <View style={styles.container}>
