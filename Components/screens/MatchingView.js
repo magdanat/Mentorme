@@ -20,7 +20,8 @@ export class MatchingView extends Component {
 
         this.state = {
             users: [],
-            displaySearch: false
+            displaySearch: false,
+            loading: true,
         }
     }
 
@@ -29,6 +30,32 @@ export class MatchingView extends Component {
     }
 
     componentDidUpdate() {
+    }
+
+    setSearch(event) {
+        console.log(event)
+        this.setState((state) => {
+            state.searchInput = event
+            return state
+        })
+    }
+
+    async searchCB() {
+        console.log("Searching...")
+        // If there searchInput isn't valid, don't do anything
+        if (this.state.searchInput) {
+            console.log('Valid search')
+            let users = await search(this.state.searchInput, this.props._user.uid)
+            let userArray = Array.from(users)
+
+            console.log(userArray)
+
+            this.setState({
+                users: userArray
+            })
+        } else {
+            console.log('Invalid search')
+        }
     }
 
     // TODO: Put more of this functionality in the findUsers model function as opposed to here.
@@ -58,21 +85,28 @@ export class MatchingView extends Component {
 
     }
 
-    test() {
-        console.log("Test2222")
-    }
-
     render() {
         return (
             <View style={styles.container}>
+
                 {/* Top Header Content */}
                 <View style={styles.headerContainer}>
 
-
                     {/* Search Bar */}
-                    <TextInput
-                        placeholder="Search"
-                        style={styles.searchBar} />
+                    <View style={styles.searchBar}>
+                        <TextInput
+                            placeholder="Search"
+                            ref={input => { this.searchInput = input}}
+                            onChangeText={(e) => this.setSearch(e)}
+                            />
+                        <TouchableOpacity
+                            style={styles.searchIcon}
+                            onPress={() => this.searchCB()}
+                            >
+                            <Image
+                                source={require("../../assets/images/shape-62.png")} />
+                        </TouchableOpacity>
+                    </View>
 
 
                     <TouchableOpacity style={styles.filterButton}
@@ -179,21 +213,21 @@ class BioContainer extends Component {
                             style={styles.buttonTitle}>
                             Academics
                         </Text>
-                        <Text 
-                        style={styles.buttonProfileContent}
+                        <Text
+                            style={styles.buttonProfileContent}
                             numberOfLines={2}
-                            style={styles.profileTextProfession}>            
+                            style={styles.profileTextProfession}>
                             {this.props.academics}
                         </Text>
                     </View>
-            
+
                     <View>
-                        <Text 
+                        <Text
                             style={styles.buttonTitle}>
                             Career
                         </Text>
                         <Text
-                        style={styles.buttonProfileContent}
+                            style={styles.buttonProfileContent}
                             numberOfLines={2}>
                             {this.props.career}
                         </Text>
@@ -210,28 +244,28 @@ class BioContainer extends Component {
                             {this.props.projects}
                         </Text>
                     </View>
-                
+
                     <View>
-                    <Text style={styles.buttonTitle}>
-                        Research
+                        <Text style={styles.buttonTitle}>
+                            Research
                     </Text>
-                    <Text
-                    style={styles.buttonProfileContent}
-                    numberOfLines={2}>
-                        {this.props.research}
-                    </Text>
+                        <Text
+                            style={styles.buttonProfileContent}
+                            numberOfLines={2}>
+                            {this.props.research}
+                        </Text>
                     </View>
 
                     <View>
                         <Text style={styles.buttonTitle}>
-                        What I can Help With: &nbsp;
+                            What I can Help With: &nbsp;
                         </Text>
-                    <Text
-                    style={styles.buttonProfileContent}
-                    numberOfLines={2}>
-                        
-                        {this.props.help}
-                    </Text>
+                        <Text
+                            style={styles.buttonProfileContent}
+                            numberOfLines={2}>
+
+                            {this.props.help}
+                        </Text>
                     </View>
 
                 </View>
@@ -310,9 +344,9 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     searchBar: {
+        // flex: 1,
         width: '75%',
         marginLeft: 10,
-        // marginRight: 10,
         marginTop: 10,
         backgroundColor: 'white',
         borderColor: '#d3d3d3',
@@ -321,5 +355,10 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         paddingRight: 20,
         borderRadius: 30,
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    searchIcon: {
+        marginLeft: 'auto',
     }
 })

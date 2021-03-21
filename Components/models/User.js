@@ -21,6 +21,9 @@ export async function updateUserType(uid) {
 // Accepts a user object and checks the user's current profile type (mentee/mentor)
 // Returns the current active profile type for a user as a string value
 export function getOppositeUserType(user) {
+
+    console.log(user)
+
     if (user.currentProfile == "mentee") {
         return "mentors"
     } else if (user.currentProfile == "mentor") {
