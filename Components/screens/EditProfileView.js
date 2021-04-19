@@ -21,13 +21,14 @@ export class EditProfileView extends Component {
     }
 
     componentDidMount() {
-        console.log("editprofileview")
-        console.log(this.props)
-        this.getProfileCB()
+        // this.getProfileCB()
 
         this.subscription = this.props.navigation.addListener(
             'focus',
-            () => {
+            (e) => {
+                console.log(e)
+                console.log('Focusing editProfileView')
+                console.log(this.props)
                 this.getProfileCB();
             }
         )
@@ -37,10 +38,10 @@ export class EditProfileView extends Component {
         this.subscription()
     }
 
-
-
-    componentDidUpdate() {
-
+    goBackCB() {
+        this.props.navigation.goBack({
+            test: 'test'
+        })
     }
 
     async getProfileCB() {
@@ -66,8 +67,10 @@ export class EditProfileView extends Component {
                 <View style={styles.titleContainer}>
                     {/* Edit */}
                     <TouchableOpacity
-                        // onPress={}
-                        onPress={() => this.props.navigation.goBack()}>
+                        onPress={() => this.props.navigation.navigate('Profile', 
+                            {
+                                prevScreen: true
+                            })}>
                         <Image source={require('../../assets/images/path-2.png')} />
                     </TouchableOpacity>
 

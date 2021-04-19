@@ -6,17 +6,15 @@ import { getUser, getUserType } from './User.js';
 
 // Accepts a user's key ID and retrieves the associated
 // profile information with that key and returns it
-export async function getProfile(uid, userType) {
-    // NOTE: Hardcoded to be mentors atm, switch back to userType
-    // so that mentors will get mentees and mentees will get mentors appropriately
-
-    console.log('profiles/' + userType + '/' + uid)
+export async function getProfile(uid) {
+    let user =  await getUser(uid)
+    let userType = getUserType(user)
 
     let ref = database().ref('profiles/' + userType + '/' + uid)
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
 
-    console.log(snapshotItem)
+    // console.log(snapshotItem)
 
     return snapshotItem;
 }
@@ -25,11 +23,6 @@ export async function getProfile(uid, userType) {
 // array
 export function profileArray(infoItem) {
     let infoKeys = Object.keys(infoItem)
-
-    console.log("Inside profile array")
-    console.log(infoItem)
-    console.log(infoKeys)
-
     let infoMap = new Map()
 
     infoKeys.map((key) => {
@@ -65,7 +58,22 @@ export async function updateProfilePicture(update, id) {
     database().ref().update(updates)
 }
 
+// Accepts userid and returns profile picture associated with that user
+// from profiles 
+export async function getProfilePicture(id) {
+    let user = await getUser(id)
+    let userType = getUserType(user)
 
+    var updates = {}
+
+    let ref = database().ref('profiles/' + userType + '/' + id + '/uri')
+    let snapshot = await ref.once('value')
+    let snapshotItem = snapshot.val()
+
+    // console.log(snapshotItem)
+
+    return snapshotItem
+}
 
 export async function focusProfile() {
     useFocusEffect(

@@ -13,11 +13,11 @@ export async function createMentor(uid, fullName, email) {
     let user = await getUser(uid)
 
     var entryData = {
-        mentorID: newMentorKey
+        id: newMentorKey
     }
 
     var profileData = {
-        mentorID: newMentorKey,
+        id: newMentorKey,
         fullName: user.fullName,
         // change to 
         info: {
@@ -53,10 +53,7 @@ export async function createMentor(uid, fullName, email) {
             },
         },
         email: email,
-        profileImageURL: null,
-        academicInfo: null,
-        researchInfo: null,
-        careerInfo: null
+        uri: false,
     }
 
     var userUpdates = {

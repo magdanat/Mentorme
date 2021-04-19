@@ -12,3 +12,5 @@ export const UserContext = React.createContext({
 export const PreferenceContext = React.createContext({
     preference: false,
 })
+
+export const ProfileContext = React.createContext()

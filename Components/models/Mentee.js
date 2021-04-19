@@ -14,11 +14,11 @@ export async function createMentee(uid, fullName, email) {
     let user = await getUser(uid)
 
     var entryData = {
-        menteeID: newMenteeKey
+        id: newMenteeKey
     }
 
     var profileData = {
-        menteeID: newMenteeKey,
+        id: newMenteeKey,
         fullName: user.fullName,
         info: {
             bio: {
@@ -59,10 +59,7 @@ export async function createMentee(uid, fullName, email) {
             },
         },
         email: email,
-        profileImageURL: null,
-        academicInfo: null,
-        researchInfo: null,
-        careerInfo: null
+        uri: false,
     }
 
     var updates = {

@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View, TextInput, FlatList } from "react-native"
 
 import { getAllChats } from '../models/Chat.js';
+import { getProfilePicture } from '../models/Profile.js';
 
 
 // TODO: 
@@ -19,7 +20,6 @@ export class InboxView extends Component {
 	}
 
 	componentDidMount() {
-		console.log(this.props)
 		this.getChatsCB()
 		this.subscription = this.props.navigation.addListener(
 			'focus',
@@ -40,13 +40,14 @@ export class InboxView extends Component {
 	async getChatsCB() {
 		let chats = await getAllChats(this.props._user.uid)
 
-		console.log("test")
-
 		if (chats) {
 			this.setState({
 				chats: chats
 			})
 		} else {
+
+			console.log("No chats...")
+
 			this.setState({
 				chats: []
 			})
@@ -72,7 +73,8 @@ export class InboxView extends Component {
 					<View style={styles.messagesContainer}>
 						<Chats {...this.props}
 							navigation={this.props.navigation}
-							chats={this.state.chats}/>
+							chats={this.state.chats}
+							user={this.props._user}/>
 					</View>
 				</View>
 			</View>
@@ -89,11 +91,6 @@ class Chats extends Component {
 	}
 
 	componentDidMount() {
-		console.log(this.props)
-	}
-
-	componentDidUpdate() {
-		console.log(this.props)
 	}
 
 	render() {
@@ -102,11 +99,14 @@ class Chats extends Component {
 				<FlatList
 					data={this.props.chats}
 					renderItem={({ item }) => 
-						<ChatContainer	{...this.props}
+						<ChatContainer
+							profile={this.props.profile}
 							navigation={this.props.navigation}
 							chat={item}
+							user={this.props.user}
 							/>
 					}
+					keyExtractor={(item, index) => index.toString()}
 					/>
 			</View>
 		)
@@ -114,48 +114,99 @@ class Chats extends Component {
 }
 
 // Renders a single chat, containing the most recent message and the user who sent it
+// Currently only supports two-person chat
 class ChatContainer extends Component {
 	constructor(props) {
 		super(props)
-	}
 
-	componentDidMount() {
-		console.log("testcopnt")
-		console.log(this.props)
-
-		let uid = this.isMyID()
-
-		// receiver is the other user
-		if (uid) {
-			this.setState({
-				navigateID: this.props.chat.recentMessage.receiverID
-			})
-		// sender is the other user
-		} else {
-			this.setState({
-				navigateID: this.props.chat.recentMessage.senderID
-			})
+		this.state = {
+			uri: false,
 		}
 	}
 
+	componentDidMount() {
+		var navigateUID
+		var navigateID
+
+		let uid = this.isMyID()
+		let myProfile = this.isMyProfile()
+
+		// receiver is the other user
+		if (uid) {
+			navigateUID = this.props.chat.recentMessage.receiverUID
+			navigateID = this.props.chat.recentMessage.receiverID
+		// sender is the other user
+		} else {
+			navigateUID = this.props.chat.recentMessage.senderUID
+			navigateID = this.props.chat.recentMessage.senderID
+		}
+
+		this.updateChatCB(navigateUID, navigateID, myProfile)
+	}
+
+	async updateChatCB(uid, id, name) {
+		let uri = await getProfilePicture(uid)
+		this.setState({
+			name: name,
+			navigateUID: uid,
+			navigateID: id,
+			uri: uri
+		})
+	}
+
 	isMyID = () => {
-		return this.props.chat.recentMessage.senderID === this.props.uid
+		return this.props.chat.recentMessage.senderID === this.props.profile.id
+	}
+
+	isMyProfile = () => {
+		let keys = Object.keys(this.props.chat.members)
+		let key
+
+		// Result is first one
+		if (this.props.profile.id === keys[0]) {
+			key = keys[1]
+		} else {
+			key = keys[0]
+		}
+
+		let name = this.props.chat.members[key].fullName
+
+		return name
 	}
 
 	render() {
+
+		var profileImage
+
+		if (this.state.uri) {
+			profileImage = (
+				<Image
+				style={styles.chatProfilePicture}
+				source={{uri: this.state.uri}} />
+			)
+		} else {
+			profileImage = (
+				<Image
+				style={styles.chatProfilePicture}
+				source={require('../../assets/images/shape-17.png')} />
+			)
+		}
+
 		return (
 			<View>
 				<TouchableOpacity 
 					onPress={(e) => this.props.navigation.navigate("MessagesView",
-						{ uid : this.state.navigateID })}
+						{ uid : this.state.navigateUID,
+							id: this.state.navigateID,
+							myUID: this.props.user.uid,
+							name: this.state.name })}
 					style={styles.chatContainer}>
-				<Image 
-					style={styles.chatProfilePicture}
-					// Should render userProfile image as a prop
-					source={require('../../assets/images/shape-17.png')} />
+				
+				{profileImage}
+
 				<View style={styles.chatInfo}>
 					<Text>
-						Test
+						{this.state.name}
 					</Text>
 
 					{/* Should only show a maximum amount of the characters (prefereably words)... */}

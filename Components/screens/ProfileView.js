@@ -17,10 +17,7 @@ export class ProfileView extends Component {
         this.exitEditMode = this.exitEditMode.bind(this);
 
         this.state = {
-            profile: {
-                fullName: "",
-                info: "",
-            },
+            profile: this.props.profile,
             bio: "",
             profileAr: [],
             edit: false,
@@ -29,17 +26,21 @@ export class ProfileView extends Component {
     }
 
     componentDidMount() {
-        console.log("Loading props...")
-        console.log(this.user)
+
         console.log(this.props)
 
-        // Get profile information
-        this.getProfileCB()
+        console.log("Loading profile information...")
 
+        // Update profile contents if navigating from a previous screen
         this.subscription = this.props.navigation.addListener(
             'focus',
             () => {
-                this.getProfileCB();
+
+                console.log(this.props.route.params)
+                if (this.props.route.params && this.props.route.params.prevScreen) {
+                    console.log('Updating information')
+                    this.getProfileCB();
+                }
             }
         )
     }
@@ -61,7 +62,7 @@ export class ProfileView extends Component {
     async getProfileCB() {
         let cUser = await getUser(this.props._user.uid)
         let cUserType = getUserType(cUser)
-        let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
+        let retrievedProfile = await getProfile(this.props._user.uid)
 
         console.log("....test")
         console.log(retrievedProfile)
@@ -70,14 +71,14 @@ export class ProfileView extends Component {
 
         console.log(profileAr)
 
-        profileAr = Array.from(profileArray(profileAr[2][1]))
+        profileAr = Array.from(profileArray(profileAr[1][1]))
 
         console.log(profileAr)
 
         this.setState({
             profile: retrievedProfile,
             profileAr: profileAr,
-            bio: profileAr[4][1].description,
+            bio: retrievedProfile.info.bio.description,
             userType: cUserType,
             uri: retrievedProfile.uri,
             loading: false
@@ -113,11 +114,11 @@ export class ProfileView extends Component {
                 userTitle = "Mentor"
             }
 
-            if (this.state.uri) {
+            if (this.props.profile.uri) {
                 image = (
                     <Image
                     style={styles.profileImageContainer}
-                        source={{ uri: this.state.uri }} />
+                        source={{ uri: this.props.profile.uri }} />
                 )
             } else {
                 image = (
@@ -165,10 +166,10 @@ export class ProfileView extends Component {
                         {/* Role  + Flavor Text */}
                         <View style={styles.profileTextContainer}>
                             <Text style={styles.profileRole}>
-                            {this.state.profile.fullName}
+                            {this.props.profile.fullName}
                             </Text>
                             <Text style={styles.profileBio}>
-                                    {this.state.bio}
+                                    {this.props.profile.info.bio.description}
                             </Text>
                         </View>
 
@@ -186,7 +187,7 @@ export class ProfileView extends Component {
                     <ProfileContainer
                         editMode={this.editMode}
                         edit={this.state.edit}
-                        profile={this.state.profileAr}/>
+                        profile={this.state.profile}/>
                 </View>
                 </>
             )
@@ -206,41 +207,43 @@ export class ProfileContainer extends Component {
     }
 
     componentDidMount() {
+        console.log('ProfileContainer')
+        console.log(this.props)
     }
 
     render() {
 
         var content 
 
-        if (this.props.profile.length > 0) {
+        if (this.props.profile) {
                 content = (
                     <View>
                     <FlatList
                         data={[
                             {
-                                title: this.props.profile[5][1].title,
-                                id: this.props.profile[5][1].key,
-                                description: this.props.profile[5][1].description
+                                title: this.props.profile.info.academics.title,
+                                id: this.props.profile.info.academics.key,
+                                description: this.props.profile.info.academics.description
                             },
                             {
-                                title: this.props.profile[3][1].title,
-                                id: this.props.profile[3][1].key,
-                                description: this.props.profile[3][1].description
+                                title: this.props.profile.info.career.title,
+                                id: this.props.profile.info.career.key,
+                                description: this.props.profile.info.career.description
                             },
                             {
-                                title: this.props.profile[1][1].title,
-                                id: this.props.profile[1][1].key,
-                                description: this.props.profile[1][1].description
+                                title: this.props.profile.info.projects.title,
+                                id: this.props.profile.info.projects.key,
+                                description: this.props.profile.info.projects.description
                             },
                             {
-                                title: this.props.profile[0][1].title,
-                                id: this.props.profile[0][1].key,
-                                description: this.props.profile[0][1].description
+                                title: this.props.profile.info.research.title,
+                                id: this.props.profile.info.research.key,
+                                description: this.props.profile.info.research.description
                             },
                             {
-                                title: this.props.profile[2][1].title,
-                                id: this.props.profile[2][1].key,
-                                description: this.props.profile[2][1].description
+                                title: this.props.profile.info.help.title,
+                                id: this.props.profile.info.help.key,
+                                description: this.props.profile.info.help.description
                             },
                         ]}
                         renderItem={({ item }) =>
@@ -273,6 +276,7 @@ export class ProfileContainerInfoContainer extends Component {
     }
 
     componentDidMount() {
+        console.log('In ProfileContainerInfoContainer')
         console.log(this.props)
     }
 
@@ -320,9 +324,11 @@ const styles = StyleSheet.create({
     },
     profileImageContainer: {
         height: 100,
+        width: 100,
+        marginLeft: '5%',
         // borderColor: 'black',
         // borderWidth: 1,
-        flex: 2,
+        // flex: 2,
     },
     profileTextContainer: {
         marginLeft: 20,

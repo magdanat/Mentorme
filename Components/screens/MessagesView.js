@@ -21,6 +21,10 @@ export class MessagesView extends Component {
     // Check for previous chat information,
     // load previous interaction exists
     componentDidMount() {
+
+        console.log("MessagesView")
+        console.log(this.props)
+
         this.chatExistsCB(this.props._user.uid, this.props.route.params.uid)
 
         // this.subscription = this.props.navigation.addListener(
@@ -49,8 +53,12 @@ export class MessagesView extends Component {
     async chatExistsCB(id1, id2) {
         let chatKey = await chatExists(id1, id2)
 
+        console.log('Callback')
+
         // chat exists between users
-        if (chatKey) {
+        if (chatKey !== "false") {
+            console.log("Chat exists")
+
             // Set up listener
             database()
                 .ref('chats/' + chatKey + '/messages')
@@ -60,8 +68,6 @@ export class MessagesView extends Component {
                     var infoArray = []
 
                     if (messageObject) {
-
-
 
                         let messageKeys = Object.keys(messageObject)
 
@@ -79,11 +85,12 @@ export class MessagesView extends Component {
                                 messages: infoArray
                             })
                     } else {
-                        console.log("Error.")
+                        console.log("Error setting up chat.")
                     }
                 })
             // let user know that chat doesn't exist 
         } else {
+            console.log('Chat does not exist')
             this.setState({
                 chatExists: false
             })
@@ -96,7 +103,9 @@ export class MessagesView extends Component {
         if (this.state.chatExists) {
             console.log("Chat exists")
 
-            this.sendMessageCB(this.props._user.uid, this.state.currentInput, this.state.chatKey)
+            this.sendMessageCB(this.props.profile.id, this.state.currentInput, this.state.chatKey)
+
+
 
             // let messageArray = this.state.messages
 
@@ -106,7 +115,6 @@ export class MessagesView extends Component {
             // //     messageContent: this.state.currentInput,
             // //     chatID: this.state.chatKey,
             // // }
-
             // // messageArray.unshift(messageObject)
 
             // this.setState({
@@ -114,7 +122,7 @@ export class MessagesView extends Component {
             // })
 
         } else {
-            console.log("Chat does not exist")
+            console.log("Sending chat. Chat does not exist")
 
             // Creating chat
             let key = await createChat(this.props._user.uid, this.props.route.params.uid)
@@ -141,17 +149,26 @@ export class MessagesView extends Component {
                         // Sort array based on message sent time
                         infoArray.sort((a, b) => (a.messageSentTime < b.messageSentTime) ? 1 : -1)
 
+                        this.setState({
+                            chatExists: true,
+                            chatKey: key,
+                            messages: infoArray
+                        })
+
                         // return infoArray
                     } else {
                         console.log("Error.")
                     }
                 })
 
-            // console.log("Above test")
-            // console.log(test)
-
             // send message to chat
-            this.sendMessageCB(this.props._user.uid, this.state.currentInput, key)
+            // this.sendMessageCB(this.props._user.uid, this.state.currentInput, key)
+
+            this.sendMessageCB(this.props.profile.id, this.state.currentInput, key)
+
+            console.log("ID:" + this.props._user.uid)
+            console.log("Chat Key:" + key)
+
 
             let messageArray = this.state.messages
 
@@ -159,7 +176,7 @@ export class MessagesView extends Component {
                 chatID: this.state.chatKey,
                 messageContent: this.state.currentInput,
                 messageSentTime: Date.now(),
-                senderID: this.props._user.uid,
+                senderID: this.props.profile.uid,
                 // Get sender's name
                 senderName: "Test",
                 receiverName: this.props.route.params.name,
@@ -185,8 +202,8 @@ export class MessagesView extends Component {
     }
 
     // Send message callback for handling promises/async calls
-    sendMessageCB(uid, message, chat) {
-        sendMessage(uid, message, chat, this.props.route.params.uid)
+    sendMessageCB(id, message, chat) {
+        sendMessage(id, message, chat, this.props.route.params.id, this.props.route.params.myUID, this.props.route.params.uid)
     }
 
     render() {
@@ -220,6 +237,9 @@ export class MessagesView extends Component {
                 <View style={styles.messagesContainer}>
                     <MessageContainer
                         uid={this.props._user.uid}
+                        id={this.props.profile.id}
+                        otherUID={this.props.route.params.uid}
+                        otherID={this.props.route.params.id}
                         messages={this.state.messages}
                     />
                 </View>
@@ -271,6 +291,7 @@ class MessageContainer extends Component {
                     renderItem={({ item }) =>
                         <Message
                             uid={this.props.uid}
+                            id={this.props.id}
                             message={item} />
                     }
                 />
@@ -288,7 +309,7 @@ class Message extends Component {
     }
 
     isMyMessage = () => {
-        return this.props.message.senderID === this.props.uid
+        return this.props.message.senderID === this.props.id
     }
 
     render() {

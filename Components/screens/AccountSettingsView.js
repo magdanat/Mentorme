@@ -24,10 +24,7 @@ export class AccountSettingsView extends Component {
 
         this.state = {
             uri: null,
-            profile: {
-                fullName: "",
-                info: "",
-            },
+            profile: this.props.profile,
             modalVisible: false,
             currentTitle: "",
             profileAr: [],
@@ -38,8 +35,19 @@ export class AccountSettingsView extends Component {
 
     componentDidMount() {
         // retrieve current user information
+        console.log("AccountSettings")
         console.log(this.props)
-        this.getProfileCB()
+        // this.getProfileCB()
+
+        this.subscription = this.props.navigation.addListener(
+            'focus',
+            () => {
+                if (this.props.route.params && this.props.route.params.prevScreen) {
+                    this.getProfileCB();
+                }
+            }
+        )
+
     }
 
     componentDidUpdate() {
@@ -151,7 +159,7 @@ export class AccountSettingsView extends Component {
                             profile={this.state.profile}
                             editMode={this.editMode}
                             navigation={this.props.navigation}
-                            uri={this.state.uri}
+                            uri={this.props.profile.uri}
                         />
                     </View>
 
@@ -211,14 +219,14 @@ export class AccountInfo extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props)
+        // console.log(this.props)
     }
 
 
     renderBioDescription() {
-        console.log(this.props.profile)
+        // console.log(this.props.profile)
 
-        console.log("redneringbiodescription")
+        // console.log("redneringbiodescription")
         let description = "No description"
 
         if (this.props.profile.info) {
@@ -237,7 +245,7 @@ export class AccountInfo extends Component {
             image = (
                 <Image
                     style={styles.profilePicture}
-                    source={{ uri: this.props.uri }} />
+                    source={{ uri: this.props.profile.uri }} />
             )
         } else {
             image = (
@@ -270,8 +278,6 @@ export class AccountInfo extends Component {
                     data={[
                         { key: 'name', label: 'Name', description: this.props.profile.fullName },
                         { key: 'email', label: 'Email', description: this.props.profile.email },
-                        // { key: "phoneNumber", label: 'Phone Number' },
-                        // { key: "webSite", label: 'Website' },
                         { key: "bio", label: "Bio", description: description },
                     ]}
                     renderItem={({ item }) => <AccountInfoSection
@@ -292,8 +298,8 @@ export class AccountInfoSection extends Component {
     }
 
     componentDidUpdate() {
-        console.log("AccountInfoSection")
-        console.log(this.props.label)
+        // console.log("AccountInfoSection")
+        // console.log(this.props.label)
     }
 
     render() {

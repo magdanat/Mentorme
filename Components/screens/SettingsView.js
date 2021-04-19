@@ -26,7 +26,11 @@ export class SettingsView extends Component {
             <View style={styles.container}>
                     <View style={styles.titleContainer}>
                     <TouchableOpacity
-                            onPress={() => this.props.navigation.goBack()}>
+                            // onPress={() => this.props.navigation.goBack()}>
+                            onPress={() => this.props.navigation.navigate('Profile', 
+                                {
+                                    prevScreen: true
+                                })}>
                             <Image source={require('../../assets/images/path-2.png')} />
                         </TouchableOpacity>
                         {/* <TouchableOpacity

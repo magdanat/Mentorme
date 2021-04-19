@@ -18,7 +18,6 @@ import { PreferencesView } from './Components/screens/PreferencesView';
 import { HomeView } from './Components/screens/HomeView';
 import { LoginView } from './Components/screens/LoginView';
 
-
 // Logged-In Components
 import { MatchingView } from './Components/screens/MatchingView';
 import { ProfileView } from './Components/screens/ProfileView';
@@ -41,6 +40,7 @@ import { AboutView } from './Components/screens/AboutView';
 
 // Models
 import * as userModel from './Components/models/User.js';
+import * as Profile from './Components/models/Profile.js';
 
 import { block } from 'react-native-reanimated';
 import { isRequired } from 'react-native/Libraries/DeprecatedPropTypes/DeprecatedColorPropType';
@@ -48,7 +48,7 @@ import { isRequired } from 'react-native/Libraries/DeprecatedPropTypes/Deprecate
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-import { UserContext, PreferenceContext } from './context.js'
+import { UserContext, PreferenceContext, ProfileContext } from './context.js'
 
 
 // Recommended method
@@ -59,6 +59,7 @@ const App = () => {
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState();
   const [preference, setPreference] = useState(null);
+  const [profile, setProfile] = useState(null);
 
   // Handle user state changes
   function onAuthStateChanged(user) {
@@ -66,23 +67,27 @@ const App = () => {
 
     // if invalid user
     if (!user) {
+
       console.log("User is invalid or logged out")
       setPreference(false)
       if (initializing) setInitializing(false);
     } else {
+
       // Get preference settings
-      console.log("Getting preference settings")
-      getPreferenceCB(user)
+      getSettingsCB(user)
     }
   }
 
   // NOTE: Using getUserCB instead of setUser causes 
   // issues with navigating payload and promises
-  async function getPreferenceCB(user) {
+  async function getSettingsCB(user) {
     let userInfo = await userModel.getUser(user.uid)
-    console.log(user.uid)
+    let profileInfo = await Profile.getProfile(user.uid)
+
+
     if (userInfo) {
       setPreference(userInfo.preference)
+      setProfile(profileInfo)
     } else {
       setPreference(false)
     }
@@ -103,7 +108,7 @@ const App = () => {
   // logged in
   if (user) {
     // need thing for loading preference
-    if (preference != null) {
+    // if (preference != null) {
       if (preference) {
         content = (
           <>
@@ -196,7 +201,7 @@ const App = () => {
           </>
         )
       }
-    }
+    // }
 
     // Not logged in
   } else {
@@ -220,9 +225,11 @@ const App = () => {
     <NavigationContainer>
       <UserContext.Provider value={user}>
         <PreferenceContext.Provider value={{ preference: [preference, togglePreference] }}>
-          <Stack.Navigator>
-            {content}
-          </Stack.Navigator>
+          <ProfileContext.Provider value={profile}>
+            <Stack.Navigator>
+              {content}
+            </Stack.Navigator>
+          </ProfileContext.Provider>
         </PreferenceContext.Provider>
       </UserContext.Provider>
     </NavigationContainer>
@@ -261,14 +268,6 @@ function ConnectTabs() {
       <Tab.Screen name="Profile" component={ProfileContextWrapper} />
     </Tab.Navigator>
   );
-}
-
-const PreferenceProviderWrapper = props => {
-  return (
-    <PreferenceContext.Provider>
-
-    </PreferenceContext.Provider>
-  )
 }
 
 const AddComponentContextWrapper = ({ navigation, route}) => (
@@ -340,11 +339,16 @@ const AccountSettingsContextWrapper = ({ navigation, route}) => (
   {(user) => (
     <PreferenceContext.Consumer>
       {(preference) => (
-        <AccountSettingsView {...user}
-          navigation={navigation}
-          route={route}
-          preference={preference}
-        />
+        <ProfileContext.Consumer>
+          {(profile) => (
+             <AccountSettingsView {...user}
+             navigation={navigation}
+             route={route}
+             preference={preference}
+             profile={profile}
+           />
+          )}
+        </ProfileContext.Consumer>
       )}
     </PreferenceContext.Consumer>
   )}
@@ -388,11 +392,17 @@ const InboxContextWrapper = ({ navigation, route }) => (
     {(user) => (
       <PreferenceContext.Consumer>
         {(preference) => (
-          <InboxView {...user}
-            navigation={navigation}
-            route={route}
-            preference={preference}
-          />
+          <ProfileContext.Consumer>
+            {(profile) => (
+                          <InboxView {...user}
+                          navigation={navigation}
+                          route={route}
+                          preference={preference}
+                          profile={profile}
+                        />
+            )}
+          </ProfileContext.Consumer>
+
         )}
       </PreferenceContext.Consumer>
     )}
@@ -420,11 +430,16 @@ const MessagesContextWrapper = ({ navigation, route }) => (
     {(user) => (
       <PreferenceContext.Consumer>
         {preference => (
-          <MessagesView {...user}
-            navigation={navigation}
-            route={route}
-            preference={preference}
-          />
+          <ProfileContext.Consumer>
+            {(profile) => (
+              <MessagesView {...user}
+              navigation={navigation}
+              route={route}
+              preference={preference}
+              profile={profile}
+            />
+            )}
+          </ProfileContext.Consumer>
         )}
       </PreferenceContext.Consumer>
     )}
@@ -436,11 +451,16 @@ const MatchingContextWrapper = ({ navigation, route }) => (
     {(user) => (
       <PreferenceContext.Consumer>
         {preference => (
-          <MatchingView {...user}
-            navigation={navigation}
-            route={route}
-            preference={preference}
-          />
+          <ProfileContext.Consumer>
+            {(profile) => (
+                <MatchingView {...user}
+                navigation={navigation}
+                route={route}
+                preference={preference}
+                profile={profile}
+              />
+            )}
+          </ProfileContext.Consumer>
         )}
       </PreferenceContext.Consumer>
     )}
@@ -450,10 +470,15 @@ const MatchingContextWrapper = ({ navigation, route }) => (
 const ProfileContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
-      <ProfileView {...user}
-        navigation={navigation}
-        route={route}
-      />
+      <ProfileContext.Consumer>
+        {(profile) => (
+            <ProfileView {...user}
+            navigation={navigation}
+            route={route}
+            profile={profile}
+          />
+        )}
+      </ProfileContext.Consumer>
     )}
   </UserContext.Consumer>
 )
@@ -461,10 +486,15 @@ const ProfileContextWrapper = ({ navigation, route }) => (
 const MatchingProfileContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
-      <MatchingProfileView {...user}
-        navigation={navigation}
-        route={route}
-      />
+      <ProfileContext.Consumer>
+        {(profile) => (
+          <MatchingProfileView {...user}
+          navigation={navigation}
+          route={route}
+          profile={profile}
+        />
+        )}  
+      </ProfileContext.Consumer>
     )}
   </UserContext.Consumer>
 )

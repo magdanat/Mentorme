@@ -26,6 +26,7 @@ export class MatchingView extends Component {
     }
 
     componentDidMount() {
+        // console.log(this.props)
         this.findUsers()
     }
 
@@ -33,7 +34,6 @@ export class MatchingView extends Component {
     }
 
     setSearch(event) {
-        console.log(event)
         this.setState((state) => {
             state.searchInput = event
             return state
@@ -48,6 +48,7 @@ export class MatchingView extends Component {
             let users = await search(this.state.searchInput, this.props._user.uid)
             let userArray = Array.from(users)
 
+            console.log("UserArray: ")
             console.log(userArray)
 
             this.setState({
@@ -67,12 +68,18 @@ export class MatchingView extends Component {
         if (cUserType === "mentees") {
             let mentees = await findMentees()
             let menteesArray = Array.from(mentees)
+
+            
+
             this.setState({
                 users: menteesArray
             })
         } else if (cUserType === "mentors") {
             let mentors = await findMentors()
             let mentorArray = Array.from(mentors)
+
+            console.log(mentors)
+
             this.setState({
                 users: mentorArray
             })
@@ -96,6 +103,7 @@ export class MatchingView extends Component {
                     <View style={styles.searchBar}>
                         <TextInput
                             placeholder="Search"
+                            style={styles.searchBarInput}
                             ref={input => { this.searchInput = input}}
                             onChangeText={(e) => this.setSearch(e)}
                             />
@@ -138,9 +146,8 @@ class Bios extends Component {
     }
 
     componentDidMount() {
-    }
-
-    componentDidUpdate() {
+        // console.log('In bios...')
+        // console.log(this.props)
     }
 
     render() {
@@ -152,6 +159,8 @@ class Bios extends Component {
                     renderItem={({ item }) =>
                         <BioContainer
                             item={item[0]}
+                            id={item[1].id}
+                            uri={item[1].uri}
                             academics={item[1].info.academics.description}
                             career={item[1].info.career.description}
                             projects={item[1].info.projects.description}
@@ -161,6 +170,7 @@ class Bios extends Component {
                             navigation={this.props.navigation}
                         />
                     }
+                    keyExtractor={(item, index) => index.toString()}
                 />
             </View>
         )
@@ -174,6 +184,8 @@ class BioContainer extends Component {
     }
 
     componentDidMount() {
+        console.log('In bio container...')
+        console.log(this.props)
     }
 
     componentDidUpdate() {
@@ -183,19 +195,43 @@ class BioContainer extends Component {
         e.preventDefault()
         this.props.navigation.navigate('MatchingProfileView', {
             userID: this.props.item,
+            id: this.props.id,
+            academics: this.props.academics,
+            career: this.props.career,
+            projects: this.props.projects,
+            research: this.props.research,
+            name: this.props.name,
+            help: this.props.help,
+            uri: this.props.uri
         })
     }
 
     render() {
+
+        var image 
+
+        if (this.props.uri) {
+            image = (
+                <Image
+                style={styles.profilePicture}
+                    source={{ uri: this.props.uri }} />
+            )
+        } else {
+            image = (
+                <Image
+                style={styles.profilePicture}
+                    source={require("../../assets/favicon.png")} />
+            )
+        }
+
         return (
             <TouchableOpacity
                 onPress={(e) => this.loadProfile(e)}
                 style={styles.profileContainer}>
                 {/* Image */}
                 <View style={styles.pictureRole}>
-                    <Image
-                        style={styles.profilePicture}
-                        source={require("../../assets/favicon.png")} />
+                    
+                    {image}
 
                     {/* Name */}
                     <Text style={styles.profileTextName}>
@@ -357,6 +393,10 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    searchBarInput: {
+        // backgroundColor: 'red',
+        width: '100%',
     },
     searchIcon: {
         marginLeft: 'auto',

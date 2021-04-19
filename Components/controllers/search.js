@@ -16,9 +16,9 @@ the input
 // Input: Entry representing a string value and user type
 // Output: List of users
 export async function search(keywords, uid) {
-    // let user = await getUser(uid)
-    // let userType = getUserType(user)
-    // let oppositeUserType = getOppositeUserType(user)
+
+    keywords = keywords.toLowerCase()
+    keywords = keywords.replace(/\s/g, "")
 
     // Mentees
     let ref1 = database().ref('profiles/mentees')
@@ -26,69 +26,70 @@ export async function search(keywords, uid) {
     let snapshotItem1 = snapshot1.val()
     let snapshotKeys1 = Object.keys(snapshotItem1)
 
+    // Mentors
     let ref2 = database().ref('profiles/mentors')
     let snapshot2 = await ref2.once('value')
     let snapshotItem2 = snapshot2.val()
     let snapshotKeys2 = Object.keys(snapshotItem2)
 
-
-
     let snapshotMap = new Map()
 
     // Iterate through entire list of mentees
     snapshotKeys1.map((key) => {
-        let item = snapshotItem1[key]
-        let name = snapshotItem1[key].fullName
-        let info = snapshotItem1[key].info
 
-        let infoObject = Object.keys(info)
+        let name = snapshotItem1[key].fullName.toLowerCase()
+        let info = snapshotItem1[key].info
 
         // Check if name includes key words
         if (name.includes(keywords)) {
+            console.log("Name found!")
+
             snapshotMap.set((key), snapshotItem1[key])
 
             // If name doesn't include keywords, look through descriptions
         } else {
-
             // Iterate through profile descriptions
-            infoObject.map((key1) => {
-                // Check if description exists or is valid
-                if (item[key1]) {
-                    if (item[key1].includes(keywords)) {
+            for (const [key2, value] of Object.entries(info)) {
+
+                if (value && value.description) {
+                    var alteredValue = value.description.toLowerCase().replace(/\s/g, "")
+                    if (alteredValue.includes(keywords)) {
                         snapshotMap.set((key), snapshotItem1[key])
                     }
                 }
-            })
+
+            }
         }
     })
 
+    console.log(snapshotKeys2)
+
     // Iterate through entire list of mentors
     snapshotKeys2.map((key) => {
-        let item = snapshotItem2[key]
-        let name = snapshotItem2[key].fullName
+
+        let name = snapshotItem2[key].fullName.toLowerCase()
         let info = snapshotItem2[key].info
-
-        let infoObject = Object.keys(info)
-
         // Check if name includes key words
         if (name.includes(keywords)) {
             snapshotMap.set((key), snapshotItem2[key])
 
-            // If name doesn't include keywords, look through descriptions
+        // If name doesn't include keywords, look through descriptions
         } else {
-
             // Iterate through profile descriptions
-            infoObject.map((key1) => {
-                // Check if description exists or is valid
-                if (item[key1]) {
-                    if (item[key1].includes(keywords)) {
+            for (const [key2, value] of Object.entries(info)) {
+                if (value && value.description) {
+                    var alteredValue = value.description.toLowerCase().replace(/\s/g, "")
+                    if (alteredValue.includes(keywords)) {
                         snapshotMap.set((key), snapshotItem2[key])
                     }
                 }
-            })
+            }
         }
 
     })
+
+    console.log("Returning snapshotMap...")
+    console.log(snapshotMap)
 
     return snapshotMap
 }

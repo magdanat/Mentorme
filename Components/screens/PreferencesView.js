@@ -47,7 +47,7 @@ export class PreferencesView extends Component {
       // mentors
 
       // Relationship should have low priority 
-      relationship: 0, 
+      relationship: 0,
 
       // both
 
@@ -56,8 +56,6 @@ export class PreferencesView extends Component {
       direction: 0
     }
   }
-
- 
 
   componentDidMount() {
   }
@@ -161,87 +159,67 @@ export class PreferencesView extends Component {
       stage: this.state.stage,
       direction: this.state.direction,
       classStanding: this.state.classStanding,
-      relationship: this.state.relationship, 
+      relationship: this.state.relationship,
     }
 
-    // Mentee chosen
-    if (this.state.mentee) {
-      console.log("Creating mentee profile...")
-      createMentee(uid, fullName, this.props._user.email)
-      createPreference(uid, preferenceObject, "mentee")
-      
+    // // Mentee chosen
+    // if (this.state.mentee) {
+    //   console.log("Creating mentee profile...")
+    //   createMentee(uid, fullName, this.props._user.email)
+    //   createPreference(uid, preferenceObject, "mentee")
 
-    // Mentor chosen
-    } else if (this.state.mentor) {
-      console.log("Creating mentor profile...")
-      createMentor(uid, fullName, this.props._user.email)
-      createPreference(uid, preferenceObject, "mentor")
+    //   // Mentor chosen
+    // } else if (this.state.mentor) {
+    //   console.log("Creating mentor profile...")
+    //   createMentor(uid, fullName, this.props._user.email)
+    //   createPreference(uid, preferenceObject, "mentor")
 
-    // Error occurred, no role selected
-    } else {
-      throw new Error("Error. No profile being created.")
-    }
+    //   // Error occurred, no role selected
+    // } else {
+    //   throw new Error("Error. No profile being created.")
+    // }
 
     // Navigate to next stack screen
     console.log('Connecting!')
 
     // Update preference here...
     // Local update
-    this.props.preference.preference[1]()
+    // this.props.preference.preference[1]()
 
     // Update user in database  
     console.log(this.props)
   }
 
   showStep = () => {
-    const { step, mentee} = this.state
+    const { step, mentee } = this.state
 
-    // Mentee/mentor selection
-    if (step === 1) {
-      return <PrefButtonElements1
-        nextStep={this.nextStepOne}
-        updateMentee={this.updateMentee}
-        updateMentor={this.updateMentor}
-      />
-    }
+    // // Mentee/mentor selection
+    // if (step === 1) {
+    //   return <PrefButtonElements1
+    //     nextStep={this.nextStepOne}
+    //     updateMentee={this.updateMentee}
+    //     updateMentor={this.updateMentor}
+    //   />
+    // } 
 
-    // If mentee option is selected is chosen
-    if (mentee) {
-      // What stage are you at...
-      if (step === 2) {
+    switch(step) {
+      case 1:
+        return <PrefButtonElements1
+          nextStep={this.nextStepOne}
+          updateMentee={this.updateMentee}
+          updateMentor={this.updateMentor}
+        />
+      case 2:
         return <PrefButtonElementsStage
           prevStep={this.prevStepMenteeMentor}
-          nextStep={this.nextStep} 
-          setStage={this.setStage}/>
-
-        // What is your class standing...
-      } else if (step === 3) {
-        return <PrefButtonElementsStand
-          prevStep={this.prevStep}
           nextStep={this.nextStep}
-          setStanding={this.setStanding}
-        />
-        // What direction in INFO are you in or interested in...
-      } else if (step === 4) {
-        return <PrefButtonElementsDirection
-          prevStep={this.prevStepMenteeMentor}
-          nextStep={this.nextStep}
-          finish={this.finish}
-          navigation={this.props.navigation}
-          setDirection={this.setDirection}
-          {...this.props}
-        />
-      }
-
-      // If mentor option is selected
-    } else {
-      // What is your relationship to the iSchool?
-      if (step === 2) {
+          setStage={this.setStage} />
+      case 3:
         return <PrefButtonElementsRelationship
           prevStep={this.prevStepMenteeMentor}
           nextStep={this.nextStep}
           setRelationship={this.setRelationship} />
-      } else if (step === 3) {
+      case 4:
         return <PrefButtonElementsDirection
           {...this.props}
           prevStep={this.prevStep}
@@ -250,8 +228,58 @@ export class PreferencesView extends Component {
           setDirection={this.setDirection}
           navigation={this.props.navigation}
         />
-      }
     }
+
+
+
+
+    // // If mentee option is selected is chosen
+    // if (mentee) {
+    //   // What stage are you at...
+    //   if (step === 2) {
+    //     return <PrefButtonElementsStage
+    //       prevStep={this.prevStepMenteeMentor}
+    //       nextStep={this.nextStep}
+    //       setStage={this.setStage} />
+
+    //     // What is your class standing...
+    //   } else if (step === 3) {
+    //     return <PrefButtonElementsStand
+    //       prevStep={this.prevStep}
+    //       nextStep={this.nextStep}
+    //       setStanding={this.setStanding}
+    //     />
+    //     // What direction in INFO are you in or interested in...
+    //   } else if (step === 4) {
+    //     return <PrefButtonElementsDirection
+    //       prevStep={this.prevStepMenteeMentor}
+    //       nextStep={this.nextStep}
+    //       finish={this.finish}
+    //       navigation={this.props.navigation}
+    //       setDirection={this.setDirection}
+    //       {...this.props}
+    //     />
+    //   }
+
+    //   // If mentor option is selected
+    // } else {
+    //   // What is your relationship to the iSchool?
+    //   if (step === 2) {
+    //     return <PrefButtonElementsRelationship
+    //       prevStep={this.prevStepMenteeMentor}
+    //       nextStep={this.nextStep}
+    //       setRelationship={this.setRelationship} />
+    //   } else if (step === 3) {
+    //     return <PrefButtonElementsDirection
+    //       {...this.props}
+    //       prevStep={this.prevStep}
+    //       nextStep={this.nextStep}
+    //       finish={this.finish}
+    //       setDirection={this.setDirection}
+    //       navigation={this.props.navigation}
+    //     />
+    //   }
+    // }
   }
 
   render() {
@@ -370,7 +398,7 @@ class PrefButtonElementsStage extends Component {
                 { key: 'Other', description: 'Alumni of the iSchool', value: 4 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.prefViewButtonThree}
                   onPress={() => this.props.setStage(item.value)}>
                   <Text style={styles.prefViewButtonText}>
@@ -438,7 +466,7 @@ class PrefButtonElementsStand extends Component {
                 { key: 'Fourth Year or more', description: 'Alumni of the iSchool', value: 4 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={styles.prefViewButtonThree}
                   onPress={() => this.props.setStanding(item.value)}>
                   <Text style={styles.prefViewButtonText}>
@@ -564,7 +592,7 @@ class PrefButtonElementsDirection extends Component {
                 { key: 'Human-Computer Interaction', value: 6 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => this.props.setDirection(item.value)}
                   style={styles.prefViewButtonFour}>
                   <Text style={styles.prefViewButtonText}>
@@ -631,7 +659,7 @@ class PrefButtonElementsRelationship extends Component {
                 { key: 'Alumni', description: "Alumni of the iSchool", value: 6 },
               ]}
               renderItem={({ item }) =>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => this.props.setRelationship(item.value)}
                   style={styles.prefViewButtonFour}>
                   <Text style={styles.prefViewButtonText}>

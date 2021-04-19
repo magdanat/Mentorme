@@ -12,40 +12,30 @@ export class MatchingProfileView extends Component {
         super(props)
 
         this.state = {
-            profile: {
-                fullName: "",
-                info: "",
-            },
-            profileAr: [],
+            profile: this.props.route.params,
         }
     }
 
-    componentDidMount() {
-        console.log(this.props)
-        this.getProfileCB()
-    }
-
-    componentDidUpdate() {
-        console.log(this.props)
-    }
-
-    async getProfileCB() {
-        let cUser = await getUser(this.props._user.uid)
-
-        let cUserType = getOppositeUserType(cUser)
-
-        let retrievedProfile = await getProfile(this.props.route.params.userID, cUserType)
-        let profileAr = Array.from(profileArray(retrievedProfile))
-        profileAr = Array.from(profileArray(profileAr[1][1]))
-
-        this.setState({
-            bio: profileAr[4][1].description,
-            profile: retrievedProfile,
-            profileAr: profileAr
-        })
-    }
-
     render() {
+
+        var image
+
+        if (this.props.route.params.uri) {
+            image = (
+                <Image
+                resizeMode={'contain'}
+                style={styles.profileImageContainer} 
+                    source={{ uri: this.props.route.params.uri }} />
+            )
+        } else {
+            image = (
+                <Image
+                resizeMode={'contain'}
+                style={styles.profileImageContainer} 
+                    source={require("../../assets/favicon.png")} />
+            )
+        }
+
         return (
             <View style={styles.container}>
                 {/* Header Content
@@ -65,20 +55,18 @@ export class MatchingProfileView extends Component {
                 style={styles.profileTitleContainer}>
 
                     {/* Profile Picture */}
-                    <Image
-                        resizeMode={'contain'}
-                        style={styles.profileImageContainer} 
-                        source={require('../../assets/images/oval-3.png')}/>
+                    {image}
+
 
                     {/* Role  + Flavor Text */}
                     <View 
                         style={styles.profileTextContainer}
                         >
                         <Text style={styles.profileRole}>
-                            {this.state.profile.fullName}
+                            {this.props.route.params.name}
                         </Text>
                         <Text style={styles.profileBio}>
-                            {this.state.bio}
+                            {this.props.route.params.bio}
                         </Text>
                     </View>
                 </View>
@@ -88,7 +76,7 @@ export class MatchingProfileView extends Component {
                     style={styles.infoContainer}
                     >
                     <ProfileContainer
-                        profile={this.state.profileAr}/>
+                        profile={this.state.profile}/>
                 </View>
 
                 {/* Chat Button */}
@@ -99,10 +87,12 @@ export class MatchingProfileView extends Component {
                         onPress={(e) => this.props.navigation.navigate("MessagesView", 
                             { 
                                 uid : this.props.route.params.userID, 
-                                name: this.state.profile.fullName,
+                                id : this.props.route.params.id, 
+                                myUID: this.props._user.uid, 
+                                name: this.props.route.params.name,
                             })}>
                         <Text style={styles.chatButtonText}>
-                            Chat with {this.state.profile.fullName}
+                            Chat with {this.props.route.params.name}
                         </Text>
                     </TouchableOpacity>
                 </View>
@@ -120,44 +110,41 @@ export class ProfileContainer extends Component {
 
         var content
 
-        if (this.props.profile.length > 0) {
+        if (this.props.profile) {
             content = (
                 <View>
                 <FlatList
                     data={[
                         {
-                            title: this.props.profile[5][1].title,
-                            id: this.props.profile[5][1].key,
-                            description: this.props.profile[5][1].description
+                            title: "Academics",
+                            description: this.props.profile.academics,
                         },
                         {
-                            title: this.props.profile[3][1].title,
-                            id: this.props.profile[3][1].key,
-                            description: this.props.profile[3][1].description
+                            title: "Career",
+                            description: this.props.profile.career,
                         },
                         {
-                            title: this.props.profile[1][1].title,
-                            id: this.props.profile[1][1].key,
-                            description: this.props.profile[1][1].description
+                            title: "Projects",
+                            description: this.props.profile.projects,
                         },
                         {
-                            title: this.props.profile[0][1].title,
-                            id: this.props.profile[0][1].key,
-                            description: this.props.profile[0][1].description
+                            title: "Research",
+                            description: this.props.profile.research,
                         },
                         {
-                            title: this.props.profile[2][1].title,
-                            id: this.props.profile[2][1].key,
-                            description: this.props.profile[2][1].description
+                            title: "What I can Help With",
+                            description: this.props.profile.help,
                         },
                     ]}
                     renderItem={({ item }) =>
                         <ProfileContainerInfoContainer
                             title={item.title}
-                            id={item.id}
+                            // id={item.id}
                             navigation={this.props.navigation}
-                            description={item.description} />
+                            description={item.description} 
+                            />
                     }
+                    keyExtractor={(item, index) => index.toString()}
                 />
             </View>)
         }
@@ -178,10 +165,6 @@ export class ProfileContainer extends Component {
 export class ProfileContainerInfoContainer extends Component {
     constructor(props) {
         super(props);
-    }
-
-    componentDidMount() {
-        console.log(this.props)
     }
 
     render() {

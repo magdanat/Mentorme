@@ -99,13 +99,13 @@ export class FilterPreferencesView extends Component {
 
     // Mentee chosen
     if (this.state.mentee) {
-      console.log("Creating mentee profile...")
-      createMentee(uid, fullName, this.props._user.email)
+      // console.log("Creating mentee profile...")
+      // createMentee(uid, fullName, this.props._user.email)
     
     // Mentor chosen
     } else if (this.state.mentor) {
-      console.log("Creating mentor profile...")
-      createMentor(uid, fullName, this.props._user.email)
+      // console.log("Creating mentor profile...")
+      // createMentor(uid, fullName, this.props._user.email)
 
     // Error occurred, no role selected
     } else {
@@ -228,7 +228,7 @@ class PrefButtonElements1 extends Component {
   render() {
     return (
       <View>
-        {/* <View style={styles.prefViewContentContainer}>
+        <View style={styles.prefViewContentContainer}>
           <Text style={styles.prefViewTitle}>Would you like to be a Mentor or Mentee?</Text>
           <Text style={styles.prefViewText}>Choose your role, but you can always change later or be both roles in your personal profile.</Text>
 
@@ -259,10 +259,10 @@ class PrefButtonElements1 extends Component {
               Continue
                 </Text>
           </TouchableOpacity>
-        </View> */}
-        <Text>
+        </View>
+        {/* <Text>
             Test
-        </Text>
+        </Text> */}
       </View>
     )
   }
