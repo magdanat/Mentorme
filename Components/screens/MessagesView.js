@@ -26,13 +26,6 @@ export class MessagesView extends Component {
         console.log(this.props)
 
         this.chatExistsCB(this.props._user.uid, this.props.route.params.uid)
-
-        // this.subscription = this.props.navigation.addListener(
-        //     'focus',
-        //     () => {
-        //         this.chatExistsCB(this.props._user.uid, this.props.route.params.uid)
-        //     }
-        // )
     }
 
     componentDidUpdate() {
@@ -102,24 +95,8 @@ export class MessagesView extends Component {
 
         if (this.state.chatExists) {
             console.log("Chat exists")
-
-            this.sendMessageCB(this.props.profile.id, this.state.currentInput, this.state.chatKey)
-
-
-
-            // let messageArray = this.state.messages
-
-            // // let messageObject = {
-            // //     senderID: this.props._user.uid,
-            // //     messageSentTime: Date.now(),
-            // //     messageContent: this.state.currentInput,
-            // //     chatID: this.state.chatKey,
-            // // }
-            // // messageArray.unshift(messageObject)
-
-            // this.setState({
-            //     messages: messageArray
-            // })
+            // this.sendMessageCB(this.props.profile.id, this.state.currentInput, this.state.chatKey)
+            this.sendMessageCB(this.state.currentInput, this.state.chatKey)
 
         } else {
             console.log("Sending chat. Chat does not exist")
@@ -127,13 +104,19 @@ export class MessagesView extends Component {
             // Creating chat
             let key = await createChat(this.props._user.uid, this.props.route.params.uid)
 
-            // // Set up listener
+            console.log(key)
+
+            // Set up listener
             var infoArray = []
 
             database()
                 .ref('chats/' + key + '/messages')
                 .on('value', snapshot => {
                     const messageObject = snapshot.val()
+
+                    console.log(key)
+
+                    console.log(messageObject)
 
                     if (messageObject) {
 
@@ -162,9 +145,7 @@ export class MessagesView extends Component {
                 })
 
             // send message to chat
-            // this.sendMessageCB(this.props._user.uid, this.state.currentInput, key)
-
-            this.sendMessageCB(this.props.profile.id, this.state.currentInput, key)
+            this.sendMessageCB(this.state.currentInput, key)
 
             console.log("ID:" + this.props._user.uid)
             console.log("Chat Key:" + key)
@@ -202,8 +183,9 @@ export class MessagesView extends Component {
     }
 
     // Send message callback for handling promises/async calls
-    sendMessageCB(id, message, chat) {
-        sendMessage(id, message, chat, this.props.route.params.id, this.props.route.params.myUID, this.props.route.params.uid)
+    sendMessageCB(message, chat) {
+        // sendMessage(id, message, chat, this.props.route.params.id, this.props.route.params.myUID, this.props.route.params.uid)
+        sendMessage(message, chat, this.props.route.params.myUID, this.props.route.params.uid)
     }
 
     render() {
@@ -237,9 +219,7 @@ export class MessagesView extends Component {
                 <View style={styles.messagesContainer}>
                     <MessageContainer
                         uid={this.props._user.uid}
-                        id={this.props.profile.id}
                         otherUID={this.props.route.params.uid}
-                        otherID={this.props.route.params.id}
                         messages={this.state.messages}
                     />
                 </View>
@@ -291,9 +271,11 @@ class MessageContainer extends Component {
                     renderItem={({ item }) =>
                         <Message
                             uid={this.props.uid}
-                            id={this.props.id}
+                            otherUID={this.props.otherUID}
+                            // id={this.props.id}
                             message={item} />
                     }
+                    keyExtractor={(item, index) => index.toString()}
                 />
             </View>
         )
@@ -306,10 +288,11 @@ class Message extends Component {
     }   
 
     componentDidMount() {
+        console.log(this.props)
     }
 
     isMyMessage = () => {
-        return this.props.message.senderID === this.props.id
+        return this.props.message.senderUID === this.props.uid
     }
 
     render() {

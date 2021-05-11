@@ -13,24 +13,18 @@ import { getProfile } from './Profile.js';
 export async function createChat(uid1, uid2) {
     var newChatKey = database().ref().child('chats').push().key;
 
+    console.log(newChatKey)
+    console.log(uid1)
+    console.log(uid2)
+
     var updates = {}
 
-    // Retrieve users
-    let user1 = await getUser(uid1)
-    let user2 = await getUser(uid2)
+    // // Retrieve users
+    // let user1 = await getUser(uid1)
+    // let user2 = await getUser(uid2)
 
     let user1Profile = await getProfile(uid1)
     let user2Profile = await getProfile(uid2)
-
-    // Find user type
-    let user1Type = getUserType(user1)
-    let user2Type = getUserType(user2)
-
-    console.log(user1)
-    console.log(user2)
-
-    console.log(user1Profile)
-    console.log(user2Profile)
 
     let user1Object = {
         uri: user1Profile.uri,
@@ -46,11 +40,11 @@ export async function createChat(uid1, uid2) {
     updates['users/' + uid1 + '/chats/' + newChatKey] = true
     updates['users/' + uid2 + '/chats/' + newChatKey] = true
 
-    updates['chats/' + newChatKey + "/members/" + user1Profile.id] = user1Object
-    updates['chats/' + newChatKey + "/members/" + user2Profile.id] = user2Object
+    updates['chats/' + newChatKey + "/members/" + uid1] = user1Object
+    updates['chats/' + newChatKey + "/members/" + uid2] = user2Object
 
-    updates['profiles/' + user2Type + '/' + uid2 + '/chats/' + newChatKey] = true
-    updates['profiles/' + user1Type + '/' + uid1 + '/chats/' + newChatKey] = true
+    updates['profiles/' + uid2 + '/chats/' + newChatKey] = true
+    updates['profiles/' + uid1 + '/chats/' + newChatKey] = true
 
     database().ref().update(updates)
 
@@ -98,12 +92,13 @@ export async function chatExists(id1, id2) {
 // Accepts a user ID and retrieves all chat instances associated with that user
 // and returns it as a sorted array 
 export async function getAllChats(id) {
-    let user = await getUser(id)
-    let userType = getUserType(user)
     let profile = await getProfile(id)
     let chats = profile.chats
     let chatArray = []
 
+    console.log("Getting all chats...")
+    console.log(id)
+    console.log(chats)
 
     if (chats) {
     
@@ -117,18 +112,22 @@ export async function getAllChats(id) {
             let ref = database().ref('chats/' + key)
             let snapshot = await ref.once('value')
 
-            console.log(key)
+            // console.log(key)
 
 
 
             let snapshotItem = snapshot.val()
 
             if (snapshotItem) {
-                console.log(snapshotItem)
+                // console.log(snapshotItem)
                 chatArray.unshift(snapshotItem)
             }
 
         }
+
+        console.log("Chat Array:")
+        console.log(chatArray)
+
         return chatArray
     }
     

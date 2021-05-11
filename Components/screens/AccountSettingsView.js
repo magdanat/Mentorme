@@ -18,39 +18,36 @@ export class AccountSettingsView extends Component {
     constructor(props) {
         super(props);
 
-        this.editMode = this.editMode.bind(this);
-        this.exitEditMode = this.exitEditMode.bind(this);
         this.handleChoosePhoto = this.handleChoosePhoto.bind(this)
+
+        console.log(this.props.profile.profile[0])
 
         this.state = {
             uri: null,
-            profile: this.props.profile,
+            profile: this.props.profile.profile[0],
+            // For log out button
             modalVisible: false,
             currentTitle: "",
             profileAr: [],
             edit: false
         }
-
     }
 
     componentDidMount() {
         // retrieve current user information
-        console.log("AccountSettings")
-        console.log(this.props)
-        // this.getProfileCB()
-
         this.subscription = this.props.navigation.addListener(
             'focus',
             () => {
-                if (this.props.route.params && this.props.route.params.prevScreen) {
-                    this.getProfileCB();
-                }
+                // // if (this.props.route.params && this.props.route.params.prevScreen) {
+                // //     // this.getProfileCB();
+                // //     console.log("Image should change.")
+                // // }
+                // console.log(this.props.profile.profile[0].info.bio.description)
+                this.setState({
+                    profile: this.props.profile.profile[0]
+                })
             }
         )
-
-    }
-
-    componentDidUpdate() {
     }
 
     handleChoosePhoto = () => {
@@ -78,16 +75,6 @@ export class AccountSettingsView extends Component {
             .then(() => console.log('User signed out'))
     }
 
-    editMode(id, title, description) {
-        this.setState((state) => {
-            state.id = id
-            state.title = title
-            state.description = description
-            state.edit = true
-            return state
-        })
-    }
-
     exitEditMode() {
         this.setState((state) => {
             state.edit = false
@@ -99,111 +86,80 @@ export class AccountSettingsView extends Component {
         this.setState({ modalVisible: visible })
     }
 
-    async getProfileCB() {
-        let cUser = await getUser(this.props._user.uid)
-        let cUserType = getUserType(cUser)
-        let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
-        let profileAr = Array.from(profileArray(retrievedProfile))
-        profileAr = Array.from(profileArray(profileAr[1][1]))
-
-        console.log(retrievedProfile)
-
-        this.setState({
-            profile: retrievedProfile,
-            profileAr: profileAr,
-            uri: retrievedProfile.uri
-        })
-    }
-
     render() {
 
         let content = null
         const { modalVisible } = this.state
 
-        if (this.state.edit) {
-            content = (
-                <>
-                    <EditAccountSettingsView
-                        id={this.state.id}
-                        title={this.state.title}
-                        description={this.state.description}
-                        exitEditMode={this.exitEditMode}
-                        userID={this.props._user.uid}
-                    />
-                </>
-            )
-        } else {
-            content = (
-                <>
+        content = (
+            <>
 
-                    <View style={styles.titleContainer}>
-                        <TouchableOpacity
-                            onPress={() => this.props.navigation.goBack()}>
-                            <Image source={require('../../assets/images/path-2.png')} />
-                        </TouchableOpacity>
-                        <Text style={styles.titleText}>
-                            Account
+                <View style={styles.titleContainer}>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.goBack()}>
+                        <Image source={require('../../assets/images/path-2.png')} />
+                    </TouchableOpacity>
+                    <Text style={styles.titleText}>
+                        Account
                             </Text>
 
-                        {/* Take back to profile menu */}
-                        <TouchableOpacity>
-                            <Text>
-                                {/* Save */}
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.infoContainer}>
-                        <AccountInfo
-                            handleChoosePhoto={this.handleChoosePhoto}
-                            profile={this.state.profile}
-                            editMode={this.editMode}
-                            navigation={this.props.navigation}
-                            uri={this.props.profile.uri}
-                        />
-                    </View>
-
-                    <View style={styles.logOut}>
-                        <TouchableOpacity
-                            onPress={() => this.setModalVisible(true)}>
-                            <Text style={styles.logOutText}>
-                                Log Out
+                    {/* Take back to profile menu */}
+                    <TouchableOpacity>
+                        <Text>
+                            {/* Save */}
                         </Text>
-                        </TouchableOpacity>
-                    </View>
+                    </TouchableOpacity>
+                </View>
 
-                    <Modal
-                        transparent={true}
-                        animationType="fade"
-                        visible={modalVisible}>
-                        <View style={styles.modalContainer}>
+                <View style={styles.infoContainer}>
+                    <AccountInfo
+                        handleChoosePhoto={this.handleChoosePhoto}
+                        profile={this.state.profile}
+                        editMode={this.editMode}
+                        navigation={this.props.navigation}
+                        uri={this.props.profile.profile[0].uri}
+                        _user={this.props._user}
+                    />
+                </View>
 
-                            <View style={styles.modalButtonContainer}>
-                                <Text>
-                                    Log Out?
+                <View style={styles.logOut}>
+                    <TouchableOpacity
+                        onPress={() => this.setModalVisible(true)}>
+                        <Text style={styles.logOutText}>
+                            Log Out
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <Modal
+                    transparent={true}
+                    animationType="fade"
+                    visible={modalVisible}>
+                    <View style={styles.modalContainer}>
+
+                        <View style={styles.modalButtonContainer}>
+                            <Text>
+                                Log Out?
                                     </Text>
-                                <View style={styles.modalButtons}>
-                                    <TouchableOpacity style={styles.yes}
-                                        onPress={() => this.logOut()}>
-                                        <Text>
-                                            Yes
+                            <View style={styles.modalButtons}>
+                                <TouchableOpacity style={styles.yes}
+                                    onPress={() => this.logOut()}>
+                                    <Text>
+                                        Yes
                                         </Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.no}
-                                        onPress={() => this.setModalVisible(false)}>
-                                        <Text>
-                                            No
+                                </TouchableOpacity>
+                                <TouchableOpacity style={styles.no}
+                                    onPress={() => this.setModalVisible(false)}>
+                                    <Text>
+                                        No
                                         </Text>
-                                    </TouchableOpacity>
-                                </View>
+                                </TouchableOpacity>
                             </View>
                         </View>
-                    </Modal>
-                </>
-            )
-        }
-
-
+                    </View>
+                </Modal>
+            </>
+        )
 
         return (
             <View style={styles.container}>
@@ -219,14 +175,12 @@ export class AccountInfo extends Component {
     }
 
     componentDidMount() {
-        // console.log(this.props)
+        console.log('AccountInfo')
+        console.log(this.props)
     }
 
 
     renderBioDescription() {
-        // console.log(this.props.profile)
-
-        // console.log("redneringbiodescription")
         let description = "No description"
 
         if (this.props.profile.info) {
@@ -238,14 +192,14 @@ export class AccountInfo extends Component {
 
     render() {
         let description = this.renderBioDescription()
-        // const { photo } = this.props.photo
+
         var image
 
         if (this.props.uri) {
             image = (
                 <Image
                     style={styles.profilePicture}
-                    source={{ uri: this.props.profile.uri }} />
+                    source={{ uri: this.props.uri }} />
             )
         } else {
             image = (
@@ -272,8 +226,6 @@ export class AccountInfo extends Component {
                 </View>
 
                 {/* <SimpleImagePicker /> */}
-
-
                 <FlatList
                     data={[
                         { key: 'name', label: 'Name', description: this.props.profile.fullName },
@@ -284,7 +236,8 @@ export class AccountInfo extends Component {
                         id={item.key}
                         label={item.label}
                         description={item.description}
-                        editMode={this.props.editMode}
+                        navigation={this.props.navigation}
+                        // editMode={this.props.editMode}
                     />}
                 />
             </View>
@@ -310,7 +263,10 @@ export class AccountInfoSection extends Component {
                 </Text>
                 <TouchableOpacity
                     style={styles.descriptionTouchable}
-                    onPress={() => this.props.editMode(this.props.id, this.props.label, this.props.description)}>
+                    // onPress={() => this.props.editMode(this.props.id, this.props.label, this.props.description)}>
+                    onPress={() => this.props.navigation.navigate('EditAccountSettingsView', {
+                        id: this.props.id, label: this.props.label, description: this.props.description
+                    })}>
                     <Text style={styles.description}>
                         {this.props.description}
                     </Text>

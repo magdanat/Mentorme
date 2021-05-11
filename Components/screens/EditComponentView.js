@@ -11,25 +11,56 @@ export class EditComponentView extends Component {
         super(props)
         
         this.state = {
+            profile: this.props.profile.profile[0],
             currentDescription: this.props.route.params.description
         }
     }
 
     componentDidMount() {
+        console.log("Edit ComponentView")
         console.log(this.props)
+        console.log(this.state)
+    }
+
+    componentDidUpdate() {
+        console.log(this.state)
     }
 
     setCurrentDescription(e) {
+
+        let profile = this.state.profile
+        let currentParams = this.props.route.params.id
+        profile.info[currentParams].description = e
+
+        console.log(profile)
+
         this.setState((state) => {
+            state.profile = profile
             state.currentDescription = e
             return state
         })
     }
 
+    changeProfile(profile) {
+        console.log(this.props.profile.profile[1])
+        this.props.profile.profile[1](profile)
+        console.log(this.props)
+    }
+
+    // TODO: Set profile info to this one 
     async editProfileInfoCB() {
-        editProfileInfo(this.props.route.params.id, this.state.currentDescription, this.props._user.uid).
-            then(() => {
-                this.props.navigation.goBack();
+        // Store changes locally & then on database
+        this.changeProfile(this.state.profile)
+        
+        editProfileInfo(this.props.route.params.id, this.state.currentDescription, this.props._user.uid)
+        .then(() => {
+            this.props.navigation.navigate('EditProfileView', {
+                prevScreen: true
+            })
+        })
+        .catch
+        ((e) => {
+            console.log(e)
         })
     }
 

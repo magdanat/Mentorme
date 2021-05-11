@@ -11,27 +11,31 @@ export class EditProfileView extends Component {
     constructor(props) {
         super(props)
 
+
+        let profileAr = Array.from(profileArray(this.props.profile.profile[0]))
+        profileAr = Array.from(profileArray(profileAr[1][1]))
+
         this.state = {
-            profile: {
-                fullName: "",
-                info: "",
-            },
-            profileAr: [],
+            profile: profileAr,
+            profileAr: profileAr,
         }
     }
 
     componentDidMount() {
-        // this.getProfileCB()
-
+        // console.log(Array.from(this.props.profile.profile[0].info))
         this.subscription = this.props.navigation.addListener(
             'focus',
             (e) => {
-                console.log(e)
-                console.log('Focusing editProfileView')
-                console.log(this.props)
-                this.getProfileCB();
+                if (this.props.route.params && this.props.route.params.prevScreen) {
+                    this.getProfileCB();
+                }
             }
         )
+        // // console.log(this.props)
+    }
+
+    componentDidUpdate() {
+        console.log(this.state)
     }
 
     componentWillUnMount() {
@@ -45,18 +49,21 @@ export class EditProfileView extends Component {
     }
 
     async getProfileCB() {
-        let cUser = await getUser(this.props._user.uid)
-        let cUserType = getUserType(cUser)
+        let retrievedProfile = await getProfile(this.props._user.uid)
 
-        console.log(cUserType)
 
-        let retrievedProfile = await getProfile(this.props._user.uid, cUserType)
-        let profileAr = Array.from(profileArray(retrievedProfile))
-        profileAr = Array.from(profileArray(profileAr[1][1]))
-        this.setState({
-            profile: retrievedProfile,
-            profileAr: profileAr
-        })
+        let profileAr = Array.from(profileArray(this.props.profile.profile[0]))
+
+        console.log(profileAr)
+
+        // profileAr = Array.from(profileArray(profileAr[1][1]))
+
+        // console.log(profileAr)
+
+        // this.setState({
+        //     profile: retrievedProfile,
+        //     profileAr: profileAr
+        // })
     }
 
     render() {
@@ -94,17 +101,6 @@ export class EditProfileView extends Component {
                         navigation={this.props.navigation}
                         profile={this.state.profileAr} />
                 </View>
-
-
-                {/* <View style={styles.addMoreButton}>
-                    <TouchableOpacity
-                            onPress={() => this.props.navigation.navigate('AddComponentView')}>
-                            <Text style={styles.addMoreButtonText}>
-                                Add More
-                            </Text>
-                        </TouchableOpacity>
-                </View> */}
-
             </View>
         )
     }
@@ -222,7 +218,7 @@ export class ProfileContainerInfoContainer extends Component {
     }
 
     componentDidMount() {
-        console.log(this.props)
+        // console.log(this.props)
     }
 
     render() {

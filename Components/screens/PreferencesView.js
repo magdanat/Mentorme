@@ -12,6 +12,7 @@ import database from '@react-native-firebase/database';
 import { createMentee } from '../models/Mentee.js'
 import { createMentor } from '../models/Mentor.js'
 import { createPreference } from '../models/Preference.js';
+import { createProfile } from '../models/Profile.js';
 
 // Context
 // import { PreferenceContext } from '../../context.js';
@@ -29,31 +30,19 @@ export class PreferencesView extends Component {
     this.setStanding = this.setStanding.bind(this)
     this.setRelationship = this.setRelationship.bind(this)
     this.setDirection = this.setDirection.bind(this)
-
+    this.updateType = this.updateType.bind(this)
+    this.finish = this.finish.bind(this)
 
     this.state = {
-
       step: 1,
-
-      // step 1
-      mentor: false,
-      mentee: false,
-      notSure: false,
-
-      // mentees
+      userType: 0,
+      userTypeFulfilled: false,
       stage: 0,
-      classStanding: 0,
-
-      // mentors
-
-      // Relationship should have low priority 
+      stageFulfilled: false,
       relationship: 0,
-
-      // both
-
-      // Direction should have the highest priority in the matching algorithm,
-      // currently 6 choices 
-      direction: 0
+      relationshipFulfilled: false,
+      direction: 0,
+      directionFulfilled: false,
     }
   }
 
@@ -79,34 +68,34 @@ export class PreferencesView extends Component {
 
   setStage(value) {
     this.setState({
-      stage: value
+      stage: value,
+      stageFulfilled: true,
     })
   }
 
   setStanding(value) {
     this.setState({
-      classStanding: value
+      standing: value
     })
   }
 
   setRelationship(value) {
     this.setState({
-      relationship: value
+      relationship: value,
+      relationshipFulfilled: true,
     })
   }
 
   setDirection(value) {
     this.setState({
-      direction: value
+      direction: value,
+      directionFulfilled: true,
     })
   }
 
   // Progresses to the next step, passed down
   // as a prop to Preference components
   nextStep = () => {
-
-    console.log(this.state)
-
     const { step } = this.state
     this.setState({
       step: step + 1
@@ -137,81 +126,53 @@ export class PreferencesView extends Component {
     })
   }
 
-  updateMentee = () => {
-    const { mentee } = this.state
+  updateType(value) {
     this.setState({
-      mentee: true
+      userType: value,
+      userTypeFulfilled: true
     })
   }
 
-  updateMentor = () => {
-    const { mentor } = this.state
-    this.setState({
-      mentor: true
-    })
-  }
+  async finish() {
 
-  finish = () => {
-    let uid = this.props._user.uid
-    let fullName = "test"
+    console.log(this.state)
 
     let preferenceObject = {
       stage: this.state.stage,
       direction: this.state.direction,
-      classStanding: this.state.classStanding,
       relationship: this.state.relationship,
+      uid: this.props._user.uid,
+      userType: this.state.userType
     }
 
-    // // Mentee chosen
-    // if (this.state.mentee) {
-    //   console.log("Creating mentee profile...")
-    //   createMentee(uid, fullName, this.props._user.email)
-    //   createPreference(uid, preferenceObject, "mentee")
+    let profileObject = {
+      uid: this.props._user.uid,
+      email: this.props._user.email,
+      userType: this.state.userType,
+    }
 
-    //   // Mentor chosen
-    // } else if (this.state.mentor) {
-    //   console.log("Creating mentor profile...")
-    //   createMentor(uid, fullName, this.props._user.email)
-    //   createPreference(uid, preferenceObject, "mentor")
+    await createProfile(profileObject)
+    await createPreference(preferenceObject)
 
-    //   // Error occurred, no role selected
-    // } else {
-    //   throw new Error("Error. No profile being created.")
-    // }
+    // // Update preference here...
+    // // Local update
+    this.props.preference.preference[1]()
 
-    // Navigate to next stack screen
-    console.log('Connecting!')
-
-    // Update preference here...
-    // Local update
-    // this.props.preference.preference[1]()
-
-    // Update user in database  
-    console.log(this.props)
+    // // Update user in database  
+    // console.log(this.props)
   }
 
   showStep = () => {
-    const { step, mentee } = this.state
+    const { step } = this.state
 
-    // // Mentee/mentor selection
-    // if (step === 1) {
-    //   return <PrefButtonElements1
-    //     nextStep={this.nextStepOne}
-    //     updateMentee={this.updateMentee}
-    //     updateMentor={this.updateMentor}
-    //   />
-    // } 
-
-    switch(step) {
+    switch (step) {
       case 1:
         return <PrefButtonElements1
           nextStep={this.nextStepOne}
-          updateMentee={this.updateMentee}
-          updateMentor={this.updateMentor}
+          updateType={this.updateType}
         />
       case 2:
         return <PrefButtonElementsStage
-          prevStep={this.prevStepMenteeMentor}
           nextStep={this.nextStep}
           setStage={this.setStage} />
       case 3:
@@ -229,57 +190,6 @@ export class PreferencesView extends Component {
           navigation={this.props.navigation}
         />
     }
-
-
-
-
-    // // If mentee option is selected is chosen
-    // if (mentee) {
-    //   // What stage are you at...
-    //   if (step === 2) {
-    //     return <PrefButtonElementsStage
-    //       prevStep={this.prevStepMenteeMentor}
-    //       nextStep={this.nextStep}
-    //       setStage={this.setStage} />
-
-    //     // What is your class standing...
-    //   } else if (step === 3) {
-    //     return <PrefButtonElementsStand
-    //       prevStep={this.prevStep}
-    //       nextStep={this.nextStep}
-    //       setStanding={this.setStanding}
-    //     />
-    //     // What direction in INFO are you in or interested in...
-    //   } else if (step === 4) {
-    //     return <PrefButtonElementsDirection
-    //       prevStep={this.prevStepMenteeMentor}
-    //       nextStep={this.nextStep}
-    //       finish={this.finish}
-    //       navigation={this.props.navigation}
-    //       setDirection={this.setDirection}
-    //       {...this.props}
-    //     />
-    //   }
-
-    //   // If mentor option is selected
-    // } else {
-    //   // What is your relationship to the iSchool?
-    //   if (step === 2) {
-    //     return <PrefButtonElementsRelationship
-    //       prevStep={this.prevStepMenteeMentor}
-    //       nextStep={this.nextStep}
-    //       setRelationship={this.setRelationship} />
-    //   } else if (step === 3) {
-    //     return <PrefButtonElementsDirection
-    //       {...this.props}
-    //       prevStep={this.prevStep}
-    //       nextStep={this.nextStep}
-    //       finish={this.finish}
-    //       setDirection={this.setDirection}
-    //       navigation={this.props.navigation}
-    //     />
-    //   }
-    // }
   }
 
   render() {
@@ -291,9 +201,11 @@ export class PreferencesView extends Component {
   }
 }
 
-// Displays screen for selecting mentee or mentor role.
-// Selecting one of the options will highlight the option selected
-// and pressing the 'next icon' will move onto the next screen.
+/* 
+  Displays screen for selecting mentee or mentor role.
+  Selecting one of the options will highlight the option selected
+  and pressing the 'next icon' will move onto the next screen.
+*/
 class PrefButtonElements1 extends Component {
   constructor(props) {
     super(props)
@@ -306,18 +218,6 @@ class PrefButtonElements1 extends Component {
   next = e => {
     e.preventDefault()
     this.props.nextStep()
-  }
-
-  // Updates chosen role to mentee
-  updateMentee = e => {
-    e.preventDefault()
-    this.props.updateMentee()
-  }
-
-  // Updates chosen role to mentor
-  updateMentor = e => {
-    e.preventDefault()
-    this.props.updateMentor()
   }
 
   prev = e => {
@@ -334,27 +234,28 @@ class PrefButtonElements1 extends Component {
         <View style={styles.prefViewContentContainer}>
           <Text style={styles.prefViewTitle}>Would you like to be a Mentor or Mentee?</Text>
           <Text style={styles.prefViewText}>Choose your role, but you can always change later or be both roles in your personal profile.</Text>
-
-          <View style={styles.prefViewButtons}>
-            <TouchableOpacity
-              onPress={this.updateMentee}
-              style={styles.prefViewButton}>
-              <Text style={styles.prefViewButtonText}>
-                Mentee
-                </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={this.updateMentor}
-              style={styles.prefViewButton}>
-              <Text style={styles.prefViewButtonText}>
-                Mentor
-                </Text>
-            </TouchableOpacity>
+          <View style={{ flex: 1 }}>
+            <FlatList
+              contentContainerStyle={{ alignItems: "center" }}
+              numColumns={2}
+              data={[
+                { key: 'Mentee', value: 1 },
+                { key: 'Mentor', value: 2 },
+                { key: 'Unsure', value: 3 },
+                { key: 'None', value: 0 },
+              ]}
+              renderItem={({ item }) =>
+                <TouchableOpacity
+                  onPress={() => this.props.updateType(item.value)}
+                  style={styles.prefViewButton}>
+                  <Text style={styles.prefViewButtonText}>
+                    {item.key}
+                  </Text>
+                </TouchableOpacity>
+              }
+            />
           </View>
-
         </View>
-
-
         <View style={styles.arrows}>
           <TouchableOpacity
             onPress={this.next}>
@@ -429,130 +330,6 @@ class PrefButtonElementsStage extends Component {
   }
 }
 
-// Implement a scrollview for the buttons?
-class PrefButtonElementsStand extends Component {
-  // constructor(props) {
-  // }
-
-  back = e => {
-    e.preventDefault()
-    this.props.prevStep()
-  }
-
-  next = e => {
-    e.preventDefault()
-    this.props.nextStep()
-  }
-
-  render() {
-    return (
-      <View>
-        <View style={styles.prefViewContentContainer}>
-          <Text style={styles.prefViewTitle}>What is your class standing?</Text>
-
-          {/* <Text style={styles.prefViewText}>Select the fields that interests you. We will show you related information
-          about your interests later.
-            </Text> */}
-
-          {/* List of buttons */}
-          <View style={{ flex: 1 }}>
-            <FlatList
-              contentContainerStyle={{ alignItems: "center" }}
-              numColumns={2}
-              data={[
-                { key: 'First Year', description: 'Undergraduate major or minor', value: 1 },
-                { key: 'Second Year', description: 'Master of Science in Information Management', value: 2 },
-                { key: 'Third Year', description: 'Doctorate in Information Science', value: 3 },
-                { key: 'Fourth Year or more', description: 'Alumni of the iSchool', value: 4 },
-              ]}
-              renderItem={({ item }) =>
-                <TouchableOpacity
-                  style={styles.prefViewButtonThree}
-                  onPress={() => this.props.setStanding(item.value)}>
-                  <Text style={styles.prefViewButtonText}>
-                    {item.key}
-                  </Text>
-                </TouchableOpacity>
-              }
-            />
-          </View>
-        </View>
-
-        <View style={styles.arrows}>
-          <TouchableOpacity onPress={this.back}>
-            <Text style={styles.leftArrows}>
-              &#8592;
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={this.next}>
-            <Text style={styles.rightArrows}>
-              &#8594;
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    )
-  }
-}
-
-class PrefButtonElements4 extends Component {
-  constructor(props) {
-    super(props)
-  }
-
-
-  back = e => {
-    e.preventDefault()
-    this.props.prevStep()
-  }
-
-  render() {
-    return (
-      <View>
-        <View style={styles.prefViewContentContainer}>
-          <Text style={styles.prefViewTitle}>Which phrase resonates with you more?</Text>
-          <Text style={styles.prefViewText}>If you change your mind, this decision can be adjusted later.</Text>
-
-          <View style={{ flex: 1 }}>
-            <FlatList
-              contentContainerStyle={{ alignItems: "center" }}
-              numColumns={2}
-              data={[
-                { key: 'Applying into a program' },
-                { key: 'Navigating classes/majors/graduating on time' },
-                { key: 'Looking for a life coach' },
-                { key: "Landing an internship/job" },
-              ]}
-              renderItem={({ item }) =>
-                <TouchableOpacity style={styles.prefViewButtonFour}>
-                  <Text style={styles.prefViewButtonText}>
-                    {item.key}
-                  </Text>
-                </TouchableOpacity>
-              }
-            />
-          </View>
-
-          <View style={styles.arrows}>
-            <TouchableOpacity onPress={this.back}>
-              <Text style={styles.leftArrows}>
-                &#8592;
-            </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('Connect')}>
-              <Text style={styles.rightArrows}>
-                Finish
-            </Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </View>
-    )
-  }
-}
-
 class PrefButtonElementsDirection extends Component {
   constructor(props) {
     super(props)
@@ -567,10 +344,14 @@ class PrefButtonElementsDirection extends Component {
     this.props.prevStep()
   }
 
-  finish = e => {
-    e.preventDefault()
-    console.log("Testing finish")
-    this.props.finish()
+  async finish() {
+
+    await this.props.finish(this.props._user.uid, this.props._user.email)
+      .then(() => {
+        console.log("Finished finish")
+      }).catch((e) => {
+        console.log("Error:" + e)
+      })
   }
 
   render() {
@@ -612,7 +393,7 @@ class PrefButtonElementsDirection extends Component {
 
             {/* Call finish function */}
             <TouchableOpacity
-              onPress={(e) => this.finish(e)}>
+              onPress={() => this.finish()}>
               <Text style={styles.rightArrows}>
                 Finish
             </Text>
@@ -657,6 +438,8 @@ class PrefButtonElementsRelationship extends Component {
                 { key: 'Ph.D', description: "Doctorate in Information Science", value: 4 },
                 { key: 'Faculty', description: "Teach and assist teaching INFO classes", value: 5 },
                 { key: 'Alumni', description: "Alumni of the iSchool", value: 6 },
+                { key: 'Exploring', description: "Exploring", value: 7 },
+                { key: 'None', description: "None", value: 8 },
               ]}
               renderItem={({ item }) =>
                 <TouchableOpacity

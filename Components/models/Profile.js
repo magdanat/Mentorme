@@ -1,16 +1,79 @@
 import database from '@react-native-firebase/database';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { getUser, getUserType } from './User.js';
+import { getUser, getUserType, updateUserType, updateUser } from './User.js';
 
+
+// Accepts two parameters, uid
+export async function createProfile(profileObject) {
+    var newProfileKey = database().ref().push().key;
+
+    let user = await getUser(profileObject.uid)
+
+    // var entryData = {
+    //     id: newProfileKey
+    // }
+
+    var profileData = {
+        id: newProfileKey,
+        fullName: user.fullName,
+        info: {
+            bio: {
+                title: "Biography",
+                enabled: false,
+                key: "bio",
+                description: false,
+            },
+            academics: {
+                title: "Academics",
+                enabled: false,
+                key: "academics",
+                description: false,
+            },
+            research: {
+                title: "Research",
+                enabled: false,
+                key: "research",
+                description: false,
+            },
+            career: {
+                title: "Career",
+                enabled: false,
+                key: "career",
+                description: false,
+            },
+            projects: {
+                title: "Projects",
+                enabled: false,
+                key: "projects",
+                description: false
+            },
+            help: {
+                title: "What I can help with",
+                enabled: false,
+                key: "help",
+                description: false
+            },
+        },
+        email: profileObject.email,
+        uri: false,
+    }
+
+    var updates = {}
+
+    updates['profiles/' + profileObject.uid] = profileData
+    updates['users/' + profileObject.uid + '/currentProfile'] = profileObject.userType
+    updates['users/' + profileObject.uid + '/preference'] = true
+
+    return database().ref().update(updates)
+}
 
 // Accepts a user's key ID and retrieves the associated
 // profile information with that key and returns it
 export async function getProfile(uid) {
     let user =  await getUser(uid)
-    let userType = getUserType(user)
 
-    let ref = database().ref('profiles/' + userType + '/' + uid)
+    let ref = database().ref('profiles/' + uid)
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
 
@@ -35,12 +98,9 @@ export function profileArray(infoItem) {
 // Accepts information being changed, the change being uploaded, and the id of the user
 // whose information is being updated
 export async function editProfileInfo(info, update, id) {
-    let user = await getUser(id)
-    let userType = getUserType(user)
     var updates = {}
-
-    updates['profiles/' + userType + '/' + id + "/info/" + info + '/description'] = update
-
+    updates['profiles/' + id + "/info/" + info + '/description'] = update
+    updates['profiles/' + id + '/info/' + info + '/enabled'] = true
     database().ref().update(updates)
 }
 
@@ -49,28 +109,25 @@ export async function editProfileInfo(info, update, id) {
 // id represents the user's specific id
 // Output: 
 export async function updateProfilePicture(update, id) {
-    let user = await getUser(id)
-    let userType = getUserType(user)
     var updates = {}
 
-    updates['profiles/' + userType + '/' + id + '/uri'] = update
+    console.log(update)
 
-    database().ref().update(updates)
+    updates['profiles/' + id + '/uri'] = update
+
+    database().ref().update(updates).then(() => {
+        console.log("Successful update")
+    }).catch((e) => {
+        console.log(e)
+    })
 }
 
 // Accepts userid and returns profile picture associated with that user
 // from profiles 
 export async function getProfilePicture(id) {
-    let user = await getUser(id)
-    let userType = getUserType(user)
-
-    var updates = {}
-
-    let ref = database().ref('profiles/' + userType + '/' + id + '/uri')
+    let ref = database().ref('profiles/' + id + '/uri')
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
-
-    // console.log(snapshotItem)
 
     return snapshotItem
 }

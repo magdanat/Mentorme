@@ -125,6 +125,10 @@ class ChatContainer extends Component {
 	}
 
 	componentDidMount() {
+
+		console.log("In chat container")
+		console.log(this.props)
+
 		var navigateUID
 		var navigateID
 
@@ -144,8 +148,18 @@ class ChatContainer extends Component {
 		this.updateChatCB(navigateUID, navigateID, myProfile)
 	}
 
+	componentDidUpdate() {
+		console.log("Chat container111")
+		console.log(this.state)
+	}
+
 	async updateChatCB(uid, id, name) {
 		let uri = await getProfilePicture(uid)
+
+
+		console.log("this yo uri?")
+		console.log(uri)
+
 		this.setState({
 			name: name,
 			navigateUID: uid,
@@ -155,7 +169,7 @@ class ChatContainer extends Component {
 	}
 
 	isMyID = () => {
-		return this.props.chat.recentMessage.senderID === this.props.profile.id
+		return this.props.chat.recentMessage.senderUID === this.props.user.uid
 	}
 
 	isMyProfile = () => {
@@ -163,7 +177,7 @@ class ChatContainer extends Component {
 		let key
 
 		// Result is first one
-		if (this.props.profile.id === keys[0]) {
+		if (this.props.user.uid === keys[0]) {
 			key = keys[1]
 		} else {
 			key = keys[0]

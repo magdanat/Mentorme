@@ -29,6 +29,7 @@ import { FilterPreferencesView } from './Components/screens/FilterPreferencesVie
 // Edit Components
 import { EditProfileView } from './Components/screens/EditProfileView';
 import { EditComponentView } from './Components/screens/EditComponentView';
+import { EditAccountSettingsView } from './Components/screens/EditAccountSettingsView';
 import { AddComponentView } from './Components/screens/AddComponentView';
 import { ChooseComponentView } from './Components/screens/ChooseComponentView';
 import { ImagePickerView } from './Components/screens/ImagePickerView';
@@ -84,18 +85,24 @@ const App = () => {
     let userInfo = await userModel.getUser(user.uid)
     let profileInfo = await Profile.getProfile(user.uid)
 
-
     if (userInfo) {
       setPreference(userInfo.preference)
       setProfile(profileInfo)
     } else {
       setPreference(false)
     }
+
     if (initializing) setInitializing(false);
+
   }
 
   togglePreference = () => {
     setPreference(true)
+  }
+
+  function changeProfile(profile) {
+    console.log("Changing the profile boss!")
+    setProfile(profile)
   }
 
   useEffect(() => {
@@ -109,98 +116,104 @@ const App = () => {
   if (user) {
     // need thing for loading preference
     // if (preference != null) {
-      if (preference) {
-        content = (
-          <>
-            {/* Connect Tabs */}
-            <Stack.Screen
-              name="Connect"
-              component={ConnectContextWrapper}
-              options={{ headerShown: false }}
-            />
-  
-            <Stack.Screen
-              name="EditProfileView"
-              component={EditProfileContextWrapper}
-              options={{ headerShown: false }}
-            />
-  
-            <Stack.Screen
-              name="EditComponentView"
-              component={EditComponentContextWrapper}
-              options={{ headerShown: false }}
-            />
-  
-            {/* Settings View */}
-            <Stack.Screen
-              name="SettingsView"
-              component={SettingsContextWrapper}
-              options={{ headerShown: false }}
-            />
-  
-  
-            {/* MessagesView */}
-            <Stack.Screen
-              name="MessagesView"
-              component={MessagesContextWrapper}
-              options={{ headerShown: false }}
-            />
-  
-            {/* MatchingProfile */}
-            <Stack.Screen
-              name="MatchingProfileView"
-              component={MatchingProfileContextWrapper}
-              options={{ headerShown: false }}
-            />
-  
-            <Stack.Screen
-              name="AddComponentView"
-              component={AddComponentContextWrapper}
-              options={{ headerShown: false}}
-            />
-  
-            <Stack.Screen
-              name="ChooseComponentView"
-              component={ChooseComponentContextWrapper}
-              options={{ headerShown: false}}
-            />
-  
-            <Stack.Screen
-              name="AccountSettingsView"
-              component={AccountSettingsContextWrapper}
-              options={{ headerShown: false}}
-            />
+    if (preference) {
+      content = (
+        <>
+          {/* Connect Tabs */}
+          <Stack.Screen
+            name="Connect"
+            component={ConnectContextWrapper}
+            options={{ headerShown: false }}
+          />
 
-            <Stack.Screen
-              name="FilterPreferencesView"
-              component={FilterPreferencesContextWrapper}
-              options={{ headerShown: false}}
-            />
-  
-            <Stack.Screen
-              name="AboutView"
-              component={AboutContextWrapper}
-              options={{ headerShown: false}}
-            />
+          <Stack.Screen
+            name="EditProfileView"
+            component={EditProfileContextWrapper}
+            options={{ headerShown: false }}
+          />
 
-            <Stack.Screen
-              name="ImagePickerView"
-              component={ImagePickerContextWrapper}
-              options={{ headerShown: false}}
-            />
-          </>
-        )
-      } else {
-        content = (
-          <>
-            <Stack.Screen
-              name="PreferenceView"
-              component={PreferenceContextWrapper}
-              options={{ headerShown: false }}
-            />
-          </>
-        )
-      }
+          <Stack.Screen
+            name="EditComponentView"
+            component={EditComponentContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="EditAccountSettingsView"
+            component={EditAccountSettingsContextWrapper}
+            options={{ headerShown: false}}
+          />
+
+          {/* Settings View */}
+          <Stack.Screen
+            name="SettingsView"
+            component={SettingsContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+
+          {/* MessagesView */}
+          <Stack.Screen
+            name="MessagesView"
+            component={MessagesContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          {/* MatchingProfile */}
+          <Stack.Screen
+            name="MatchingProfileView"
+            component={MatchingProfileContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="AddComponentView"
+            component={AddComponentContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="ChooseComponentView"
+            component={ChooseComponentContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="AccountSettingsView"
+            component={AccountSettingsContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="FilterPreferencesView"
+            component={FilterPreferencesContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="AboutView"
+            component={AboutContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="ImagePickerView"
+            component={ImagePickerContextWrapper}
+            options={{ headerShown: false }}
+          />
+        </>
+      )
+    } else {
+      content = (
+        <>
+          <Stack.Screen
+            name="PreferenceView"
+            component={PreferenceContextWrapper}
+            options={{ headerShown: false }}
+          />
+        </>
+      )
+    }
     // }
 
     // Not logged in
@@ -225,8 +238,9 @@ const App = () => {
     <NavigationContainer>
       <UserContext.Provider value={user}>
         <PreferenceContext.Provider value={{ preference: [preference, togglePreference] }}>
-          <ProfileContext.Provider value={profile}>
-            <Stack.Navigator>
+          <ProfileContext.Provider value={{ profile: [profile, changeProfile] }}>
+            <Stack.Navigator
+              screenOptions={{animationEnabled: false}}>
               {content}
             </Stack.Navigator>
           </ProfileContext.Provider>
@@ -270,36 +284,58 @@ function ConnectTabs() {
   );
 }
 
-const AddComponentContextWrapper = ({ navigation, route}) => (
+const AddComponentContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
-  {(user) => (
-    <PreferenceContext.Consumer>
-      {(preference) => (
-        <AddComponentView {...user}
-          navigation={navigation}
-          route={route}
-          preference={preference}
-        />
-      )}
-    </PreferenceContext.Consumer>
-  )}
-</UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <AddComponentView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
 )
 
-const ChooseComponentContextWrapper = ({ navigation, route}) => (
+const ChooseComponentContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
-  {(user) => (
-    <PreferenceContext.Consumer>
-      {(preference) => (
-        <ChooseComponentView {...user}
-          navigation={navigation}
-          route={route}
-          preference={preference}
-        />
-      )}
-    </PreferenceContext.Consumer>
-  )}
-</UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <ChooseComponentView {...user}
+            navigation={navigation}
+            route={route}
+            preference={preference}
+          />
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
+const EditAccountSettingsContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <ProfileContext.Consumer>
+            {(profile) => (
+              <EditAccountSettingsView
+                {...user}
+                navigation={navigation}
+                route={route}
+                preference={preference}
+                profile={profile}
+              />
+            )}
+          </ProfileContext.Consumer>
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
 )
 
 const EditProfileContextWrapper = ({ navigation, route }) => (
@@ -307,11 +343,16 @@ const EditProfileContextWrapper = ({ navigation, route }) => (
     {(user) => (
       <PreferenceContext.Consumer>
         {(preference) => (
-          <EditProfileView {...user}
-            navigation={navigation}
-            route={route}
-            preference={preference}
-          />
+          <ProfileContext.Consumer>
+            {(profile) => (
+              <EditProfileView {...user}
+                navigation={navigation}
+                route={route}
+                preference={preference}
+                profile={profile}
+              />
+            )}
+          </ProfileContext.Consumer>
         )}
       </PreferenceContext.Consumer>
     )}
@@ -323,7 +364,71 @@ const EditComponentContextWrapper = ({ navigation, route }) => (
     {(user) => (
       <PreferenceContext.Consumer>
         {(preference) => (
-          <EditComponentView {...user}
+          <ProfileContext.Consumer>
+            {(profile) => (
+              <EditComponentView {...user}
+                navigation={navigation}
+                route={route}
+                preference={preference}
+                profile={profile}
+              />
+            )}
+
+          </ProfileContext.Consumer>
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
+const AccountSettingsContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <ProfileContext.Consumer>
+            {(profile) => (
+              <AccountSettingsView {...user}
+                navigation={navigation}
+                route={route}
+                preference={preference}
+                profile={profile}
+              />
+            )}
+          </ProfileContext.Consumer>
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
+const ImagePickerContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <ProfileContext.Consumer>
+            {(profile) => (
+               <ImagePickerView {...user}
+               navigation={navigation}
+               route={route}
+               preference={preference}
+               profile={profile}
+             />
+            )}
+          </ProfileContext.Consumer>
+        )}
+      </PreferenceContext.Consumer>
+    )}
+  </UserContext.Consumer>
+)
+
+const AboutContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <PreferenceContext.Consumer>
+        {(preference) => (
+          <AboutView {...user}
             navigation={navigation}
             route={route}
             preference={preference}
@@ -334,59 +439,6 @@ const EditComponentContextWrapper = ({ navigation, route }) => (
   </UserContext.Consumer>
 )
 
-const AccountSettingsContextWrapper = ({ navigation, route}) => (
-  <UserContext.Consumer>
-  {(user) => (
-    <PreferenceContext.Consumer>
-      {(preference) => (
-        <ProfileContext.Consumer>
-          {(profile) => (
-             <AccountSettingsView {...user}
-             navigation={navigation}
-             route={route}
-             preference={preference}
-             profile={profile}
-           />
-          )}
-        </ProfileContext.Consumer>
-      )}
-    </PreferenceContext.Consumer>
-  )}
-</UserContext.Consumer>
-)
-
-const ImagePickerContextWrapper = ({ navigation, route}) => (
-  <UserContext.Consumer>
-  {(user) => (
-    <PreferenceContext.Consumer>
-      {(preference) => (
-        <ImagePickerView {...user}
-          navigation={navigation}
-          route={route}
-          preference={preference}
-        />
-      )}
-    </PreferenceContext.Consumer>
-  )}
-</UserContext.Consumer>
-)
-
-const AboutContextWrapper = ({ navigation, route}) => (
-  <UserContext.Consumer>
-  {(user) => (
-    <PreferenceContext.Consumer>
-      {(preference) => (
-        <AboutView {...user}
-          navigation={navigation}
-          route={route}
-          preference={preference}
-        />
-      )}
-    </PreferenceContext.Consumer>
-  )}
-</UserContext.Consumer>
-)
-
 const InboxContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
@@ -394,12 +446,12 @@ const InboxContextWrapper = ({ navigation, route }) => (
         {(preference) => (
           <ProfileContext.Consumer>
             {(profile) => (
-                          <InboxView {...user}
-                          navigation={navigation}
-                          route={route}
-                          preference={preference}
-                          profile={profile}
-                        />
+              <InboxView {...user}
+                navigation={navigation}
+                route={route}
+                preference={preference}
+                profile={profile}
+              />
             )}
           </ProfileContext.Consumer>
 
@@ -433,11 +485,11 @@ const MessagesContextWrapper = ({ navigation, route }) => (
           <ProfileContext.Consumer>
             {(profile) => (
               <MessagesView {...user}
-              navigation={navigation}
-              route={route}
-              preference={preference}
-              profile={profile}
-            />
+                navigation={navigation}
+                route={route}
+                preference={preference}
+                profile={profile}
+              />
             )}
           </ProfileContext.Consumer>
         )}
@@ -453,7 +505,7 @@ const MatchingContextWrapper = ({ navigation, route }) => (
         {preference => (
           <ProfileContext.Consumer>
             {(profile) => (
-                <MatchingView {...user}
+              <MatchingView {...user}
                 navigation={navigation}
                 route={route}
                 preference={preference}
@@ -472,7 +524,7 @@ const ProfileContextWrapper = ({ navigation, route }) => (
     {(user) => (
       <ProfileContext.Consumer>
         {(profile) => (
-            <ProfileView {...user}
+          <ProfileView {...user}
             navigation={navigation}
             route={route}
             profile={profile}
@@ -489,11 +541,11 @@ const MatchingProfileContextWrapper = ({ navigation, route }) => (
       <ProfileContext.Consumer>
         {(profile) => (
           <MatchingProfileView {...user}
-          navigation={navigation}
-          route={route}
-          profile={profile}
-        />
-        )}  
+            navigation={navigation}
+            route={route}
+            profile={profile}
+          />
+        )}
       </ProfileContext.Consumer>
     )}
   </UserContext.Consumer>

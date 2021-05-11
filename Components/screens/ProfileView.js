@@ -13,12 +13,12 @@ export class ProfileView extends Component {
     constructor(props) {
         super(props)
 
-        this.editMode = this.editMode.bind(this);
-        this.exitEditMode = this.exitEditMode.bind(this);
+        // this.editMode = this.editMode.bind(this);
+        // this.exitEditMode = this.exitEditMode.bind(this);
 
         this.state = {
-            profile: this.props.profile,
-            bio: "",
+            profile: this.props.profile.profile[0],
+            // bio: "",
             profileAr: [],
             edit: false,
             loading: true,
@@ -26,28 +26,9 @@ export class ProfileView extends Component {
     }
 
     componentDidMount() {
-
-        console.log(this.props)
-
-        console.log("Loading profile information...")
-
-        // Update profile contents if navigating from a previous screen
-        this.subscription = this.props.navigation.addListener(
-            'focus',
-            () => {
-
-                console.log(this.props.route.params)
-                if (this.props.route.params && this.props.route.params.prevScreen) {
-                    console.log('Updating information')
-                    this.getProfileCB();
-                }
-            }
-        )
     }
 
     componentWillUnmount() {
-        console.log("Unmounting this ish")
-        this.subscription()
     }
    
     componentDidUpdate() { 
@@ -57,32 +38,6 @@ export class ProfileView extends Component {
 
     refresh = (data) => {
         console.log(data)
-    }
-
-    async getProfileCB() {
-        let cUser = await getUser(this.props._user.uid)
-        let cUserType = getUserType(cUser)
-        let retrievedProfile = await getProfile(this.props._user.uid)
-
-        console.log("....test")
-        console.log(retrievedProfile)
-
-        let profileAr = Array.from(profileArray(retrievedProfile))
-
-        console.log(profileAr)
-
-        profileAr = Array.from(profileArray(profileAr[1][1]))
-
-        console.log(profileAr)
-
-        this.setState({
-            profile: retrievedProfile,
-            profileAr: profileAr,
-            bio: retrievedProfile.info.bio.description,
-            userType: cUserType,
-            uri: retrievedProfile.uri,
-            loading: false
-        })
     }
 
     editMode() {
@@ -107,26 +62,25 @@ export class ProfileView extends Component {
         var userTitle 
         var image
 
+        var uri = this.props.profile.profile[0].uri
+        var bio = this.props.profile.profile[0].info.bio.description
 
-            if (this.state.userType === "mentees") {
-                userTitle = "Mentee"
-            } else if (this.state.userType === "mentors") {
-                userTitle = "Mentor"
-            }
+        var image = (uri ? (
+            <Image
+            style={styles.profileImageContainer}
+                source={{ uri: uri}} />
+        ) : (
+            <Image
+            style={styles.profileImageContainer}
+                source={require("../../assets/favicon.png")} />
+        ))
 
-            if (this.props.profile.uri) {
-                image = (
-                    <Image
-                    style={styles.profileImageContainer}
-                        source={{ uri: this.props.profile.uri }} />
-                )
-            } else {
-                image = (
-                    <Image
-                    style={styles.profileImageContainer}
-                        source={require("../../assets/favicon.png")} />
-                )
-            }
+
+        if (this.state.userType === "mentees") {
+            userTitle = "Mentee"
+        } else if (this.state.userType === "mentors") {
+            userTitle = "Mentor"
+        }
 
             content = (
                 <>
@@ -166,19 +120,12 @@ export class ProfileView extends Component {
                         {/* Role  + Flavor Text */}
                         <View style={styles.profileTextContainer}>
                             <Text style={styles.profileRole}>
-                            {this.props.profile.fullName}
+                            {this.props.profile.profile[0].fullName}
                             </Text>
                             <Text style={styles.profileBio}>
-                                    {this.props.profile.info.bio.description}
+                                    {bio}
                             </Text>
                         </View>
-
-                        {/* Import Button
-                        <TouchableOpacity style={styles.linkedInButton}>
-                            <Text style={styles.linkedInContainer}>
-                                Import from LinkedIn
-                            </Text>
-                        </TouchableOpacity> */}
                     </View>
                 </View>
 
@@ -207,8 +154,6 @@ export class ProfileContainer extends Component {
     }
 
     componentDidMount() {
-        console.log('ProfileContainer')
-        console.log(this.props)
     }
 
     render() {
@@ -276,8 +221,8 @@ export class ProfileContainerInfoContainer extends Component {
     }
 
     componentDidMount() {
-        console.log('In ProfileContainerInfoContainer')
-        console.log(this.props)
+        // console.log('In ProfileContainerInfoContainer')
+        // console.log(this.props)
     }
 
     render() {

@@ -6,7 +6,7 @@ import { getUser } from './User.js';
 
 // Accepts two user ids representing the sender and receiver, along with the
 // chatID and message being sent. 
-export async function sendMessage(id1, message, chat, id2, uid1, uid2) {
+export async function sendMessage(message, chat, uid1, uid2) {
     var newMessageKey = database().ref().child('messages').push().key;
 
     console.log("UID1: " + uid1)
@@ -17,8 +17,8 @@ export async function sendMessage(id1, message, chat, id2, uid1, uid2) {
         messageID: newMessageKey,
         messageContent: message,
         messageSentTime: Date.now(),
-        senderID: id1,
-        receiverID: id2,
+        // senderID: id1,
+        // receiverID: id2,
         senderUID: uid1,
         receiverUID: uid2,
     }

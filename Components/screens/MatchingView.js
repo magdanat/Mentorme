@@ -6,11 +6,14 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
 // Controllers
-import { findMentees, findMentors } from '../controllers/matching.js';
+// import { findMentees, findMentors } from '../controllers/matching.js';
+import { findUsers } from '../controllers/matching.js';
 import { search } from '../controllers/search.js';
+// Firebase
+import auth from '@react-native-firebase/auth';
 
 // Models
-import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
+// import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 
 // Depending on user profile type, i.e mentor or mentee, display different
 // component or just search a different database
@@ -31,6 +34,18 @@ export class MatchingView extends Component {
     }
 
     componentDidUpdate() {
+        console.log(this.props.profile.profile[0])
+    }
+
+    logOut() {
+        this.setState({
+            modalVisible: false,
+        })
+
+
+        auth()
+            .signOut()
+            .then(() => console.log('User signed out'))
     }
 
     setSearch(event) {
@@ -59,37 +74,11 @@ export class MatchingView extends Component {
         }
     }
 
-    // TODO: Put more of this functionality in the findUsers model function as opposed to here.
     async findUsers() {
-        let cUser = await getUser(this.props._user.uid)
-
-        let cUserType = getOppositeUserType(cUser)
-
-        if (cUserType === "mentees") {
-            let mentees = await findMentees()
-            let menteesArray = Array.from(mentees)
-
-            
-
-            this.setState({
-                users: menteesArray
-            })
-        } else if (cUserType === "mentors") {
-            let mentors = await findMentors()
-            let mentorArray = Array.from(mentors)
-
-            console.log(mentors)
-
-            this.setState({
-                users: mentorArray
-            })
-        } else {
-            this.setState({
-                users: []
-            })
-        }
-
-
+        let users = await findUsers(this.props._user.uid)
+        this.setState({
+            users: users
+        })
     }
 
     render() {
@@ -146,8 +135,6 @@ class Bios extends Component {
     }
 
     componentDidMount() {
-        // console.log('In bios...')
-        // console.log(this.props)
     }
 
     render() {
@@ -158,6 +145,7 @@ class Bios extends Component {
                     }
                     renderItem={({ item }) =>
                         <BioContainer
+                            {...this.props}
                             item={item[0]}
                             id={item[1].id}
                             uri={item[1].uri}
@@ -184,8 +172,8 @@ class BioContainer extends Component {
     }
 
     componentDidMount() {
-        console.log('In bio container...')
-        console.log(this.props)
+        // console.log('In bio container...')
+        // console.log(this.props)
     }
 
     componentDidUpdate() {
@@ -208,21 +196,17 @@ class BioContainer extends Component {
 
     render() {
 
-        var image 
+        var uri = this.props.uri
 
-        if (this.props.uri) {
-            image = (
-                <Image
-                style={styles.profilePicture}
-                    source={{ uri: this.props.uri }} />
-            )
-        } else {
-            image = (
-                <Image
-                style={styles.profilePicture}
-                    source={require("../../assets/favicon.png")} />
-            )
-        }
+        var image = (uri ? (
+            <Image
+            style={styles.profilePicture}
+                source={{ uri: uri}} />
+        ) : (
+            <Image
+            style={styles.profilePicture}
+                source={require("../../assets/favicon.png")} />
+        ))
 
         return (
             <TouchableOpacity

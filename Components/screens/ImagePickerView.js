@@ -16,8 +16,12 @@ export class ImagePickerView extends Component {
     constructor(props) {
         super(props);
 
+        var image = this.props.profile.profile[0].uri
+
+        console.log(image)
+
         this.state = {
-            imageSource: null
+            imageSource: image
         }
     }
 
@@ -32,8 +36,7 @@ export class ImagePickerView extends Component {
         launchImageLibrary(options, response => {
             console.log("response", response);
             if (response.uri) {
-                console.log(response)
-                this.setState({ imageSource: response});
+                this.setState({ imageSource: response.uri});
             } else if (response.didCancel) {
                 console.log('User cancelled photo picker');
             }
@@ -42,7 +45,15 @@ export class ImagePickerView extends Component {
 
     async updateProfilePictureCB() {
         if (this.state.imageSource) {
-            updateProfilePicture(this.state.imageSource.uri, this.props._user.uid)
+
+            let profile = this.props.profile.profile[0]
+            profile.uri = this.state.imageSource
+
+            this.props.profile.profile[1](profile)
+
+            // Update in the database
+            updateProfilePicture(this.state.imageSource, this.props._user.uid)
+            
         } else {
             console.log('No photo to upload')
         }
@@ -52,7 +63,7 @@ export class ImagePickerView extends Component {
 
         var imageContent
 
-        if (this.state.imageSource === null) {
+        if (!this.state.imageSource) {
             imageContent = (
                 <Image
                 source={require("../../assets/favicon.png")}
@@ -63,7 +74,7 @@ export class ImagePickerView extends Component {
         } else {
             imageContent = (
                 <Image
-                source={{uri: this.state.imageSource.uri }}
+                source={{uri: this.state.imageSource }}
                 style={styles.imageBox}
                 resizeMode='contain'
             />

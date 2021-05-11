@@ -16,8 +16,11 @@ export class MatchingProfileView extends Component {
         }
     }
 
-    render() {
+    componentDidMount() {
+        console.log(this.props)
+    }
 
+    render() {
         var image
 
         if (this.props.route.params.uri) {
@@ -87,7 +90,7 @@ export class MatchingProfileView extends Component {
                         onPress={(e) => this.props.navigation.navigate("MessagesView", 
                             { 
                                 uid : this.props.route.params.userID, 
-                                id : this.props.route.params.id, 
+                                // id : this.props.route.params.id, 
                                 myUID: this.props._user.uid, 
                                 name: this.props.route.params.name,
                             })}>

@@ -7,32 +7,68 @@ import { StyleSheet, Text, View, Button, TextInput, Image, TouchableOpacity, Fla
 import auth from '@react-native-firebase/auth';
 
 import { getProfile, profileArray } from '../models/Profile.js';
-import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
+import { updateFirebaseUserEmail, updateFirebaseUsername } from '../models/User.js';
 import { editProfileInfo } from '../models/Profile.js';
+
 
 export class EditAccountSettingsView extends Component {
     constructor(props) {
         super(props)
 
-        this.state = {
-            currentDescription: this.props.description
-        }
+        var description = this.props.route.params.description
+        var email = this.props._user.email
 
-    }  
+        this.state = {
+            currentDescription: description,
+            currentEmail: email,
+            id: this.props.route.params.id
+        }
+    }
 
     componentDidMount() {
-        console.log("EditAdcdcoutnSettingsView")
-        console.log(this.props)
+
+        console.log()
+
+        switch(this.state.id) { 
+            case "name":
+                const name = this.props.route.params.description.split(" ")
+                this.setState({
+                    currentFirstName: name[0],
+                    currentLastName: name[1]
+                })    
+        }
     }
 
     componentDidUpdate() {
-        console.log("testtestser")
         console.log(this.state)
-        console.log(this.props)
     }
 
     async editProfileInfoCB() {
-        editProfileInfo(this.props.id, this.state.currentDescription, this.props.userID)
+        console.log("Current id: " + this.state.id)
+
+        let profile = this.props.profile.profile[0]
+        switch(this.state.id) {
+            case "bio":
+                console.log("Bio changes")
+                await editProfileInfo(this.props.route.params.id, this.state.currentDescription, this.props._user.uid)
+                profile.info.bio.description = this.state.currentDescription
+                break;
+            case "email":
+                console.log("Email changes")
+                await updateFirebaseUserEmail(this.state.currentEmail, this.state.id)
+                profile.email = this.state.currentEmail
+                break;
+            case "name":
+                console.log("Name changes...")
+                await updateFirebaseUsername(this.state.currentFirstName, this.state.currentLastName)
+                let fullName = this.state.currentFirstName + " "  + this.state.currentLastName
+                profile.fullName = fullName
+                break;
+        }
+
+        console.log(profile)
+
+        this.props.profile.profile[1](profile)
     }
 
     setCurrentDescription(e) {
@@ -42,42 +78,58 @@ export class EditAccountSettingsView extends Component {
         })
     }
 
+    updateFirstName(value) { 
+        this.setState((state) => {
+            state.currentFirstName = value
+            return state
+        })
+    }
+
+    updateLastName(value) {
+        this.setState((state) => {
+            state.currentLastName = value
+            return state
+        })
+    }
+
+    updateEmail(value) {
+        this.setState((state) => {
+            state.currentEmail = value
+            return state
+        })
+    }
+
     renderComponent() {
-        switch (this.props.id) {
-            case "name": 
+        switch (this.state.id) {
+            case "name":
                 return (
                     <>
+                        <Text>
+                            First Name
+                        </Text>
                         <TextInput
-                            onChangeText={(e) => this.setCurrentDescription(e)}
-                            value={this.state.currentDescription}
-                            />
+                            onChangeText={(e) => this.updateFirstName(e)}
+                            value={this.state.currentFirstName}
+                        
+                        />
+                        <Text>
+                            Last Name
+                        </Text>
+                        <TextInput
+                            onChangeText={(e) => this.updateLastName(e)}
+                            value={this.state.currentLastName}/>
                     </>
                 )
             case "email":
                 return (
                     <>
-                        <Text>
-                            Test
-                        </Text>
-                    </>
-                )
-            case "phoneNumber": 
-                return (
-                    <>
                         <TextInput
-                            onChangeText={(e) => this.setCurrentDescription(e)}
-                            value={this.state.currentDescription}/>
+                            onChangeText={(e) => this.updateEmail(e)}
+                            value={this.state.currentEmail}
+                        />
                     </>
                 )
-            case "webSite": 
-                return (
-                    <>
-                        <TextInput
-                            onChangeText={(e) => this.setCurrentDescription(e)}
-                            value={this.state.currentDescription}/>
-                    </>
-                )
-            case "bio": 
+            case "bio":
                 return (
                     <>
                         <TextInput
@@ -85,50 +137,55 @@ export class EditAccountSettingsView extends Component {
                             onChangeText={(e) => this.setCurrentDescription(e)}
                             value={this.state.currentDescription}
                             maxLength={100}
-                            placeholder={"max character length 100"}/>
+                            placeholder={"max character length 100"} />
                     </>
                 )
             default:
                 content = (
                     <>
-                    <Text>
-                        Test
-                    </Text>
+                        <Text>
+                            Test
+                        </Text>
                     </>
                 )
         }
     }
 
     render() {
-        // const content
-        var content
+        var title = this.props.route.params.label
 
-        return (
-            <View style={styles.container}>
+        var content = (
+            <>
                 {/* Title */}
                 <View style={styles.titleContainer}>
-                <TouchableOpacity
-                            onPress={this.props.exitEditMode}>
-                            <Image source={require('../../assets/images/path-2.png')} />
-                        </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => this.props.navigation.navigate('AccountSettingsView')}>
+                        <Image source={require('../../assets/images/path-2.png')} />
+                    </TouchableOpacity>
 
-                            <Text>
-                                {this.props.title}
-                            </Text>
+                    <Text>
+                        {title}
+                    </Text>
 
-                        {/* Take back to profile menu */}
-                        <TouchableOpacity
-                            onPress={() => this.editProfileInfoCB()}>
-                            <Text>
-                                Save
+                    {/* Take back to profile menu */}
+                    <TouchableOpacity
+                        onPress={() => this.editProfileInfoCB()}>
+                        <Text>
+                            Save
                             </Text>
-                        </TouchableOpacity>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Input */}
                 <View style={styles.textInput}>
                     {this.renderComponent()}
                 </View>
+            </>
+        )
+
+        return (
+            <View style={styles.container}>
+                {content}
             </View>
         )
     }
@@ -149,6 +206,5 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
         marginLeft: "5%",
         marginRight: "5%",
-        borderBottomWidth: 1,
     }
 })
