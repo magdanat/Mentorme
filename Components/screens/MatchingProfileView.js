@@ -5,7 +5,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { StyleSheet, Text, View, Button, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
 import { getProfile, profileArray } from '../models/Profile.js';
-import { getUser, getOppositeUserType, getUserType} from '../models/User.js';
+
+import { toggleFavorite, checkProfileList } from '../models/List.js';
 
 export class MatchingProfileView extends Component {
     constructor(props) {
@@ -13,11 +14,35 @@ export class MatchingProfileView extends Component {
 
         this.state = {
             profile: this.props.route.params,
+            loading: false,
+            favorited: false,
         }
     }
 
+    // Check if profile is in list 
     componentDidMount() {
         console.log(this.props)
+        this.checkProfileListCB()
+    }
+
+    componentDidUpdate() {
+        console.log(this.state)
+    }
+
+    async checkProfileListCB() {
+        let favoritedProfile = await checkProfileList(this.props._user.uid, this.props.route.params.userID)
+
+        this.setState({
+            favorited: favoritedProfile
+        })
+    }
+
+    async toggleFavoriteCB() {
+        let favorite = await toggleFavorite(this.props._user.uid, this.props.route.params.userID, this.state.favorited)
+
+        this.setState({
+            favorited: favorite
+        })
     }
 
     render() {
@@ -60,7 +85,6 @@ export class MatchingProfileView extends Component {
                     {/* Profile Picture */}
                     {image}
 
-
                     {/* Role  + Flavor Text */}
                     <View 
                         style={styles.profileTextContainer}
@@ -72,6 +96,13 @@ export class MatchingProfileView extends Component {
                             {this.props.route.params.bio}
                         </Text>
                     </View>
+
+                    {/* Favorite Button */}
+                    <TouchableOpacity
+                        onPress={() => this.toggleFavoriteCB()} 
+                        style={styles.favoriteButton}>
+                        <Image source={require('../../assets/favicon.png')}/>
+                    </TouchableOpacity>
                 </View>
 
                 {/* Info */}
@@ -198,6 +229,9 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "white",
+    },
+    favoriteButton: {
+        marginRight: 25,
     },
     titleContainer: {
         marginTop: 25,

@@ -36,14 +36,6 @@ export async function updateUser(updateObject) {
 export async function updateUserType(uid) {
 }
 
-// Accepts a user object and checks the user's current profile type (mentee/mentor)
-// Returns the current active profile type for a user as a string value
-export function getOppositeUserType(user) {
-}
-
-export function getUserType(user) {
-}
-
 // Creates a new user and puts it in the database
 export function createNewUser(uid, email, fName, lName) {
     let fullName = fName + ' ' + lName
@@ -62,6 +54,9 @@ export function createNewUser(uid, email, fName, lName) {
         .then(() => console.log('Data set.'));
 }
 
+/*
+    Input: 
+*/
 export async function updateFirebaseUserEmail(value, valueType) {
     let user = auth().currentUser
 

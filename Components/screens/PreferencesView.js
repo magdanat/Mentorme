@@ -35,6 +35,7 @@ export class PreferencesView extends Component {
 
     this.state = {
       step: 1,
+      prefUserType: 0,
       userType: 0,
       userTypeFulfilled: false,
       stage: 0,
@@ -127,7 +128,23 @@ export class PreferencesView extends Component {
   }
 
   updateType(value) {
+    // Refers to user type that will be set initially for preferences.
+    let prefUserType
+    switch(value) {
+      case 1:
+        prefUserType = 2
+        break
+      case 2:
+        prefUserType = 1
+        break
+      case 3:
+      case 0:
+        prefUserType = 3
+        break
+    }
+
     this.setState({
+      prefUserType: prefUserType,
       userType: value,
       userTypeFulfilled: true
     })
@@ -142,7 +159,8 @@ export class PreferencesView extends Component {
       direction: this.state.direction,
       relationship: this.state.relationship,
       uid: this.props._user.uid,
-      userType: this.state.userType
+      userType: this.state.userType,
+      prefUserType: this.state.prefUserType
     }
 
     let profileObject = {

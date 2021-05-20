@@ -271,9 +271,6 @@ const styles = StyleSheet.create({
         height: 100,
         width: 100,
         marginLeft: '5%',
-        // borderColor: 'black',
-        // borderWidth: 1,
-        // flex: 2,
     },
     profileTextContainer: {
         marginLeft: 20,

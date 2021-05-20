@@ -6,9 +6,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text, View, TextInput, FlatList, Image, TouchableOpacity } from 'react-native';
 
 // Controllers
-// import { findMentees, findMentors } from '../controllers/matching.js';
 import { findUsers } from '../controllers/matching.js';
 import { search } from '../controllers/search.js';
+
+// Models
+import { getUserList } from '../models/List.js';
+
 // Firebase
 import auth from '@react-native-firebase/auth';
 
@@ -25,12 +28,14 @@ export class MatchingView extends Component {
             users: [],
             displaySearch: false,
             loading: true,
+            userList: []
         }
     }
 
+    // Find users, also get list of already favorited users
     componentDidMount() {
-        // console.log(this.props)
         this.findUsers()
+        this.get
     }
 
     componentDidUpdate() {

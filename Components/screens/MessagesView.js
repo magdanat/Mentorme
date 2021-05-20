@@ -298,7 +298,6 @@ class Message extends Component {
     render() {
         return (
             <View style={[styles.message, {
-                // backgroundColor: this.isMyMessage() ? '#fbc015' : 'light-grey',
                 borderColor: this.isMyMessage() ? '#fbc015' : 'grey',
                 backgroundColor: this.isMyMessage() ? '#fbc015' : 'white',
                 marginLeft: this.isMyMessage() ? 100 : 0,

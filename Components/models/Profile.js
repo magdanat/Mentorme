@@ -1,12 +1,11 @@
 import database from '@react-native-firebase/database';
 import { useFocusEffect } from '@react-navigation/native';
 
-import { getUser, getUserType, updateUserType, updateUser } from './User.js';
-
+import { getUser } from './User.js';
 
 // Accepts two parameters, uid
 export async function createProfile(profileObject) {
-    var newProfileKey = database().ref().push().key;
+    let newProfileKey = database().ref().push().key;
 
     let user = await getUser(profileObject.uid)
 
@@ -71,15 +70,17 @@ export async function createProfile(profileObject) {
 // Accepts a user's key ID and retrieves the associated
 // profile information with that key and returns it
 export async function getProfile(uid) {
-    let user =  await getUser(uid)
-
     let ref = database().ref('profiles/' + uid)
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
 
-    // console.log(snapshotItem)
-
     return snapshotItem;
+}
+
+// Accepts a users' key ID and retrieves
+// the profiles that user has favorited 
+export async function getUserProfiles(uid) {
+
 }
 
 // Accepts a info object and returns it as a formatted
@@ -144,8 +145,6 @@ export async function focusProfile() {
     return null;
 }
 
-// export function getProfileInfo(info, id) {
-//     let ref  = database().ref('profiles/')
+export async function getListOfProfiles(uid) {
 
-
-// }
+}
