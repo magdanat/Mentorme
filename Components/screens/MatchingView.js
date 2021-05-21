@@ -39,7 +39,8 @@ export class MatchingView extends Component {
     }
 
     componentDidUpdate() {
-        console.log(this.props.profile.profile[0])
+        // console.log(this.props.profile.profile[0])
+        console.log(this.state.users)
     }
 
     logOut() {
@@ -124,7 +125,7 @@ export class MatchingView extends Component {
                 <View style={styles.bios}>
                     <Bios
                         navigation={this.props.navigation}
-                        mentors={this.state.users}
+                        users={this.state.users}
                     />
                 </View>
 
@@ -134,7 +135,7 @@ export class MatchingView extends Component {
 }
 
 // Represents the list of different user profiles
-class Bios extends Component {
+export class Bios extends Component {
     constructor(props) {
         super(props)
     }
@@ -146,7 +147,7 @@ class Bios extends Component {
         return (
             <View>
                 <FlatList
-                    data={this.props.mentors
+                    data={this.props.users
                     }
                     renderItem={({ item }) =>
                         <BioContainer
@@ -171,7 +172,7 @@ class Bios extends Component {
 }
 
 // Renders a single profile instance
-class BioContainer extends Component {
+export class BioContainer extends Component {
     constructor(props) {
         super(props)
     }

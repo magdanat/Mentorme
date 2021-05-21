@@ -2,6 +2,7 @@ import database from '@react-native-firebase/database';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { getUser } from './User.js';
+import { getUserList } from './List.js';
 
 // Accepts two parameters, uid
 export async function createProfile(profileObject) {
@@ -146,5 +147,16 @@ export async function focusProfile() {
 }
 
 export async function getListOfProfiles(uid) {
+    let userFavorites = await getUserList(uid)
 
+    let userProfilesArray = []
+
+    console.log(userFavorites)
+
+    for (const user of userFavorites) {
+        let userProfile = await getProfile(user)
+        userProfilesArray.push([user, userProfile])
+    }
+
+    return userProfilesArray
 }

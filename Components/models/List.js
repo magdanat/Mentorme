@@ -21,6 +21,21 @@ export async function getUserList(uid) {
 
     console.log(snapshotItem)
 
+    let itemKeys = Object.keys(snapshotItem)
+
+    console.log(itemKeys)
+
+    let usersArray = []
+
+    itemKeys.map((key) => {
+        
+
+        if (snapshotItem[key]) {
+            usersArray.push(key)
+        }
+    })
+
+    return usersArray
 }
 
 /*
@@ -69,37 +84,3 @@ export async function toggleFavorite(uid1, uid2, favorited) {
         return newFavorited
     }
 }
-
-/* Accepts two parameter
-*/
-export async function addToList(uid1, uid2) {
-    var updates = {}
-
-    updates['lists/' + uid1 + '/' + uid2] = true
-
-    database()
-        .ref()
-        .update(updates)
-        .then(() => {
-            console.log("Successfully added list.")
-        }).catch((e) => {
-            console.log(e)
-            return false
-        })
-
-    return true
-}
-
-// export async function removeFromList(uid1, uid2) {
-//     var updates = {}
-
-//     database()
-//         .ref('lists/' + uid1)
-//         .set(() => {
-//             updates[uid2] = null
-//         }).then(() => {
-//             console.log("Remove successful")
-//         }).catch((e) => {
-//             console.log(e)
-//         })
-// }

@@ -21,6 +21,7 @@ import { LoginView } from './Components/screens/LoginView';
 // Logged-In Components
 import { MatchingView } from './Components/screens/MatchingView';
 import { ProfileView } from './Components/screens/ProfileView';
+import { FavoritesListView } from './Components/screens/FavoritesListView';
 import { InboxView } from './Components/screens/InboxView';
 import { MatchingProfileView } from './Components/screens/MatchingProfileView';
 import { MessagesView } from './Components/screens/MessagesView';
@@ -199,6 +200,12 @@ const App = () => {
           <Stack.Screen
             name="ImagePickerView"
             component={ImagePickerContextWrapper}
+            options={{ headerShown: false }}
+          />
+
+          <Stack.Screen
+            name="FavoritesListView"
+            component={FavoritesListContextWrapper}
             options={{ headerShown: false }}
           />
         </>
@@ -577,6 +584,18 @@ const ConnectContextWrapper = ({ navigation, route }) => (
   <UserContext.Consumer>
     {(user) => (
       <ConnectTabs {...user}
+        navigation={navigation}
+        route={route}
+      />
+    )}
+  </UserContext.Consumer>
+)
+
+const FavoritesListContextWrapper = ({ navigation, route }) => (
+  <UserContext.Consumer>
+    {(user) => (
+      <FavoritesListView
+        {...user}
         navigation={navigation}
         route={route}
       />

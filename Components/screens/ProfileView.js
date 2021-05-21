@@ -126,6 +126,13 @@ export class ProfileView extends Component {
                                     {bio}
                             </Text>
                         </View>
+
+                        <TouchableOpacity
+                            style={styles.favoriteButton}
+                            onPress={() => this.props.navigation.navigate('FavoritesListView')}
+                            >
+                            <Image source={require('../../assets/favicon.png')}/>
+                        </TouchableOpacity>
                     </View>
                 </View>
 
@@ -296,6 +303,9 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         marginBottom: 175,
+    },
+    favoriteButton: {
+        marginRight: 35,
     },
     specificInfoContainer: {
         minHeight: 150,

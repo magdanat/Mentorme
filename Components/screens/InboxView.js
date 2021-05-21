@@ -15,7 +15,8 @@ export class InboxView extends Component {
 		super(props)
 
 		this.state = {
-			chats: []
+			chats: [],
+			loading: false,
 		}
 	}
 
