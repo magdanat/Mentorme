@@ -34,13 +34,19 @@ export class MatchingView extends Component {
 
     // Find users, also get list of already favorited users
     componentDidMount() {
+        // console.log("MatchingView")
+        // console.log(this.props)
         this.findUsers()
-        this.get
+        // this.get
     }
 
     componentDidUpdate() {
         // console.log(this.props.profile.profile[0])
-        console.log(this.state.users)
+        // console.log(this.state.users)
+    }
+
+    componentWillUnount() {
+        console.log("Unmounting...")
     }
 
     logOut() {

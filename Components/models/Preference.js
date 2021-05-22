@@ -29,7 +29,7 @@ export async function getPreference(uid) {
     let snapshot = await ref.once('value')
     let snapshotItem = snapshot.val()
 
-    console.log(snapshotItem)
+    // console.log(snapshotItem)
 
     return snapshotItem;
 }

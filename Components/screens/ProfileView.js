@@ -26,6 +26,8 @@ export class ProfileView extends Component {
     }
 
     componentDidMount() {
+        console.log("ProfileView")
+        console.log(this.props)
     }
 
     componentWillUnmount() {

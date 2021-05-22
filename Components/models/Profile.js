@@ -65,7 +65,7 @@ export async function createProfile(profileObject) {
     updates['users/' + profileObject.uid + '/currentProfile'] = profileObject.userType
     updates['users/' + profileObject.uid + '/preference'] = true
 
-    return database().ref().update(updates)
+    database().ref().update(updates)
 }
 
 // Accepts a user's key ID and retrieves the associated
@@ -150,8 +150,6 @@ export async function getListOfProfiles(uid) {
     let userFavorites = await getUserList(uid)
 
     let userProfilesArray = []
-
-    console.log(userFavorites)
 
     for (const user of userFavorites) {
         let userProfile = await getProfile(user)

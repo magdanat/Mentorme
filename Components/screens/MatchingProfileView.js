@@ -29,6 +29,10 @@ export class MatchingProfileView extends Component {
         console.log(this.state)
     }
 
+    componentWillUnmount() {
+        console.log("Unmounting...")
+    }
+
     async checkProfileListCB() {
         let favoritedProfile = await checkProfileList(this.props._user.uid, this.props.route.params.userID)
 

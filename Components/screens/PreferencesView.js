@@ -12,7 +12,7 @@ import database from '@react-native-firebase/database';
 import { createMentee } from '../models/Mentee.js'
 import { createMentor } from '../models/Mentor.js'
 import { createPreference } from '../models/Preference.js';
-import { createProfile } from '../models/Profile.js';
+import { createProfile, getProfile } from '../models/Profile.js';
 
 // Context
 // import { PreferenceContext } from '../../context.js';
@@ -48,6 +48,8 @@ export class PreferencesView extends Component {
   }
 
   componentDidMount() {
+    console.log("PreferencesView")
+    console.log(this.props)
   }
 
   setValue(event) {
@@ -171,6 +173,11 @@ export class PreferencesView extends Component {
 
     await createProfile(profileObject)
     await createPreference(preferenceObject)
+
+    let newProfile = await getProfile(this.props._user.uid)
+    // Set user profile
+    this.props.profile.profile[1](newProfile)
+
 
     // // Update preference here...
     // // Local update
