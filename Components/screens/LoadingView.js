@@ -14,11 +14,6 @@ export class LoadingView extends Component {
 
     render() {
         return (
-            // <View>
-            //     <Text>
-            //         Loading!
-            //     </Text>
-            // </View>
             null
         )
     }

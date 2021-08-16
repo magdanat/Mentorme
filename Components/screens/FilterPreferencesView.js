@@ -266,14 +266,6 @@ class PreferenceButton extends Component {
     super(props);
   }
 
-  componentDidMount() {
-    // console.log(this.props)
-  }
-
-  componentDidUpdate() {
-    console.log(this.props)
-  }
-
   isSelected() {
     console.log(this.props.givenValue === this.props.value[1])
     return this.props.givenValue === this.props.value[1]

@@ -22,7 +22,6 @@ export class EditProfileView extends Component {
     }
 
     componentDidMount() {
-        // console.log(Array.from(this.props.profile.profile[0].info))
         this.subscription = this.props.navigation.addListener(
             'focus',
             (e) => {
@@ -31,7 +30,6 @@ export class EditProfileView extends Component {
                 }
             }
         )
-        // // console.log(this.props)
     }
 
     componentDidUpdate() {
@@ -53,17 +51,6 @@ export class EditProfileView extends Component {
 
 
         let profileAr = Array.from(profileArray(this.props.profile.profile[0]))
-
-        console.log(profileAr)
-
-        // profileAr = Array.from(profileArray(profileAr[1][1]))
-
-        // console.log(profileAr)
-
-        // this.setState({
-        //     profile: retrievedProfile,
-        //     profileAr: profileAr
-        // })
     }
 
     render() {
@@ -244,9 +231,6 @@ export class ProfileContainerInfoContainer extends Component {
                     <View>
                         <Text style={styles.infoContainerDesc}>
                             {this.props.description}
-
-                            {/* Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                            sunt in culpa qui officia deserunt mollit anim id est laborum */}
                         </Text>
                     </View>
                 </View>

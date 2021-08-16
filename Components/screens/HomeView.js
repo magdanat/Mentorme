@@ -96,11 +96,6 @@ export const HomeView = ({ navigation }) => {
   return (
     <View style={styles.homeContainer}>
       <Text style={styles.welcomeTitle}>Welcome</Text>
-      
-      {/* <TouchableOpacity
-      >
-        <Text style={styles.loginLinkedIn}>Log in with LinkedIn</Text>
-      </TouchableOpacity> */}
       {/* <Text> OR</Text> */}
       <View style={styles.loginInfo}>
         <TextInput

@@ -102,8 +102,6 @@ export async function findUsers(uid) {
         }
     }
 
-    console.log(prefArray)
-
     // Sort the array in ascending order
     prefArray.sort(function (a, b) {
         console.log(a[1])

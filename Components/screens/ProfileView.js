@@ -13,12 +13,8 @@ export class ProfileView extends Component {
     constructor(props) {
         super(props)
 
-        // this.editMode = this.editMode.bind(this);
-        // this.exitEditMode = this.exitEditMode.bind(this);
-
         this.state = {
             profile: this.props.profile.profile[0],
-            // bio: "",
             profileAr: [],
             edit: false,
             loading: true,

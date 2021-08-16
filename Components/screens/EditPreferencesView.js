@@ -123,14 +123,10 @@ export class EditPreferencesView extends Component {
     // Update preference here...
     // Local update
     this.props.preference.preference[1]()
-
-    // Update user in database  
-
-    console.log(this.props)
   }
 
   showStep = () => {
-    const { step, mentor, mentee, notSure, legalName, prefName, interests } = this.state
+    const { step, mentee } = this.state
 
     // Mentee/mentor selection
     if (step === 1) {
@@ -200,9 +196,6 @@ class PrefButtonElements1 extends Component {
   constructor(props) {
     super(props)
   }
-
-  // componentDidMount() {
-  // }
 
   // Proceeds to next form
   next = e => {
@@ -331,8 +324,6 @@ class PrefButtonElementsStage extends Component {
 
 // Implement a scrollview for the buttons?
 class PrefButtonElementsStand extends Component {
-  // constructor(props) {
-  // }
 
   back = e => {
     e.preventDefault()

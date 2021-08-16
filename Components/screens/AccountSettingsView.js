@@ -11,9 +11,6 @@ import { getUser, getOppositeUserType, getUserType } from '../models/User.js';
 import { EditAccountSettingsView } from './EditAccountSettingsView.js';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-
-// import SimpleImagePicker from '../controllers/imagePicker';
-
 export class AccountSettingsView extends Component {
     constructor(props) {
         super(props);
@@ -34,15 +31,9 @@ export class AccountSettingsView extends Component {
     }
 
     componentDidMount() {
-        // retrieve current user information
         this.subscription = this.props.navigation.addListener(
             'focus',
             () => {
-                // // if (this.props.route.params && this.props.route.params.prevScreen) {
-                // //     // this.getProfileCB();
-                // //     console.log("Image should change.")
-                // // }
-                // console.log(this.props.profile.profile[0].info.bio.description)
                 this.setState({
                     profile: this.props.profile.profile[0]
                 })
@@ -174,12 +165,6 @@ export class AccountInfo extends Component {
         super(props)
     }
 
-    componentDidMount() {
-        console.log('AccountInfo')
-        console.log(this.props)
-    }
-
-
     renderBioDescription() {
         let description = "No description"
 
@@ -216,7 +201,6 @@ export class AccountInfo extends Component {
                 <View style={styles.pictureContainer}>
                     {image}
                     <TouchableOpacity
-                        // onPress={this.props.handleChoosePhoto}
                         onPress={() => this.props.navigation.navigate('ImagePickerView')}
                         style={styles.changePictureButton}>
                         <Text style={styles.changePictureText}>
@@ -237,7 +221,6 @@ export class AccountInfo extends Component {
                         label={item.label}
                         description={item.description}
                         navigation={this.props.navigation}
-                        // editMode={this.props.editMode}
                     />}
                 />
             </View>
@@ -248,11 +231,6 @@ export class AccountInfo extends Component {
 export class AccountInfoSection extends Component {
     constructor(props) {
         super(props)
-    }
-
-    componentDidUpdate() {
-        // console.log("AccountInfoSection")
-        // console.log(this.props.label)
     }
 
     render() {

@@ -11,10 +11,6 @@ export class AboutView extends Component {
         super(props);
     }
 
-    componentDidMount() {
-    }
-
-
     render() {
         return (
             <View style={styles.container}>
@@ -23,13 +19,6 @@ export class AboutView extends Component {
                             onPress={() => this.props.navigation.goBack()}>
                             <Image source={require('../../assets/images/path-2.png')} />
                         </TouchableOpacity>
-                        {/* <TouchableOpacity
-                            onPress={() => this.logOut()}
-                            >
-                            <Text>
-                                Logout
-                            </Text>
-                        </TouchableOpacity> */}
                         <Text style={styles.titleText}>
                             About Passionfruit
                         </Text>

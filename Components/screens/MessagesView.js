@@ -71,12 +71,11 @@ export class MessagesView extends Component {
 
                         // Sort array based on message sent time
                         infoArray.sort((a, b) => (a.messageSentTime < b.messageSentTime) ? 1 : -1)
-                                    // retrieve all messages and sort them by oldest to newest
-                            this.setState({
-                                chatExists: true,
-                                chatKey: chatKey,
-                                messages: infoArray
-                            })
+                        this.setState({
+                            chatExists: true,
+                            chatKey: chatKey,
+                            messages: infoArray
+                        })
                     } else {
                         console.log("Error setting up chat.")
                     }
@@ -95,7 +94,6 @@ export class MessagesView extends Component {
 
         if (this.state.chatExists) {
             console.log("Chat exists")
-            // this.sendMessageCB(this.props.profile.id, this.state.currentInput, this.state.chatKey)
             this.sendMessageCB(this.state.currentInput, this.state.chatKey)
 
         } else {
